@@ -19,21 +19,22 @@ public class Payment {
    private int paymentId;
    
    @ManyToOne
-   @JoinColumn(name="customer_id", nullable=false)
-   private Customer customer;
+   @JoinColumn(name="customer_id")
+   private Customer customerId;
    
    @ManyToOne
-   @JoinColumn(name="staff_id", nullable=false)
-   private Staff staff;
+   @JoinColumn(name="staff_id")
+   private Staff staffId;
    
    @ManyToOne
-   @JoinColumn(name="rental_id")
-   private Rental rental;
+   @JoinColumn(name="rental_id",nullable=false)
+   private Rental rentalId;
    
-   @Column(name="amount",nullable=false, precision=5, scale=2)
-   private BigDecimal amount;
+   @Column(name="amount", precision=5, scale=2)
+   private int amount;
    
-   @Column(name="payment_date", nullable=false)
+   @Column(name="payment_date")
+   @Convert(converter = LocalDateTimeAttributeConverter.class)
    private Date paymentDate;
    
    @Column(name="last_update")
@@ -48,35 +49,35 @@ public void setPaymentId(int paymentId) {
 	this.paymentId = paymentId;
 }
 
-public Customer getCustomer() {
-	return customer;
+public Customer getCustomerId() {
+	return customerId;
 }
 
-public void setCustomer(Customer customer) {
-	this.customer = customer;
+public void setCustomerId(Customer customerId) {
+	this.customerId = customerId;
 }
 
-public Staff getStaff() {
-	return staff;
+public Staff getStaffId() {
+	return staffId;
 }
 
-public void setStaff(Staff staff) {
-	this.staff = staff;
+public void setStaffId(Staff staffId) {
+	this.staffId = staffId;
 }
 
-public Rental getRental() {
-	return rental;
+public Rental getRentalId() {
+	return rentalId;
 }
 
-public void setRental(Rental rental) {
-	this.rental = rental;
+public void setRentalId(Rental rentalId) {
+	this.rentalId = rentalId;
 }
 
-public BigDecimal getAmount() {
+public int getAmount() {
 	return amount;
 }
 
-public void setAmount(BigDecimal amount) {
+public void setAmount(int amount) {
 	this.amount = amount;
 }
 
@@ -95,6 +96,8 @@ public LocalDateTime getLastUpdate() {
 public void setLastUpdate(LocalDateTime lastUpdate) {
 	this.lastUpdate = lastUpdate;
 }
+
+
    
    
    

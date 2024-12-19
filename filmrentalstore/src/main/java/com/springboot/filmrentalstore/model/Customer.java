@@ -16,26 +16,26 @@ public class Customer {
     @Column(name="customer_id",nullable = false)
     private int customerId;
     @ManyToOne
-    @JoinColumn(name = "store_id", nullable = false)
+    @JoinColumn(name = "store_id" )
     private Store storeId;
 
-    @Column(name="first_name", nullable = false, length = 45)
+    @Column(name="first_name",  length = 45)
     private String firstName;
 
-    @Column(name="last_name",nullable = false, length = 45)
+    @Column(name="last_name", length = 45)
     private String lastName;
 
-    @Column(name="email",length = 50)
+    @Column(name="email",length = 50,nullable = false)
     private String email;
 
     @ManyToOne
-    @JoinColumn(name = "address_id", nullable = false)
-    private Address address; 
+    @JoinColumn(name = "address_id")
+    private Address addressId; 
 
-    @Column(name="active",nullable = false)
-    private Boolean active;
+    @Column(name="active")
+    private char active;
 
-    @Column(name = "create_date", nullable = false)
+    @Column(name = "create_date")
     private Date createDate;
 
     @Column(name = "last_update")
@@ -82,19 +82,19 @@ public class Customer {
 		this.email = email;
 	}
 
-	public Address getAddress() {
-		return address;
+	public Address getAddressId() {
+		return addressId;
 	}
 
-	public void setAddress(Address address) {
-		this.address = address;
+	public void setAddressId(Address addressId) {
+		this.addressId = addressId;
 	}
 
-	public Boolean getActive() {
+	public char getActive() {
 		return active;
 	}
 
-	public void setActive(Boolean active) {
+	public void setActive(char active) {
 		this.active = active;
 	}
 
@@ -113,5 +113,7 @@ public class Customer {
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
+
+	
     
 }

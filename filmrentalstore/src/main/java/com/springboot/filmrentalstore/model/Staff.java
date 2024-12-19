@@ -15,32 +15,32 @@ public class Staff {
     @Column(name = "staff_id")
     private int staffId;
 
-    @Column(name="first_name",nullable = false, length = 45)
+    @Column(name="first_name", length = 45)
     private String firstName;
 
-    @Column(name="last_name",nullable = false, length = 45)
+    @Column(name="last_name", length = 45)
     private String lastName;
 
     @ManyToOne
-    @JoinColumn(name = "address_id", nullable = false)
-    private Address address;
+    @JoinColumn(name = "address_id")
+    private Address addressId;
 
     @Lob
-    @Column(name = "picture")
+    @Column(name = "picture", nullable = false)
     private byte[] picture;
 
-    @Column(name = "email")
+    @Column(name = "email",length =50,nullable=false)
     private String email;
 
     @ManyToOne
-    @JoinColumn(name = "store_id", nullable = false)
-    private Store store;
+    @JoinColumn(name = "store_id")
+    private Store storeId;
     
-    @Column(name = "active")
+    @Column(name = "active",length =22)
     private int active;
-    @Column(name = "username")
+    @Column(name = "username",length =16)
     private String username;
-    @Column(name = "password")
+    @Column(name = "password",length=40,nullable =false)
     private String password;
 
     @Column(name = "last_update", nullable = false)
@@ -71,12 +71,12 @@ public class Staff {
 		this.lastName = lastName;
 	}
 
-	public Address getAddress() {
-		return address;
+	public Address getAddressId() {
+		return addressId;
 	}
 
-	public void setAddress(Address address) {
-		this.address = address;
+	public void setAddressId(Address addressId) {
+		this.addressId = addressId;
 	}
 
 	public byte[] getPicture() {
@@ -95,12 +95,12 @@ public class Staff {
 		this.email = email;
 	}
 
-	public Store getStore() {
-		return store;
+	public Store getStoreId() {
+		return storeId;
 	}
 
-	public void setStore(Store store) {
-		this.store = store;
+	public void setStoreId(Store storeId) {
+		this.storeId = storeId;
 	}
 
 	public int getActive() {
@@ -134,6 +134,8 @@ public class Staff {
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
+
+	
     
     
 }

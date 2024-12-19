@@ -17,12 +17,12 @@ public class Inventory {
     private int inventoryId;
 
     @ManyToOne
-    @JoinColumn(name = "film_id", nullable = false)
-    private Film film;
+    @JoinColumn(name = "film_id")
+    private Film filmId;
 
     @ManyToOne
-    @JoinColumn(name = "store_id", nullable = false)
-    private Store store;
+    @JoinColumn(name = "store_id")
+    private Store storeId;
 
     @Column(name = "last_update", nullable = false)
     @Convert(converter = LocalDateTimeAttributeConverter.class)
@@ -36,20 +36,20 @@ public class Inventory {
 		this.inventoryId = inventoryId;
 	}
 
-	public Film getFilm() {
-		return film;
+	public Film getFilmId() {
+		return filmId;
 	}
 
-	public void setFilm(Film film) {
-		this.film = film;
+	public void setFilmId(Film filmId) {
+		this.filmId = filmId;
 	}
 
-	public Store getStore() {
-		return store;
+	public Store getStoreId() {
+		return storeId;
 	}
 
-	public void setStore(Store store) {
-		this.store = store;
+	public void setStoreId(Store storeId) {
+		this.storeId = storeId;
 	}
 
 	public LocalDateTime getLastUpdate() {
@@ -59,6 +59,8 @@ public class Inventory {
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
+
+	
 
     
 }

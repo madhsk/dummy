@@ -17,31 +17,29 @@ public class Rental {
    @Column(name = "rental_id")
    private int rentalId;
    
-   @Column(name="rental_date",nullable=false)
+   @Column(name="rental_date")
+   @Convert(converter = LocalDateTimeAttributeConverter.class)
    private LocalDateTime rentalDate;
    
    @ManyToOne
-   @JoinColumn(name="inventory_id", nullable=false)
-   private Inventory inventory;
+   @JoinColumn(name="inventory_id")
+   private Inventory inventoryId;
    
    @ManyToOne
-   @JoinColumn(name="customer_id", nullable=false)
-   private Customer customer;
+   @JoinColumn(name="customer_id")
+   private Customer customerId;
    
-   @Column(name="return_date")
+   @Column(name="return_date", nullable = false)
+   @Convert(converter = LocalDateTimeAttributeConverter.class)
    private LocalDateTime returnDate;
    
    @ManyToOne
-   @JoinColumn(name="staff_id", nullable=false)
-   private Staff staff;
+   @JoinColumn(name="staff_id")
+   private Staff staffId;
    
    @Column(name="last_update", nullable=false)
    @Convert(converter = LocalDateTimeAttributeConverter.class)
    private LocalDateTime lastUpdate;
-
-public void setReturnDate(LocalDateTime returnDate) {
-	this.returnDate = returnDate;
-}
 
 public int getRentalId() {
 	return rentalId;
@@ -51,41 +49,44 @@ public void setRentalId(int rentalId) {
 	this.rentalId = rentalId;
 }
 
-public void setRentalDate(LocalDateTime localDateTime) {
-	this.rentalDate = localDateTime;
-}
-
-public Inventory getInventory() {
-	return inventory;
-}
-
-public void setInventory(Inventory inventory) {
-	this.inventory = inventory;
-}
-
-public Customer getCustomer() {
-	return customer;
-}
-
-public void setCustomer(Customer customer) {
-	this.customer = customer;
-}
-
-
 public LocalDateTime getRentalDate() {
 	return rentalDate;
+}
+
+public void setRentalDate(LocalDateTime rentalDate) {
+	this.rentalDate = rentalDate;
+}
+
+public Inventory getInventoryId() {
+	return inventoryId;
+}
+
+public void setInventoryId(Inventory inventoryId) {
+	this.inventoryId = inventoryId;
+}
+
+public Customer getCustomerId() {
+	return customerId;
+}
+
+public void setCustomerId(Customer customerId) {
+	this.customerId = customerId;
 }
 
 public LocalDateTime getReturnDate() {
 	return returnDate;
 }
 
-public Staff getStaff() {
-	return staff;
+public void setReturnDate(LocalDateTime returnDate) {
+	this.returnDate = returnDate;
 }
 
-public void setStaff(Staff staff) {
-	this.staff = staff;
+public Staff getStaffId() {
+	return staffId;
+}
+
+public void setStaffId(Staff staffId) {
+	this.staffId = staffId;
 }
 
 public LocalDateTime getLastUpdate() {
@@ -95,6 +96,8 @@ public LocalDateTime getLastUpdate() {
 public void setLastUpdate(LocalDateTime lastUpdate) {
 	this.lastUpdate = lastUpdate;
 }
+
+
    
    
 }

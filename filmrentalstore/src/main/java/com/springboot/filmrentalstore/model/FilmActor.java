@@ -21,9 +21,33 @@ public class FilmActor {
 	@EmbeddedId
 	private FilmActorId filmActorId;
 	
-	@Column(name ="last_update")
+	
+	 @Column(name = "last_update", nullable = false)
+    @Convert(converter = LocalDateTimeAttributeConverter.class)
 	private LocalDateTime lastUpdate;
 
+
+	public FilmActorId getFilmActorId() {
+		return filmActorId;
+	}
+
+
+	public void setFilmActorId(FilmActorId filmActorId) {
+		this.filmActorId = filmActorId;
+	}
+
+
+	public LocalDateTime getLastUpdate() {
+		return lastUpdate;
+	}
+
+
+	public void setLastUpdate(LocalDateTime lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
+
+	 
+	 
 }
 
 

@@ -17,12 +17,12 @@ public class Store {
     private int storeId;
 
     @ManyToOne
-    @JoinColumn(name = "staff_id", nullable = false)
-    private Staff staff;
+    @JoinColumn(name = "staff_id")
+    private Staff staffId;
 
     @ManyToOne
-    @JoinColumn(name = "addres_id", nullable = false)
-    private Address address;
+    @JoinColumn(name = "addres_id")
+    private Address addressId;
 
     @Column(name = "last_update", nullable = false)
     @Convert(converter = LocalDateTimeAttributeConverter.class)
@@ -36,20 +36,20 @@ public class Store {
 		this.storeId = storeId;
 	}
 
-	public Staff getStaff() {
-		return staff;
+	public Staff getStaffId() {
+		return staffId;
 	}
 
-	public void setStaff(Staff staff) {
-		this.staff = staff;
+	public void setStaffId(Staff staffId) {
+		this.staffId = staffId;
 	}
 
-	public Address getAddress() {
-		return address;
+	public Address getAddressId() {
+		return addressId;
 	}
 
-	public void setAddress(Address address) {
-		this.address = address;
+	public void setAddressId(Address addressId) {
+		this.addressId = addressId;
 	}
 
 	public LocalDateTime getLastUpdate() {
@@ -59,6 +59,8 @@ public class Store {
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
+
+	
     
     
 }

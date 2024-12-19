@@ -18,38 +18,39 @@ public class Film {
     @Column(name="film_id")
     private int filmId;
 
-    @Column(name="title",nullable = false, length = 128)
+    @Column(name="title", length = 255)
     private String title;
 
-    @Column(name="description",columnDefinition = "TEXT")
+    @Column(name="description",columnDefinition = "TEXT",nullable = false)
     private String description;
 
-    @Column(name = "release_year")
+    @Column(name = "release_year",nullable = false,length = 4)
     private int releaseYear;
 
     @ManyToOne
     @JoinColumn(name = "language_id", nullable = false)
-    private Language language;
+    private Language languageId;
 
     @ManyToOne
-    @JoinColumn(name = "original_language_id")
-    private Language originalLanguage;
+    @JoinColumn(name = "original_language_id",nullable = false)
+    private Language originalLanguageId;
 
-    @Column(name = "rental_duration")
+    @Column(name = "rental_duration",length = 22)
     private int rentalDuration;
 
     @Column(name = "rental_rate", precision = 4, scale = 2)
-    private BigDecimal rentalRate;
+    private int rentalRate;
 
-    @Column(name = "length")
+    @Column(name = "length",length = 22,nullable = false)
     private int length;
 
     @Column(name = "replacement_cost", precision = 5, scale = 2)
-    private BigDecimal replacementCost;
+    private int replacementCost;
 
-    @Column(name = "rating")
+    @Column(name = "rating",length = 10,nullable = false)
     private String rating;
-    @Column(name = "special_features")
+    
+    @Column(name = "special_features",length = 100,nullable = false)
     private String specialFeatures;
 
     @Column(name = "last_update", nullable = false)
@@ -69,112 +70,142 @@ public class Film {
 		return actors;
 	}
 
-	public void setActors(Set<Actor> actors) {
-		this.actors = actors;
-	}
 
 	public int getFilmId() {
 		return filmId;
 	}
 
+
 	public void setFilmId(int filmId) {
 		this.filmId = filmId;
 	}
+
 
 	public String getTitle() {
 		return title;
 	}
 
+
 	public void setTitle(String title) {
 		this.title = title;
 	}
+
 
 	public String getDescription() {
 		return description;
 	}
 
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
 
 	public int getReleaseYear() {
 		return releaseYear;
 	}
 
+
 	public void setReleaseYear(int releaseYear) {
 		this.releaseYear = releaseYear;
 	}
 
-	public Language getLanguage() {
-		return language;
+
+	public Language getLanguageId() {
+		return languageId;
 	}
 
-	public void setLanguage(Language language) {
-		this.language = language;
+
+	public void setLanguageId(Language languageId) {
+		this.languageId = languageId;
 	}
 
-	public Language getOriginalLanguage() {
-		return originalLanguage;
+
+	public Language getOriginalLanguageId() {
+		return originalLanguageId;
 	}
 
-	public void setOriginalLanguage(Language originalLanguage) {
-		this.originalLanguage = originalLanguage;
+
+	public void setOriginalLanguageId(Language originalLanguageId) {
+		this.originalLanguageId = originalLanguageId;
 	}
+
 
 	public int getRentalDuration() {
 		return rentalDuration;
 	}
 
+
 	public void setRentalDuration(int rentalDuration) {
 		this.rentalDuration = rentalDuration;
 	}
 
-	public BigDecimal getRentalRate() {
+
+	public int getRentalRate() {
 		return rentalRate;
 	}
 
-	public void setRentalRate(BigDecimal rentalRate) {
+
+	public void setRentalRate(int rentalRate) {
 		this.rentalRate = rentalRate;
 	}
+
 
 	public int getLength() {
 		return length;
 	}
 
+
 	public void setLength(int length) {
 		this.length = length;
 	}
 
-	public BigDecimal getReplacementCost() {
+
+	public int getReplacementCost() {
 		return replacementCost;
 	}
 
-	public void setReplacementCost(BigDecimal replacementCost) {
+
+	public void setReplacementCost(int replacementCost) {
 		this.replacementCost = replacementCost;
 	}
+
 
 	public String getRating() {
 		return rating;
 	}
 
+
 	public void setRating(String rating) {
 		this.rating = rating;
 	}
+
 
 	public String getSpecialFeatures() {
 		return specialFeatures;
 	}
 
+
 	public void setSpecialFeatures(String specialFeatures) {
 		this.specialFeatures = specialFeatures;
 	}
+
 
 	public LocalDateTime getLastUpdate() {
 		return lastUpdate;
 	}
 
+
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
+
+
+	public void setActors(Set<Actor> actors) {
+		this.actors = actors;
+	}
+
+	
+	
     
 }

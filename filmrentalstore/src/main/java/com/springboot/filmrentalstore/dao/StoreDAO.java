@@ -1,0 +1,42 @@
+package com.springboot.filmrentalstore.dao;
+
+import com.springboot.filmrentalstore.model.Store;
+import com.springboot.filmrentalstore.model.Staff;
+import com.springboot.filmrentalstore.model.Customer;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface StoreDAO extends JpaRepository<Store, Integer> {
+
+    // Find Store by City (using Address join)
+    @Query("SELECT s FROM Store s JOIN s.address a WHERE a.city = :city")
+    List<Store> findByCity(@Param("city") String city);
+
+    // Find Store by Country (using Address join)
+    @Query("SELECT s FROM Store s JOIN s.address a WHERE a.country = :country")
+    List<Store> findByCountry(@Param("country") String country);
+
+    // Find Store by Phone Number
+    @Query("SELECT s FROM Store s WHERE s.phone = :phone")
+    Store findByPhone(@Param("phone") String phone);
+
+    // Find all Staff in a Store
+    @Query("SELECT s FROM Staff s WHERE s.store.storeId = :storeId")
+    List<Staff> findStaffByStoreId(@Param("storeId") int storeId);
+
+    // Find all Customers in a Store
+    @Query("SELECT c FROM Customer c WHERE c.store.storeId = :storeId")
+    List<Customer> findCustomersByStoreId(@Param("storeId") int storeId);
+
+    // Find Manager by Store ID
+    @Query("SELECT s.manager FROM Store s WHERE s.storeId = :storeId")
+    Staff findManagerByStoreId(@Param("storeId") int storeId);
+
+    // Get all Manager details with Store details
+    @Query("SELECT s.manager.firstName, s.manager.lastName, s.manager.email, s.manager.phone, " +
+           "s.address, s.address.city, s.phone FROM Store s")
+    List<Object[]> findAllManagersWithStoreDetails();
+}

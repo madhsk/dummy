@@ -1,0 +1,92 @@
+package com.springboot.filmrentalstore.service;
+
+import com.springboot.filmrentalstore.dao.StaffDAO;
+import com.springboot.filmrentalstore.model.Staff;
+import com.springboot.filmrentalstore.model.Address;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class StaffService {
+
+    @Autowired
+    private StaffDAO staffRepository;
+
+    // Add a new Staff
+    public String addStaff(Staff staff) {
+        staffRepository.save(staff);
+        return "Record Created Successfully";
+    }
+
+    // Search Staff by Last Name
+    public List<Staff> getStaffByLastName(String lastName) {
+        return staffRepository.findByLastName(lastName);
+    }
+
+    // Search Staff by First Name
+    public List<Staff> getStaffByFirstName(String firstName) {
+        return staffRepository.findByFirstName(firstName);
+    }
+
+    // Search Staff by Email
+    public Staff getStaffByEmail(String email) {
+        return staffRepository.findByEmail(email);
+    }
+
+    // Assign Address to a Staff
+    public Staff assignAddressToStaff(int staffId, Address address) {
+        Staff staff = staffRepository.findById(staffId)
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
+        staff.setAddress(address);
+        return staffRepository.save(staff);
+    }
+
+    // Search Staff by City
+    public List<Staff> getStaffByCity(String city) {
+        return staffRepository.findByCity(city);
+    }
+
+    // Search Staff by Country
+    public List<Staff> getStaffByCountry(String country) {
+        return staffRepository.findByCountry(country);
+    }
+
+    // Search Staff by Phone Number
+    public Staff getStaffByPhone(String phone) {
+        return staffRepository.findByPhone(phone);
+    }
+
+    // Update First Name of a Staff
+    public Staff updateStaffFirstName(int staffId, String firstName) {
+        Staff staff = staffRepository.findById(staffId)
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
+        staff.setFirstName(firstName);
+        return staffRepository.save(staff);
+    }
+
+    // Update Last Name of a Staff
+    public Staff updateStaffLastName(int staffId, String lastName) {
+        Staff staff = staffRepository.findById(staffId)
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
+        staff.setLastName(lastName);
+        return staffRepository.save(staff);
+    }
+
+    // Update Email of a Staff
+    public Staff updateStaffEmail(int staffId, String email) {
+        Staff staff = staffRepository.findById(staffId)
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
+        staff.setEmail(email);
+        return staffRepository.save(staff);
+    }
+
+    // Assign Store to a Staff
+    public Staff updateStaffStore(int staffId, int storeId) {
+        Staff staff = staffRepository.findById(staffId)
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
+        staff.getStore().setStoreId(storeId);
+        return staffRepository.save(staff);
+    }
+}

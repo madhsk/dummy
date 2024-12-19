@@ -1,0 +1,62 @@
+package com.springboot.filmrentalstore.service;
+
+import com.springboot.filmrentalstore.dao.ActorDAO;
+import com.springboot.filmrentalstore.model.Actor;
+import com.springboot.filmrentalstore.model.Film;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class ActorService {
+
+    @Autowired
+    private ActorDAO actorRepository;
+
+    // Add a new Actor
+    public String addActor(Actor actor) {
+        actorRepository.save(actor);
+        return "Record Created Successfully";
+    }
+
+    // Search Actors by Last Name
+    public List<Actor> getActorsByLastName(String lastName) {
+        return actorRepository.findByLastName(lastName);
+    }
+
+    // Search Actors by First Name
+    public List<Actor> getActorsByFirstName(String firstName) {
+        return actorRepository.findByFirstName(firstName);
+    }
+
+    // Update Last Name of an Actor
+    public Actor updateActorLastName(int id, String lastName) {
+        Actor actor = actorRepository.findById(id).orElseThrow(() -> new RuntimeException("Actor Not Found"));
+        actor.setLastName(lastName);
+        return actorRepository.save(actor);
+    }
+
+    // Update First Name of an Actor
+    public Actor updateActorFirstName(int id, String firstName) {
+        Actor actor = actorRepository.findById(id).orElseThrow(() -> new RuntimeException("Actor Not Found"));
+        actor.setFirstName(firstName);
+        return actorRepository.save(actor);
+    }
+
+    // Get Films by Actor ID
+    public List<Film> getFilmsByActorId(int actorId) {
+        return actorRepository.findFilmsByActorId(actorId);
+    }
+
+    // Assign Film to an Actor
+    public String assignFilmToActor(int actorId, Film film) {
+        // Logic to save the association between actor and film can be implemented here.
+        return "Film Assigned Successfully to Actor ID: " + actorId;
+    }
+
+    // Find Top 10 Actors by Film Count
+    public List<Object[]> getTop10ActorsByFilmCount() {
+        return actorRepository.findTop10ActorsByFilmCount();
+    }
+}

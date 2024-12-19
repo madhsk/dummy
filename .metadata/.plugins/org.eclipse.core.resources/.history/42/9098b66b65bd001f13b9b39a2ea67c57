@@ -1,0 +1,8 @@
+package com.springboot.filmrentalstore.dao;
+
+import com.springboot.filmrentalstore.model.FilmActor;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface FilmActorDAO extends JpaRepository<FilmActor, Integer> {
+    // You can add custom queries here if needed
+}

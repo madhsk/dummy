@@ -1,0 +1,39 @@
+package com.springboot.filmrentalstore.model;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+@Entity
+@Table(name = "filmcategory")
+@Data
+@NoArgsConstructor
+public class FilmCategory {
+	@EmbeddedId
+	private FilmCategoryId filmcategoryId;
+	
+    @Column(name = "lastupdate", nullable = false)
+    @Convert(converter = LocalDateTimeAttributeConverter.class)
+    private LocalDateTime lastUpdate;
+}
+
+
+@Embeddable
+class FilmCategoryId {
+	
+
+	@ManyToOne
+	@JsonBackReference
+	@JoinColumn(name = "filmid", referencedColumnName = "filmid", nullable = false)
+	private Film film;
+	
+	@ManyToOne
+	@JsonBackReference
+	@JoinColumn(name = "categoryid", referencedColumnName = "categoryid", nullable = false)
+	private Category category;
+
+}

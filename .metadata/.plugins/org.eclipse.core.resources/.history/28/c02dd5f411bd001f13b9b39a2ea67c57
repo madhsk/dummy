@@ -1,0 +1,38 @@
+package com.springboot.filmrentalstore.dao;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import com.springboot.filmrentalstore.model.*;
+@Repository
+public interface CustomerDAO extends JpaRepository<Customer,Integer>{
+	
+	// Declare a method to find customers by first name
+	List<Customer> findByFirstName(String firstName);
+
+    // Declare a method to find customers by last name
+    List<Customer> findByLastName(String lastName);
+
+    // Declare a method to find customers by email
+    List<Customer> findByEmail(String email);
+
+    // Declare a native SQL query to find all active customers
+    @Query(value = "SELECT * FROM sakila.customer where active = 1", nativeQuery = true)
+    List<Customer> findAllActiveCustomer();
+
+    // Declare a native SQL query to find all inactive customers
+    @Query(value = "SELECT * FROM sakila.customer where active = 0", nativeQuery = true)
+    List<Customer> findAllInActiveCustomer();
+
+    // Declare a method to find customers by phone number in the associated address
+    List<Customer> findByAddressPhone(String phone);
+
+    // Declare a method to find customers by city name in the associated address
+    List<Customer> findByAddressCityCity(String city);
+
+    // Declare a method to find customers by country name in the associated address's city's country
+    List<Customer> findByAddressCityCountryCountry(String country);
+}

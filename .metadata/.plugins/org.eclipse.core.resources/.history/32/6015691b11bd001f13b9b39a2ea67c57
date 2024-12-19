@@ -1,0 +1,43 @@
+package com.springboot.filmrentalstore.model;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.Date;
+
+@Entity
+@Table(name="rental")
+@Data
+@NoArgsConstructor
+public class Rental {
+   @Id
+   @GeneratedValue(strategy=GenerationType.IDENTITY)
+   @Column(name = "rentalid")
+   private int rentalId;
+   
+   @Column(name="rentaldate",nullable=false)
+   private Date rentalDate;
+   
+   @ManyToOne
+   @JoinColumn(name="inventoryid", nullable=false)
+   private Inventory inventory;
+   
+   @ManyToOne
+   @JoinColumn(name="customerid", nullable=false)
+   private Customer customer;
+   
+   @Column(name="returndate")
+   private Date returnDate;
+   
+   @ManyToOne
+   @JoinColumn(name="staffid", nullable=false)
+   private Staff staff;
+   
+   @Column(name="lastupdate", nullable=false)
+   @Convert(converter = LocalDateTimeAttributeConverter.class)
+   private LocalDateTime lastUpdate;
+   
+   // Getters and Setters 
+}

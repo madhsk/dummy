@@ -1,0 +1,5 @@
+package com.springboot.filmrentalstore.service;
+
+public class CustomerService {
+
+}

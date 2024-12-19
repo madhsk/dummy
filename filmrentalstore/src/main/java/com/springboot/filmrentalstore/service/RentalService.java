@@ -1,0 +1,82 @@
+package com.springboot.filmrentalstore.service;
+
+import com.springboot.filmrentalstore.dao.*;
+import com.springboot.filmrentalstore.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+public class RentalService {
+
+    @Autowired
+    private RentalDAO rentalDAO;
+    @Autowired
+    private InventoryDAO inventoryDAO;
+
+    @Autowired
+    private CustomerDAO customerDAO;
+
+    @Autowired
+    private StaffDAO staffDAO;
+
+    
+    public String rentFilm(int customerId, int inventoryId, int staffId) {
+        // Fetch customer by ID
+        Customer customer = customerDAO.findById(customerId).orElse(null);
+        if (customer == null) {
+            return "Customer not found.";
+        }
+
+        // Fetch inventory by ID (which represents the film in a specific store)
+        Inventory inventory = inventoryDAO.findById(inventoryId).orElse(null);
+        if (inventory == null) {
+            return "Film not available in inventory.";
+        }
+
+        // Fetch staff by ID
+        Staff staff = staffDAO.findById(staffId).orElse(null);
+        if (staff == null) {
+            return "Staff member not found.";
+        }
+
+        // Create and save rental record
+        Rental rental = new Rental();
+        rental.setRentalDate(LocalDateTime.now()); // Use the current date and time
+        rental.setInventory(inventory);
+        rental.setCustomer(customer);
+        rental.setStaff(staff);
+        rental.setLastUpdate(LocalDateTime.now()); // Set current timestamp for last update
+
+        rentalDAO.save(rental);
+
+        return "Record Created Successfully";
+    }
+
+    // Get all Films rented by a Customer
+    public List<Film> getFilmsRentedByCustomer(int customerId) {
+        return rentalDAO.findFilmsRentedByCustomer(customerId);
+    }
+
+    // Get Top 10 Most Rented Films
+    public List<Object[]> getTop10MostRentedFilms() {
+        return rentalDAO.findTop10MostRentedFilms();
+    }
+
+    // Get Top 10 Most Rented Films of a Store
+    public List<Object[]> getTop10MostRentedFilmsByStore(int storeId) {
+        return rentalDAO.findTop10MostRentedFilmsByStore(storeId);
+    }
+
+    // Get Customers who have not yet returned a Film
+    public List<Object[]> getCustomersNotReturnedFilm(int filmId) {
+        return rentalDAO.findCustomersNotReturnedFilm(filmId);
+    }
+
+    // Update Return Date
+    public String updateReturnDate(int rentalId, LocalDateTime returnDate) {
+        rentalDAO.updateReturnDate(rentalId, returnDate);
+        return "Return date updated successfully";
+    }
+}

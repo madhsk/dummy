@@ -1,0 +1,45 @@
+package com.springboot.filmrentalstore.model;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.Date;
+
+@Entity
+@Table(name = "customer")
+@Data
+@NoArgsConstructor
+public class Customer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="customerid",nullable = false)
+    private int customerId;
+
+    @Column(name = "storeid", nullable = false)
+    private int storeId;
+
+    @Column(name="firstname", nullable = false, length = 45)
+    private String firstName;
+
+    @Column(name="lastname",nullable = false, length = 45)
+    private String lastName;
+
+    @Column(name="email",length = 50)
+    private String email;
+
+    @ManyToOne
+    @JoinColumn(name = "addressid", nullable = false)
+    private Address address; 
+
+    @Column(name="active",nullable = false)
+    private Boolean active;
+
+    @Column(name = "createdate", nullable = false)
+    private Date createDate;
+
+    @Column(name = "lastupdate")
+    @Convert(converter = LocalDateTimeAttributeConverter.class)
+    private LocalDateTime lastUpdate;
+}

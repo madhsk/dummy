@@ -1,0 +1,57 @@
+package com.springboot.filmrentalstore.dao;
+
+import com.springboot.filmrentalstore.model.Store;
+import com.springboot.filmrentalstore.model.Staff;
+import com.springboot.filmrentalstore.model.Customer;
+import com.springboot.filmrentalstore.model.Address;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface StoreDAO extends JpaRepository<Store, Integer> {
+
+    // Assign Address to a Store
+    @Query("UPDATE Store s SET s.address = :address WHERE s.storeId = :storeId")
+    void assignAddress(@Param("storeId") int storeId, @Param("address") Address address);
+
+    // Search Store by City
+    @Query("SELECT s FROM Store s WHERE s.address.city.city = :city")
+    List<Store> findByCity(@Param("city") String city);
+
+    // Search Store by Country
+    @Query("SELECT s FROM Store s WHERE s.address.city.country.name = :country")
+    List<Store> findByCountry(@Param("country") String country);
+
+    // Search Store by phone number
+    @Query("SELECT s FROM Store s WHERE s.address.phone = :phone")
+    List<Store> findByPhoneNumber(@Param("phone") String phone);
+
+    // Update phone number of a Store
+    @Query("UPDATE Address a SET a.phone = :phone WHERE a.id = :addressId")
+    void updatePhoneNumber(@Param("addressId") int addressId, @Param("phone") String phone);
+
+    // Assign manager to a Store
+    @Query("UPDATE Store s SET s.staff = :manager WHERE s.storeId = :storeId")
+    void assignManager(@Param("storeId") int storeId, @Param("manager") Staff manager);
+
+    // Display all Staff of a Store
+    @Query("SELECT st FROM Staff st WHERE st.store.storeId = :storeId")
+    List<Staff> findAllStaffByStoreId(@Param("storeId") int storeId);
+
+    // Display all Customers of a Store
+    @Query("SELECT c FROM Customer c WHERE c.store.storeId = :storeId")
+    List<Customer> findAllCustomersByStoreId(@Param("storeId") int storeId);
+
+    // Display Manager Details of a Store
+    @Query("SELECT s.staff FROM Store s WHERE s.storeId = :storeId")
+    Staff findManagerByStoreId(@Param("storeId") int storeId);
+
+    // Display Manager details (first name, last name, email, phone) and Store details (Address, City, Phone) of all stores
+    @Query("SELECT st.firstName, st.lastName, st.email, st.address.phone, " +
+           "s.address.addressLine1, s.address.city.city, s.address.phone " +
+           "FROM Store s " +
+           "JOIN s.staff st")
+    List<Object[]> findManagerAndStoreDetails();
+}

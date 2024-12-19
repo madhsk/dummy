@@ -1,0 +1,39 @@
+package com.springboot.filmrentalstore.dao;
+
+import com.springboot.filmrentalstore.model.Customer;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface CustomerDAO extends JpaRepository<Customer, Integer> {
+
+    // Find Customers by Last Name
+    List<Customer> findByLastName(String lastName);
+
+    // Find Customers by First Name
+    List<Customer> findByFirstName(String firstName);
+
+    // Find Customer by Email
+    Customer findByEmail(String email);
+
+    // Find Customers by City
+    @Query("SELECT c FROM Customer c JOIN c.address a WHERE a.city = :city")
+    List<Customer> findByCity(@Param("city") String city);
+
+    // Find Customers by Country
+    @Query("SELECT c FROM Customer c JOIN c.address a WHERE a.country = :country")
+    List<Customer> findByCountry(@Param("country") String country);
+
+    // Find Customers by Active Status
+    List<Customer> findByActive(Boolean active);
+
+    // Find Customers by Phone Number
+    @Query("SELECT c FROM Customer c JOIN c.address a WHERE c.phone = :phone")
+    Customer findByPhone(@Param("phone") String phone);
+
+    // Find Customers by Store ID
+    @Query("SELECT c FROM Customer c WHERE c.store.storeId = :storeId")
+    List<Customer> findByStoreId(@Param("storeId") int storeId);
+}

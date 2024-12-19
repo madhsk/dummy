@@ -1,0 +1,17 @@
+package com.springboot.filmrentalstore.dao;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.springboot.filmrentalstore.model.*;
+@Repository
+public interface StaffDAO extends JpaRepository<Staff,Integer>{
+	List<Staff> findByLastName(String lastName);
+	List<Staff> findByFirstName(String firstName);
+	List<Staff> findByEmail(String email);
+	List<Staff> findByAddressCityCity(String city);
+	List<Staff> findByAddressCityCountryCountry(String country);
+	List<Staff> findByAddressPhone(String phone);
+}

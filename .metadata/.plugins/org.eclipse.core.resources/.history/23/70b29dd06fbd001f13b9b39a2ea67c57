@@ -1,0 +1,67 @@
+package com.springboot.filmrentalstore.controller;
+
+import com.springboot.filmrentalstore.model.Actor;
+import com.springboot.filmrentalstore.model.Film;
+import com.springboot.filmrentalstore.service.ActorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/actors")
+public class ActorController {
+
+    @Autowired
+    private ActorService actorService;
+
+    // Add a new Actor
+    @PostMapping("/post")
+    public ResponseEntity<String> addActor(@RequestBody Actor actor) {
+        String message = actorService.addActor(actor);
+        return ResponseEntity.ok(message);
+    }
+
+    // Search Actors by Last Name
+    @GetMapping("/lastname/{ln}")
+    public ResponseEntity<List<Actor>> getActorsByLastName(@PathVariable String ln) {
+        List<Actor> actors = actorService.getActorsByLastName(ln);
+        return ResponseEntity.ok(actors);
+    }
+
+    // Search Actors by First Name
+    @GetMapping("/firstname/{fn}")
+    public ResponseEntity<List<Actor>> getActorsByFirstName(@PathVariable String fn) {
+        List<Actor> actors = actorService.getActorsByFirstName(fn);
+        return ResponseEntity.ok(actors);
+    }
+
+    // Update Last Name of an Actor
+    @PutMapping("/update/lastname/{id}")
+    public ResponseEntity<Actor> updateActorLastName(@PathVariable int id, @RequestParam String lastName) {
+        Actor updatedActor = actorService.updateActorLastName(id, lastName);
+        return ResponseEntity.ok(updatedActor);
+    }
+
+    // Update First Name of an Actor
+    @PutMapping("/update/firstname/{id}")
+    public ResponseEntity<Actor> updateActorFirstName(@PathVariable int id, @RequestParam String firstName) {
+        Actor updatedActor = actorService.updateActorFirstName(id, firstName);
+        return ResponseEntity.ok(updatedActor);
+    }
+
+    // Get Films by Actor ID
+    @GetMapping("/{id}/films")
+    public ResponseEntity<List<Actor>> getFilmsByActorId(@PathVariable int id) {
+        List<Actor> films = actorService.getFilmsByActorId(id);
+        return ResponseEntity.ok(films);
+    }
+
+ // Find Top 10 Actors by Film Count
+    @GetMapping("/toptenbyfilmcount")
+    public ResponseEntity<List<Object[]>> getTop10ActorsByFilmCount() {
+        List<Object[]> topActors = actorService.getTop10ActorsByFilmCount();
+        return ResponseEntity.ok(topActors);
+    }
+}

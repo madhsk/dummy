@@ -1,27 +1,24 @@
 package com.springboot.filmrentalstore.model;
 
-import jakarta.persistence.*;
+import java.time.LocalDate;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-
 @Entity
-@Table(name = "language")
 @Data
-@NoArgsConstructor
 public class Language {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "language_id", precision = 5, scale = 2)
-    private int languageId;
-
-    @Column(name="name",nullable = false, length = 20)
-    private String name;
-
-    @Column(name = "last_update", nullable = false)
-    @Convert(converter = LocalDateTimeAttributeConverter.class)
-    private LocalDateTime lastUpdate;
+	
+	@Id
+	public int languageId;
+ 
+	@NotNull
+	public String name;
+ 
+	@Column(name = "lastUpdate")
+	private LocalDate lastUpdate;
 
 	public int getLanguageId() {
 		return languageId;
@@ -39,13 +36,12 @@ public class Language {
 		this.name = name;
 	}
 
-	public LocalDateTime getLastUpdate() {
+	public LocalDate getLastUpdate() {
 		return lastUpdate;
 	}
 
-	public void setLastUpdate(LocalDateTime lastUpdate) {
+	public void setLastUpdate(LocalDate lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
-
-    
+	
 }

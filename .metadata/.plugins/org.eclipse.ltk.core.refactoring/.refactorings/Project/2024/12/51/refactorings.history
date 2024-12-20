@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;com.Project.DTO.ActorDto&apos; to &apos;ActorDTO&apos;&#x0D;&#x0A;- Original project: &apos;Project&apos;&#x0D;&#x0A;- Original element: &apos;com.Project.DTO.ActorDto&apos;&#x0D;&#x0A;- Renamed element: &apos;com.Project.DTO.ActorDTO&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;ActorDto&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.Project.DTO{ActorDto.java[ActorDto" matchStrategy="1" name="ActorDTO" qualified="false" references="true" similarDeclarations="false" stamp="1734633389620" textual="false" version="1.0"/>
+</session>

@@ -2,6 +2,8 @@
 <section name="Workbench">
 	<section name="MavenProjectImportWizardPage">
 		<list key="rootDirectory">
+			<item value="C:\Users\madhsk\OneDrive - Capgemini\Desktop\movie rental\Film-Rental-Store"/>
+			<item value="C:\Users\madhsk\rentapp\dummy\filmrentalstore"/>
 			<item value="C:\Users\madhsk\Film_Rental_Project\backend\filmrentalstore"/>
 		</list>
 		<list key="projectNameTemplate">
@@ -12,5 +14,9 @@
 			<item value="[groupId].[artifactId]-[version]"/>
 			<item value="[name]"/>
 		</list>
+	</section>
+	<section name="org.eclipse.m2e.core.pom.overview">
+	</section>
+	<section name="org.eclipse.m2e.core.pom.dependencies">
 	</section>
 </section>

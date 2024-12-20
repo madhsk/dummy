@@ -1,38 +1,40 @@
 package com.springboot.filmrentalstore.model;
-
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+ 
+ 
 import java.time.LocalDateTime;
+ 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
+ 
 @Entity
 @Table(name = "inventory")
-@Data
-@NoArgsConstructor
 public class Inventory {
+ 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "inventory_id")
-    private int inventoryId;
-
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long inventoryId;
+ 
     @ManyToOne
-    @JoinColumn(name = "film_id", nullable = false)
+    @JoinColumn(name = "film_id") 
     private Film film;
-
+ 
     @ManyToOne
-    @JoinColumn(name = "store_id", nullable = false)
+    @JoinColumn(name = "store_id")
     private Store store;
-
-    @Column(name = "last_update", nullable = false)
-    @Convert(converter = LocalDateTimeAttributeConverter.class)
+ 
     private LocalDateTime lastUpdate;
 
-	public int getInventoryId() {
+	public Long getInventoryId() {
 		return inventoryId;
 	}
 
-	public void setInventoryId(int inventoryId) {
+	public void setInventoryId(Long inventoryId) {
 		this.inventoryId = inventoryId;
 	}
 
@@ -59,6 +61,8 @@ public class Inventory {
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
-
+    
     
 }
+
+ 

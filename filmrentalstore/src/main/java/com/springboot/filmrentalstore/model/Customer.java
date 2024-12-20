@@ -1,117 +1,93 @@
 package com.springboot.filmrentalstore.model;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
-import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
-@Table(name = "customer")
-@NoArgsConstructor
 public class Customer {
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="customer_id",nullable = false)
-    private int customerId;
-    @ManyToOne
-    @JoinColumn(name = "store_id", nullable = false)
-    private Store storeId;
-
-    @Column(name="first_name", nullable = false, length = 45)
+    private Long customerId;
+	@ManyToOne
+	@JsonBackReference
+    @JoinColumn(name = "store_id")
+	private Store store;
+	
     private String firstName;
-
-    @Column(name="last_name",nullable = false, length = 45)
     private String lastName;
-
-    @Column(name="email",length = 50)
     private String email;
-
     @ManyToOne
-    @JoinColumn(name = "address_id", nullable = false)
-    private Address address; 
-
-    @Column(name="active",nullable = false)
-    private Boolean active;
-
-    @Column(name = "create_date", nullable = false)
-    private Date createDate;
-
-    @Column(name = "last_update")
-    @Convert(converter = LocalDateTimeAttributeConverter.class)
+    @JsonBackReference
+    @JoinColumn(name = "address_id")
+    private Address address;
+    private boolean active;
+    
+    
+    private LocalDateTime createDate;
     private LocalDateTime lastUpdate;
-
-	public int getCustomerId() {
+	public Long getCustomerId() {
 		return customerId;
 	}
-
-	public void setCustomerId(int customerId) {
+	public void setCustomerId(Long customerId) {
 		this.customerId = customerId;
 	}
-
-	public Store getStoreId() {
-		return storeId;
+	public Store getStore() {
+		return store;
 	}
-
-	public void setStoreId(Store storeId) {
-		this.storeId = storeId;
+	public void setStore(Store store) {
+		this.store = store;
 	}
-
 	public String getFirstName() {
 		return firstName;
 	}
-
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-
 	public String getLastName() {
 		return lastName;
 	}
-
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-
 	public String getEmail() {
 		return email;
 	}
-
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
 	public Address getAddress() {
 		return address;
 	}
-
 	public void setAddress(Address address) {
 		this.address = address;
 	}
-
-	public Boolean getActive() {
+	public boolean isActive() {
 		return active;
 	}
-
-	public void setActive(Boolean active) {
+	public void setActive(boolean active) {
 		this.active = active;
 	}
-
-	public Date getCreateDate() {
+	public LocalDateTime getCreateDate() {
 		return createDate;
 	}
-
-	public void setCreateDate(Date createDate) {
+	public void setCreateDate(LocalDateTime createDate) {
 		this.createDate = createDate;
 	}
-
 	public LocalDateTime getLastUpdate() {
 		return lastUpdate;
 	}
-
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
     
+    
 }
+

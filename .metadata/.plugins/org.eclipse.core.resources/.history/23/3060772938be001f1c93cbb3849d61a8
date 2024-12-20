@@ -1,0 +1,29 @@
+package com.Project.service;
+
+import java.util.Collection;
+import java.util.List;
+
+import com.Project.DTO.ActorDto;
+import com.Project.Exception.InvalidInputException;
+import com.Project.Exception.ResourceNotFoundException;
+import com.Project.model.Film;
+
+public interface ActorServiceInterface {
+
+	List<ActorDto> getActorsByLastName(String ln) throws InvalidInputException, ResourceNotFoundException;
+
+	List<ActorDto> getActorsByFirstName(String fn) throws InvalidInputException, ResourceNotFoundException;
+
+	void updateLastName(Long id, String lastName) throws ResourceNotFoundException, InvalidInputException;
+
+	void updateFirstName(Long id, String firstName) throws ResourceNotFoundException, InvalidInputException;
+
+	List<ActorDto> getTopTenActorsByFilmCount() throws ResourceNotFoundException;
+
+	String addActor(ActorDto actorDTO) throws InvalidInputException;
+
+	void assignFilmToActor(Long actorId, Collection<Long> filmIds) throws ResourceNotFoundException;
+
+	List<Film> getFilmsByActorId(Long id)throws ResourceNotFoundException;
+
+}

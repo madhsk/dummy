@@ -1,100 +1,94 @@
 package com.springboot.filmrentalstore.model;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
-import java.util.Date;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
-@Table(name="rental")
-@Data
-@NoArgsConstructor
 public class Rental {
-   @Id
-   @GeneratedValue(strategy=GenerationType.IDENTITY)
-   @Column(name = "rental_id")
-   private int rentalId;
-   
-   @Column(name="rental_date",nullable=false)
-   private LocalDateTime rentalDate;
-   
-   @ManyToOne
-   @JoinColumn(name="inventory_id", nullable=false)
-   private Inventory inventory;
-   
-   @ManyToOne
-   @JoinColumn(name="customer_id", nullable=false)
-   private Customer customer;
-   
-   @Column(name="return_date")
-   private LocalDateTime returnDate;
-   
-   @ManyToOne
-   @JoinColumn(name="staff_id", nullable=false)
-   private Staff staff;
-   
-   @Column(name="last_update", nullable=false)
-   @Convert(converter = LocalDateTimeAttributeConverter.class)
-   private LocalDateTime lastUpdate;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long rentalId;
 
-public void setReturnDate(LocalDateTime returnDate) {
-	this.returnDate = returnDate;
-}
+    private LocalDateTime rentalDate;
 
-public int getRentalId() {
-	return rentalId;
-}
+    @ManyToOne
+    @JoinColumn(name = "inventory_id")
+    private Inventory inventory;
 
-public void setRentalId(int rentalId) {
-	this.rentalId = rentalId;
-}
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
-public void setRentalDate(LocalDateTime localDateTime) {
-	this.rentalDate = localDateTime;
-}
+    private LocalDateTime returnDate;
 
-public Inventory getInventory() {
-	return inventory;
-}
+    @ManyToOne
+    @JoinColumn(name = "staff_id")
+    private Staff staff;
 
-public void setInventory(Inventory inventory) {
-	this.inventory = inventory;
-}
+    private LocalDateTime lastUpdate;
 
-public Customer getCustomer() {
-	return customer;
-}
+	public Long getRentalId() {
+		return rentalId;
+	}
 
-public void setCustomer(Customer customer) {
-	this.customer = customer;
-}
+	public void setRentalId(Long rentalId) {
+		this.rentalId = rentalId;
+	}
 
+	public LocalDateTime getRentalDate() {
+		return rentalDate;
+	}
 
-public LocalDateTime getRentalDate() {
-	return rentalDate;
-}
+	public void setRentalDate(LocalDateTime rentalDate) {
+		this.rentalDate = rentalDate;
+	}
 
-public LocalDateTime getReturnDate() {
-	return returnDate;
-}
+	public Inventory getInventory() {
+		return inventory;
+	}
 
-public Staff getStaff() {
-	return staff;
-}
+	public void setInventory(Inventory inventory) {
+		this.inventory = inventory;
+	}
 
-public void setStaff(Staff staff) {
-	this.staff = staff;
-}
+	public Customer getCustomer() {
+		return customer;
+	}
 
-public LocalDateTime getLastUpdate() {
-	return lastUpdate;
-}
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
 
-public void setLastUpdate(LocalDateTime lastUpdate) {
-	this.lastUpdate = lastUpdate;
+	public LocalDateTime getReturnDate() {
+		return returnDate;
+	}
+
+	public void setReturnDate(LocalDateTime returnDate) {
+		this.returnDate = returnDate;
+	}
+
+	public Staff getStaff() {
+		return staff;
+	}
+
+	public void setStaff(Staff staff) {
+		this.staff = staff;
+	}
+
+	public LocalDateTime getLastUpdate() {
+		return lastUpdate;
+	}
+
+	public void setLastUpdate(LocalDateTime lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
+    
+    
 }
-   
-   
-}
+ 

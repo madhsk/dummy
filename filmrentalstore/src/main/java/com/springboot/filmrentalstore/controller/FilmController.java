@@ -1,158 +1,232 @@
 package com.springboot.filmrentalstore.controller;
 
-import com.springboot.filmrentalstore.model.Film;
-import com.springboot.filmrentalstore.model.Language;
-import com.springboot.filmrentalstore.model.Actor;
-import com.springboot.filmrentalstore.service.FilmService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
+import com.springboot.filmrentalstore.DTO.*;
+import com.springboot.filmrentalstore.exception.*;
+import com.springboot.filmrentalstore.model.*;
+import com.springboot.filmrentalstore.service.IFilmService;
+
+import jakarta.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/films")
 public class FilmController {
 
-    @Autowired
-    private FilmService filmService;
+	@Autowired
+	private IFilmService filmService;
 
-    // Add a new Film
-    @PostMapping("/post")
-    public String addFilm(@RequestBody Film film) {
-        return filmService.addFilm(film);
-    }
+	@PostMapping("/post")
+	public ResponseEntity<String> addFilm(@Valid @RequestBody FilmDTO filmDTO) throws InvalidInputException {
+		filmService.addFilm(filmDTO);
+		return ResponseEntity.ok("Record Saved");
+	}
 
-    // Search Films by Title
-    @GetMapping("/title/{title}")
-    public List<Film> searchFilmsByTitle(@PathVariable String title) {
-        return filmService.searchFilmsByTitle(title);
-    }
+	@DeleteMapping("/delete/{film_id}")
+	public ResponseEntity<String> deleteFilmById(@PathVariable int film_id) throws ResourceNotFoundException {
+		boolean deleted = filmService.deleteFilmById(film_id);
 
-    // Search Films by Release Year
-    @GetMapping("/year/{year}")
-    public List<Film> searchFilmsByReleaseYear(@PathVariable int year) {
-        return filmService.searchFilmsByReleaseYear(year);
-    }
+		if(!deleted) {
+			throw new ResourceNotFoundException("Film record not found."); 
+		}
 
-    // Search Films with Rental Duration greater than {rd}
-    @GetMapping("/duration/gt/{rd}")
-    public List<Film> searchFilmsByRentalDurationGreaterThan(@PathVariable int rd) {
-        return filmService.searchFilmsByRentalDurationGreaterThan(rd);
-    }
+		return ResponseEntity.ok("Film record deleted");
 
-    // Search Films with Rental Rate greater than {rate}
-    @GetMapping("/rate/gt/{rate}")
-    public List<Film> searchFilmsByRentalRateGreaterThan(@PathVariable double rate) {
-        return filmService.searchFilmsByRentalRateGreaterThan(rate);
-    }
 
-    // Search Films with Length greater than {length}
-    @GetMapping("/length/gt/{length}")
-    public List<Film> searchFilmsByLengthGreaterThan(@PathVariable int length) {
-        return filmService.searchFilmsByLengthGreaterThan(length);
-    }
+	}
 
-    // Search Films with Rental Duration less than {rd}
-    @GetMapping("/duration/lt/{rd}")
-    public List<Film> searchFilmsByRentalDurationLessThan(@PathVariable int rd) {
-        return filmService.searchFilmsByRentalDurationLessThan(rd);
-    }
+	@GetMapping
+	public List<FilmDTO> getAllFilm() {
+		return filmService.getAllFilm();
+	}
 
-    // Search Films with Rental Rate less than {rate}
-    @GetMapping("/rate/lt/{rate}")
-    public List<Film> searchFilmsByRentalRateLessThan(@PathVariable double rate) {
-        return filmService.searchFilmsByRentalRateLessThan(rate);
-    }
+	@GetMapping("/title/{title}")
+	public ResponseEntity<FilmDTO> findByTitle(@PathVariable String title) throws ResourceNotFoundException {
+		FilmDTO filmDTO = filmService.findFilmsByTitle(title);
+		if (filmDTO == null) {
+			throw new ResourceNotFoundException("Film with title " + title + " not found");
+		}
+		return ResponseEntity.ok(filmDTO);
+	}
 
-    // Search Films with Length less than {length}
-    @GetMapping("/length/lt/{length}")
-    public List<Film> searchFilmsByLengthLessThan(@PathVariable int length) {
-        return filmService.searchFilmsByLengthLessThan(length);
-    }
+	@GetMapping("/year/{release_year}")
+	public ResponseEntity<List<FilmDTO>> findFilmsByReleaseYear(@PathVariable int release_year) throws ResourceNotFoundException {
+		List<FilmDTO> filmDTOList = filmService.findFilmsByReleaseYear(release_year);
+		if (filmDTOList.isEmpty()) {
+			throw new ResourceNotFoundException("No records of films found for " + release_year + " release year");
+		}
+		return ResponseEntity.ok(filmDTOList);
+	}
 
-    // Search Films between two years
-    @GetMapping("/betweenyear/{from}/{to}")
-    public List<Film> searchFilmsBetweenYears(@PathVariable int from, @PathVariable int to) {
-        return filmService.searchFilmsBetweenYears(from, to);
-    }
+	@GetMapping("/duration/gt/{rd}")
+	public ResponseEntity<List<FilmDTO>> findFilmsWhereRentalDurationIsGreater(@PathVariable int rd) throws ResourceNotFoundException {
+		List<FilmDTO> filmDTOListByRentalDuration = filmService.findFilmsByRentalDuration(rd);
+		if (filmDTOListByRentalDuration.isEmpty()) {
+			throw new ResourceNotFoundException("No films found where rental duration is greater than " + rd);
+		}
+		return ResponseEntity.ok(filmDTOListByRentalDuration);
+	}
 
-    // Search Films with Rating less than {rating}
-    @GetMapping("/rating/lt/{rating}")
-    public List<Film> searchFilmsByRatingLessThan(@PathVariable double rating) {
-        return filmService.searchFilmsByRatingLessThan(rating);
-    }
+	@GetMapping("/rate/gt/{rate}")
+	public ResponseEntity<List<FilmDTO>> findFilmsWhereRentalRateIsGreater(@PathVariable int rate) throws ResourceNotFoundException {
+		List<FilmDTO> filmDTOListByRentalRate = filmService.findFilmsWhereRentalRateIsGreater(rate);
+		if (filmDTOListByRentalRate.isEmpty()) {
+			throw new ResourceNotFoundException("No films found where rental rate is greater than " + rate);
+		}
+		return ResponseEntity.ok(filmDTOListByRentalRate);
+	}
 
-    // Search Films with Rating greater than {rating}
-    @GetMapping("/rating/gt/{rating}")
-    public List<Film> searchFilmsByRatingGreaterThan(@PathVariable double rating) {
-        return filmService.searchFilmsByRatingGreaterThan(rating);
-    }
 
-    // Search Films by Language
-    @GetMapping("/language/{lang}")
-    public List<Film> searchFilmsByLanguage(@PathVariable String lang) {
-        return filmService.searchFilmsByLanguage(lang);
-    }
+	@GetMapping("/length/gt/{length}")
+	public ResponseEntity<List<FilmDTO>> findFilmsWhereLengthIsGreater(@PathVariable int length) throws ResourceNotFoundException{
+		List<FilmDTO> filmDTOListByLength = filmService.findFilmsWhereLengthIsGreater(length);
+		if(filmDTOListByLength.isEmpty()) {
+			throw new ResourceNotFoundException("No films found where length is greater than " + length);
+		}
 
-    // Count Films by Year
-    @GetMapping("/countbyyear")
-    public List<Object[]> countFilmsByYear() {
-        return filmService.countFilmsByYear();
-    }
+		return ResponseEntity.ok(filmDTOListByLength);
 
-    // Get Actors of a Film by Film ID
-    @GetMapping("/{id}/actors")
-    public List<Actor> getActorsByFilmId(@PathVariable int id) {
-        return filmService.findActorsByFilmId(id);
-    }
+	}
 
-    // Get Films by Category
-    @GetMapping("/category/{category}")
-    public List<Film> getFilmsByCategory(@PathVariable String category) {
-        return filmService.findFilmsByCategory(category);
-    }
 
-    // Assign Actor to Film
-    @PutMapping("/{id}/actor")
-    public String assignActorToFilm(@PathVariable int id, @RequestBody Actor actor) {
-        return filmService.assignActorToFilm(id, actor);
-    }
+	@GetMapping("/duration/lt/{rd}")
+	public ResponseEntity<List<FilmDTO>> findFilmsWhereRentalDurationIsLower(@PathVariable int rd)throws ResourceNotFoundException {
+		List<FilmDTO> filmDTOListByRentalDuration = filmService.findFilmsWhereRentalDurationIsLower(rd);
+		if(filmDTOListByRentalDuration.isEmpty()) {
+			throw new ResourceNotFoundException("No films found where rental duration is lower than " + rd);
+		}
 
-    // Update Film Title
-    @PutMapping("/update/title/{id}")
-    public Film updateFilmTitle(@PathVariable int id, @RequestBody String title) {
-        return filmService.updateFilmTitle(id, title);
-    }
+		return ResponseEntity.ok(filmDTOListByRentalDuration);
 
-    // Update Film Release Year
-    @PutMapping("/update/releaseyear/{id}")
-    public Film updateFilmReleaseYear(@PathVariable int id, @RequestBody int year) {
-        return filmService.updateFilmReleaseYear(id, year);
-    }
+	}
 
-    // Update Film Rental Duration
-    @PutMapping("/update/rentaldurtion/{id}")
-    public Film updateFilmRentalDuration(@PathVariable int id, @RequestBody int duration) {
-        return filmService.updateFilmRentalDuration(id, duration);
-    }
+	@GetMapping("/rate/lt/{rate}")
+	public ResponseEntity<List<FilmDTO>> findFilmsWhereRentalRateIsLower(@PathVariable int rate) throws ResourceNotFoundException {
+		List<FilmDTO> filmDTOListByRentalRate =filmService.findFilmsWhereRateIsLower(rate);
+		if(filmDTOListByRentalRate.isEmpty()) {
+			throw new ResourceNotFoundException("No films found where rental rate is lower than " + rate);
+		}
+		return ResponseEntity.ok(filmDTOListByRentalRate);
+	}
 
-    // Update Film Rental Rate
-    @PutMapping("/update/rentalrate/{id}")
-    public Film updateFilmRentalRate(@PathVariable int id, @RequestBody BigDecimal rate) {
-        return filmService.updateFilmRentalRate(id, rate);
-    }
 
-    // Update Film Rating
-    @PutMapping("/update/rating/{id}")
-    public Film updateFilmRating(@PathVariable int id, @RequestBody String rating) {
-        return filmService.updateFilmRating(id, rating);
-    }
+	@GetMapping("/length/lt/{length}")
+	public ResponseEntity<List<FilmDTO>> findFilmsWhereLengthIsLower(@PathVariable int length) throws ResourceNotFoundException {
+		List<FilmDTO> filmDTOListByLength = filmService.findFilmsWhereLengthIsLower(length);
+		if(filmDTOListByLength.isEmpty()) {
+			throw new ResourceNotFoundException("No films found where length is greater than " + length);
+		}
+		return ResponseEntity.ok(filmDTOListByLength);
+	}
 
-    // Update Film Language
-    @PutMapping("/update/language/{id}")
-    public Film updateFilmLanguage(@PathVariable int id, @RequestBody Language language) {
-        return filmService.updateFilmLanguage(id, language);
-    }
+
+	@GetMapping("/betweenyear/{from}/{to}")
+	public ResponseEntity<List<FilmDTO>> findFilmBetweenYear(@PathVariable int from, @PathVariable int to) throws ResourceNotFoundException {
+		List<FilmDTO> filmsBetweenYear = filmService.findFilmBetweenYear(from,to);
+		if(filmsBetweenYear.isEmpty()) {
+			throw new ResourceNotFoundException("No films found between year " + from +" to " +to);
+		}
+		return ResponseEntity.ok(filmsBetweenYear);
+	}
+
+
+	@GetMapping("/rating/lt/{rating}")
+	public ResponseEntity<List<FilmDTO>> findFilmsWhereRatingIsLower(@PathVariable int rating) throws ResourceNotFoundException{
+		List<FilmDTO> filmsByRating = filmService.findFilmsWhereRatingIsLower(rating);
+		if(filmsByRating.isEmpty()) {
+			throw new ResourceNotFoundException("No films founds with rating lower than "+rating);
+		}
+		return ResponseEntity.ok(filmsByRating);
+	}
+
+
+	@GetMapping("/rating/gt/{rating}")
+	public ResponseEntity<List<FilmDTO>> findFilmsWhereRatingIsHigher(@PathVariable int rating) throws ResourceNotFoundException{
+		List<FilmDTO> filmsByRating = filmService.findFilmsWhereRatingIsHigher(rating);
+		if(filmsByRating.isEmpty()) {
+			throw new ResourceNotFoundException("No films found with rating higher than "+rating);
+		}
+
+		return ResponseEntity.ok(filmsByRating);
+
+	}
+
+
+	@GetMapping("/language/{lang}")
+	public ResponseEntity<List<FilmDTO>> findFilmsByLanguage(@PathVariable String lang) throws ResourceNotFoundException{
+		List<FilmDTO> filmsByLang = filmService.findFilmsByLanguage(lang);
+		if(filmsByLang.isEmpty()) {
+			throw new ResourceNotFoundException("No film found with langauge "+ lang);
+		}
+		return ResponseEntity.ok(filmsByLang);
+	}
+
+	@GetMapping("/countbyyear")
+	public ResponseEntity<Map<Integer,Integer>> displayFilmsNumberByYear() {
+		Map<Integer, Integer> numberOfFilmsByYear = filmService.displayFilmsNumberByYear();
+		return ResponseEntity.ok(numberOfFilmsByYear);
+	}
+
+	@PutMapping("/update/title/{id}")
+	public ResponseEntity<FilmDTO> updateTitle(@PathVariable int id, @RequestBody String title) throws InvalidInputException {
+		FilmDTO updatedFilm = filmService.updateTitle(id,title);
+
+		return ResponseEntity.ok(updatedFilm);
+	}
+
+	@PutMapping("/update/releaseyear/{id}") 
+	public ResponseEntity<FilmDTO> updateReleaseYear(@PathVariable int id, @RequestBody int year)throws InvalidInputException{
+		FilmDTO updatedFilm = filmService.updateReleaseYear(id,year);
+		return ResponseEntity.ok(updatedFilm);
+	}
+
+	@PutMapping("/update/rentalduration/{id}")
+	public ResponseEntity<FilmDTO> updateRentalDuration(@PathVariable int id, @RequestBody int rental_duration) throws InvalidInputException{
+		FilmDTO updatedFilm = filmService.updateRentalDuration(id,rental_duration);
+		return ResponseEntity.ok(updatedFilm);
+	}
+	@PutMapping("/update/rentalrate/{id}")
+	public ResponseEntity<FilmDTO> updateRentalRate(@PathVariable int id, @RequestBody int rental_rate) throws InvalidInputException{
+		FilmDTO updatedFilm = filmService.updateRentalRate(id,rental_rate);
+		return ResponseEntity.ok(updatedFilm);
+	}
+
+	@PutMapping("/update/rating/{id}")
+	public ResponseEntity<FilmDTO> updateRating(@PathVariable long id, @RequestBody int rating) throws InvalidInputException{
+		FilmDTO updatedFilm = filmService.updateRating(id,rating);
+		return ResponseEntity.ok(updatedFilm);
+	}
+
+	@PutMapping("/update/language/{id}")
+	public ResponseEntity<FilmDTO> updateLanguage(@PathVariable int id,@RequestBody int lang_id) throws InvalidInputException{
+		FilmDTO updatedFilm = filmService.updateLanguage(id,lang_id);
+		return ResponseEntity.ok(updatedFilm);
+	}
+	
+
+	 @PutMapping("/{filmId}/actors")
+	    public ResponseEntity<String> assignActorsToFilm(@PathVariable Long filmId, @RequestBody Collection<Long> actorIds) {
+	        try {
+	            filmService.assignActorsToFilm(filmId, actorIds);
+	            return ResponseEntity.ok("Actors assigned to film successfully");
+	        } catch (InvalidInputException e) {
+	            return ResponseEntity.badRequest().body(e.getMessage());
+	        }
+	 }
+	 
+	 
+	 
+		@PutMapping("/update/category/{id}")
+		public ResponseEntity<FilmCategory> updateCategory(@PathVariable long id, @RequestBody long category_id) throws InvalidInputException{
+			FilmCategory updatedFilm= filmService.updateCategory(id,category_id);
+			
+			return ResponseEntity.ok(updatedFilm);
+		}
 
 }

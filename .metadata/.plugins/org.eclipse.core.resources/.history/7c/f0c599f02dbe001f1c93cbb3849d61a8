@@ -1,0 +1,5 @@
+package com.springboot.filmrentalstore.DTO;
+
+public class ActorDTO {
+
+}

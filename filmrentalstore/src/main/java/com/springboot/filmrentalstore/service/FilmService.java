@@ -1,151 +1,331 @@
 package com.springboot.filmrentalstore.service;
 
+import com.springboot.filmrentalstore.DTO.*;
 import com.springboot.filmrentalstore.dao.*;
-import com.springboot.filmrentalstore.model.Film;
-import com.springboot.filmrentalstore.model.Language;
-import com.springboot.filmrentalstore.model.Actor;
-import com.springboot.filmrentalstore.model.Category;
-
+import com.springboot.filmrentalstore.exception.InvalidInputException;
+import jakarta.transaction.Transactional;
+import com.springboot.filmrentalstore.model.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.List;
-
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 @Service
-public class FilmService {
+public class FilmService implements IFilmService {
 
-    @Autowired
-    private FilmDAO filmRepository;
+	@Autowired
+	private FilmDAO filmRepository;
 
-    // Add a new film
-    public String addFilm(Film film) {
-        filmRepository.save(film);
-        return "Record Created Successfully";
-    }
-
-    // Search Films by Title
-    public List<Film> searchFilmsByTitle(String title) {
-        return filmRepository.findByTitleContaining(title);
-    }
-
-    // Search Films by Release Year
-    public List<Film> searchFilmsByReleaseYear(int releaseYear) {
-        return filmRepository.findByReleaseYear(releaseYear);
-    }
-
-    // Search Films with Rental Duration greater than {rd}
-    public List<Film> searchFilmsByRentalDurationGreaterThan(int rentalDuration) {
-        return filmRepository.findByRentalDurationGreaterThan(rentalDuration);
-    }
-
-    // Search Films with Rental Rate greater than {rate}
-    public List<Film> searchFilmsByRentalRateGreaterThan(double rentalRate) {
-        return filmRepository.findByRentalRateGreaterThan(rentalRate);
-    }
-
-    // Search Films with Length greater than {length}
-    public List<Film> searchFilmsByLengthGreaterThan(int length) {
-        return filmRepository.findByLengthGreaterThan(length);
-    }
-
-    // Search Films with Rental Duration less than {rd}
-    public List<Film> searchFilmsByRentalDurationLessThan(int rentalDuration) {
-        return filmRepository.findByRentalDurationLessThan(rentalDuration);
-    }
-
-    // Search Films with Rental Rate less than {rate}
-    public List<Film> searchFilmsByRentalRateLessThan(double rentalRate) {
-        return filmRepository.findByRentalRateLessThan(rentalRate);
-    }
-
-    // Search Films with Length less than {length}
-    public List<Film> searchFilmsByLengthLessThan(int length) {
-        return filmRepository.findByLengthLessThan(length);
-    }
-
-    // Search Films between {fromYear} and {toYear}
-    public List<Film> searchFilmsBetweenYears(int fromYear, int toYear) {
-        return filmRepository.findByReleaseYearBetween(fromYear, toYear);
-    }
-
-    // Search Films with Rating less than {rating}
-    public List<Film> searchFilmsByRatingLessThan(double rating) {
-        return filmRepository.findByRatingLessThan(rating);
-    }
-
-    // Search Films with Rating greater than {rating}
-    public List<Film> searchFilmsByRatingGreaterThan(double rating) {
-        return filmRepository.findByRatingGreaterThan(rating);
-    }
-
-    // Search Films by Language
-    public List<Film> searchFilmsByLanguage(String language) {
-        return filmRepository.findByLanguage(language);
-    }
-
-    // Count Films released by Year
-    public List<Object[]> countFilmsByYear() {
-        return filmRepository.countFilmsByYear();
-    }
-
-    // Find all Actors of a Film by Film ID
-    public List<Actor> findActorsByFilmId(int filmId) {
-        return filmRepository.findActorsByFilmId(filmId);
-    }
-
-    // Find all Films by Category
-    public List<Film> findFilmsByCategory(String category) {
-        return filmRepository.findFilmsByCategory(category);
-    }
-
-    public String assignActorToFilm(int filmId, Actor actor) {
-        Film film = filmRepository.findById(filmId).orElseThrow(() -> new RuntimeException("Film not found"));
-        if (film.getActors() == null) {
-            film.setActors(new HashSet<>());  // Initialize if null
-        }
-        film.getActors().add(actor);  // Add the actor to the film
-        filmRepository.save(film);
-        return "Actor Assigned to Film Successfully";
-    }
+	@Autowired
+	private ModelMapper modelMapper;
 
 
-    // Update Film properties
-    public Film updateFilmTitle(int filmId, String newTitle) {
-        Film film = filmRepository.findById(filmId).orElseThrow(() -> new RuntimeException("Film not found"));
-        film.setTitle(newTitle);
-        return filmRepository.save(film);
-    }
+	@Autowired
+	private FilmActorDAO filmActorRepository;
 
-    public Film updateFilmReleaseYear(int filmId, int newReleaseYear) {
-        Film film = filmRepository.findById(filmId).orElseThrow(() -> new RuntimeException("Film not found"));
-        film.setReleaseYear(newReleaseYear);
-        return filmRepository.save(film);
-    }
 
-    public Film updateFilmRentalDuration(int filmId, int newDuration) {
-        Film film = filmRepository.findById(filmId).orElseThrow(() -> new RuntimeException("Film not found"));
-        film.setRentalDuration(newDuration);
-        return filmRepository.save(film);
-    }
+	@Autowired
+	private ActorDAO actorRepository;
 
-    public Film updateFilmRentalRate(int filmId, BigDecimal newRate) {
-        Film film = filmRepository.findById(filmId).orElseThrow(() -> new RuntimeException("Film not found"));
-        film.setRentalRate(newRate);
-        return filmRepository.save(film);
-    }
+	@Autowired
+	private CategoryDAO categoryRepository;
 
-    public Film updateFilmRating(int filmId, String newRating) {
-        Film film = filmRepository.findById(filmId).orElseThrow(() -> new RuntimeException("Film not found"));
-        film.setRating(newRating);
-        return filmRepository.save(film);
-    }
+	@Autowired
+	private FilmCategoryDAO filmCategoryRepository;
 
-    public Film updateFilmLanguage(int filmId, Language newLanguage) {
-        Film film = filmRepository.findById(filmId).orElseThrow(() -> new RuntimeException("Film not found"));
-        film.setLanguage(newLanguage);  // Update with the full Language object
-        return filmRepository.save(film);
-    }
+
+
+	@Override
+	@Transactional
+	public void addFilm(FilmDTO filmDTO) {
+		Film film = modelMapper.map(filmDTO, Film.class);
+		filmRepository.save(film);
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public boolean deleteFilmById(int film_id) {
+		// TODO Auto-generated method stub
+		List<Film> film_list = filmRepository.findAll();
+
+		for(Film film : film_list) {
+			if(film.getFilmId()==film_id) {
+				film_list.remove(film);
+			}
+		}
+
+		return true;
+	}
+
+
+	@Override
+	public FilmDTO findFilmsByTitle(String title) {
+		Film film = filmRepository.findFilmByTitle(title);
+		return film != null ? modelMapper.map(film, FilmDTO.class) : null;
+	}
+
+	@Override
+	public List<FilmDTO> getAllFilm() {
+		List<Film> films = filmRepository.findAll();
+
+		films.stream().map(film -> modelMapper.map(film, FilmDTO.class)).collect(Collectors.toList()).forEach(System.out::println);
+
+		return films.stream().map(film -> modelMapper.map(film, FilmDTO.class)).collect(Collectors.toList());
+	}
+
+
+	@Override
+	public List<FilmDTO> findFilmsByReleaseYear(int releaseYear) {
+		List<Film> films = filmRepository.findAll().stream()
+				.filter(film -> film.getRelease_year() == releaseYear)
+				.collect(Collectors.toList());
+		return films.stream().map(film -> modelMapper.map(film, FilmDTO.class)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<FilmDTO> findFilmsByRentalDuration(int rd) {
+		List<Film> films = filmRepository.findAll().stream()
+				.filter(film -> film.getRental_duration() > rd)
+				.collect(Collectors.toList());
+		return films.stream().map(film -> modelMapper.map(film, FilmDTO.class)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<FilmDTO> findFilmsWhereRentalRateIsGreater(int rate) {
+		List<Film> films = filmRepository.findAll().stream()
+				.filter(film -> film.getRental_rate() > rate)
+				.collect(Collectors.toList());
+		return films.stream().map(film -> modelMapper.map(film, FilmDTO.class)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<FilmDTO> findFilmsWhereLengthIsGreater(int length) {
+		// TODO Auto-generated method stub
+		List<Film> films = filmRepository.findAll().stream()
+				.filter(film -> film.getLength()>length)
+				.collect(Collectors.toList());
+
+		return films.stream().map(film -> modelMapper.map(film, FilmDTO.class)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<FilmDTO> findFilmsWhereRentalDurationIsLower(int rd) {
+		// TODO Auto-generated method stub
+		List<Film> films = filmRepository.findAll().stream()
+				.filter(film -> film.getRental_duration() < rd)
+				.collect(Collectors.toList());
+		return films.stream().map(film -> modelMapper.map(film, FilmDTO.class)).collect(Collectors.toList());
+
+	}
+
+
+	@Override
+	public List<FilmDTO> findFilmsWhereRateIsLower(int rate) {
+		// TODO Auto-generated method stub
+		List<Film> films = filmRepository.findAll().stream()
+				.filter(film -> film.getRental_rate() < rate)
+				.collect(Collectors.toList());
+		return films.stream().map(film -> modelMapper.map(film, FilmDTO.class)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<FilmDTO> findFilmsWhereLengthIsLower(int length) {
+		// TODO Auto-generated method stub
+		List<Film> films = filmRepository.findAll().stream()
+				.filter(film -> film.getLength()<length)
+				.collect(Collectors.toList());
+
+		return films.stream().map(film -> modelMapper.map(film, FilmDTO.class)).collect(Collectors.toList());
+
+	}
+
+	@Override
+	public List<FilmDTO> findFilmBetweenYear(int from, int to) {
+		// TODO Auto-generated method stub
+		List<Film> films = filmRepository.findAll().stream()
+				.filter(film -> film.getRelease_year()>from && film.getRelease_year()<to)
+				.collect(Collectors.toList());
+		return films.stream().map(film -> modelMapper.map(film, FilmDTO.class)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<FilmDTO> findFilmsWhereRatingIsLower(int rating) {
+		// TODO Auto-generated method stub
+		List<Film> films = filmRepository.findAll().stream()
+				.filter(film -> film.getRating()<rating)
+				.collect(Collectors.toList());
+		return films.stream().map(film -> modelMapper.map(film, FilmDTO.class)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<FilmDTO> findFilmsWhereRatingIsHigher(int rating) {
+		// TODO Auto-generated method stub
+		List<Film> films = filmRepository.findAll().stream()
+				.filter(film -> film.getRating()>rating)
+				.collect(Collectors.toList());
+		return films.stream().map(film -> modelMapper.map(film, FilmDTO.class)).collect(Collectors.toList());
+
+
+	}
+
+	@Override
+	public List<FilmDTO> findFilmsByLanguage(String lang) {
+		// TODO Auto-generated method stub
+
+		if (lang == null || lang.trim().isEmpty()) {
+			throw new IllegalArgumentException("Language cannot be null or empty");
+		}
+
+		List<Film> films = filmRepository.findAll().stream()
+				.filter(film -> film.getLanguage() != null && film.getLanguage().getName().equals(lang))
+				.collect(Collectors.toList());
+
+		return films.stream()
+				.map(film -> modelMapper.map(film, FilmDTO.class))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public Map<Integer, Integer> displayFilmsNumberByYear() {
+		// TODO Auto-generated method stub
+		Map<Integer,Integer> filmCountByYear= new HashMap<>();
+		for(int i=1900; i<=2100;i++ ) {
+			filmCountByYear.put(i, 0);
+		}
+
+		List<Film> films = filmRepository.findAll();
+
+		for (Film film : films) {
+			Integer releaseYear = film.getRelease_year();
+			if (releaseYear != null && releaseYear >= 1900 && releaseYear <= 2100) {
+				filmCountByYear.put(releaseYear, filmCountByYear.get(releaseYear) + 1);
+			}
+		}
+
+		return filmCountByYear;
+	}
+
+	@Override
+	public FilmDTO updateTitle(long id, String title) throws InvalidInputException {
+		Film film = filmRepository.findById(id)
+				.orElseThrow(() -> new InvalidInputException("Film with ID " + id + " not found"));
+
+		if (title == null || title.trim().isEmpty()) {
+			throw new InvalidInputException("New title cannot be null or empty");
+		}
+
+		film.setTitle(title);
+
+		Film updatedFilm = filmRepository.save(film);
+
+		return modelMapper.map(updatedFilm, FilmDTO.class);
+	}
+
+	@Override
+	public FilmDTO updateReleaseYear(long id,int year) throws InvalidInputException {
+		// TODO Auto-generated method stub
+		Film film = filmRepository.findById(id)
+				.orElseThrow(() -> new InvalidInputException("Film with ID " + id + " not found"));
+
+		film.setRelease_year(year);
+
+		Film updatedFilm = filmRepository.save(film);
+
+
+		return modelMapper.map(updatedFilm, FilmDTO.class);
+	}
+
+	@Override
+	public FilmDTO updateRentalDuration(long id, double rental_duration) throws InvalidInputException {
+		// TODO Auto-generated method stub
+		Film film = filmRepository.findById(id)
+				.orElseThrow(() -> new InvalidInputException("Film with ID " + id + " not found"));
+		film.setRental_duration(rental_duration);
+		Film updatedFilm = filmRepository.save(film);
+
+		return modelMapper.map(updatedFilm, FilmDTO.class);
+	}
+
+	@Override
+	public FilmDTO updateRentalRate(long id, double rental_rate) throws InvalidInputException {
+		// TODO Auto-generated method stub
+		Film film = filmRepository.findById(id)
+				.orElseThrow(() -> new InvalidInputException("Film with ID " + id + " not found"));
+		film.setRental_rate(rental_rate);
+		Film updatedFilm = filmRepository.save(film);
+
+		return modelMapper.map(updatedFilm, FilmDTO.class);
+	}
+
+	@Override
+	public FilmDTO updateRating(long id, int rating) throws InvalidInputException {
+		// TODO Auto-generated method stub
+		Optional<Film> film = Optional.of(filmRepository.findById(id)
+				.orElseThrow(() -> new InvalidInputException("Film with ID " + id + " not found")));
+
+		film.get().setRating(rating);
+		Film updatedFilm = filmRepository.save(film.get());
+		return modelMapper.map(updatedFilm, FilmDTO.class);
+	}
+
+	@Override
+	public FilmDTO updateLanguage(long id, int lang_id) throws InvalidInputException {
+		// TODO Auto-generated method stub
+		Film film = filmRepository.findById(id)
+				.orElseThrow(() -> new InvalidInputException("Film with ID " + id + " not found")); 
+		film.getLanguage().setLanguageId(lang_id);
+		Film updatedFilm = filmRepository.save(film);
+		return modelMapper.map(updatedFilm, FilmDTO.class);
+	}
+
+
+
+
+
+	@Transactional
+	@Override
+	public void assignActorsToFilm(Long filmId, Collection<Long> actorIds) {
+
+		Film film = filmRepository.findById(filmId)
+				.orElseThrow(() -> new IllegalArgumentException("Film with ID " + filmId + " not found"));
+
+		for (Long actorId : actorIds) {
+			Actor actor = actorRepository.findById(actorId)
+					.orElseThrow(() -> new IllegalArgumentException("Actor with ID " + actorId + " not found"));
+
+			// Check if the association already exists
+			if (!filmActorRepository.existsByFilmAndActor(film, actor)) {
+				FilmActor filmActor = new FilmActor();
+				filmActor.setFilm(film);
+				filmActor.setActor(actor);
+				filmActor.setLastUpdate(LocalDateTime.now());
+
+				filmActorRepository.save(filmActor);
+			}
+		}
+	}
+
+	@Override
+	public FilmCategory updateCategory(long id, long category_id) throws InvalidInputException {
+		// TODO Auto-generated method stub
+
+
+		Optional<Film> film = filmRepository.findById(id);
+
+		Optional<Category> category = categoryRepository.findById(category_id);
+
+		FilmCategory filmCategory = new FilmCategory();
+		if(!filmCategoryRepository.existsByFilmAndCategory(film,category)) {
+
+			filmCategory.setFilm(film.get());
+			filmCategory.setCategory(category.get());
+			filmCategoryRepository.save(filmCategory);
+
+		}
+
+
+		return filmCategory;
+	}
 
 }

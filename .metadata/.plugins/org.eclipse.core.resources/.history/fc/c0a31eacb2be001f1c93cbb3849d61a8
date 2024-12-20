@@ -1,0 +1,88 @@
+package com.Project.data.test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.modelmapper.ModelMapper;
+
+import com.Project.DTO.RentalDTO;
+import com.Project.Exception.ResourceNotFoundException;
+import com.Project.Repo.RentalRepository;
+import com.Project.model.Customer;
+import com.Project.model.Inventory;
+import com.Project.model.Rental;
+import com.Project.model.Staff;
+import com.Project.service.RentalService;
+
+public class RentalServiceTest {
+
+    @InjectMocks
+    private RentalService rentalService;
+
+    @Mock
+    private RentalRepository rentalRepository;
+
+    private ModelMapper modelMapper = new ModelMapper();
+
+    private Rental rental;
+    private RentalDTO rentalDTO;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+
+        // Setup mock Rental entity
+        rental = new Rental();
+        rental.setRentalId(1L);
+        rental.setRentalDate(LocalDateTime.now());
+        rental.setReturnDate(LocalDateTime.now().plusDays(5));
+        rental.setLastUpdate(LocalDateTime.now());
+        rental.setCustomer(new Customer());  // Assuming the Customer entity is correctly initialized
+        rental.setInventory(new Inventory()); // Assuming the Inventory entity is correctly initialized
+        rental.setStaff(new Staff());  // Assuming the Staff entity is correctly initialized
+
+        // Setup RentalDTO object
+        rentalDTO = modelMapper.map(rental, RentalDTO.class);
+    }
+
+    @Test
+    public void testAddRental() {
+        when(rentalRepository.save(any(Rental.class))).thenReturn(rental);
+        RentalDTO savedRental = rentalService.addRental(rentalDTO);
+        assertNotNull(savedRental);
+        assertEquals(rental.getRentalId(), savedRental.getRentalId());
+    }
+
+//    @Test
+//    public void testGetRentalsByCustomerId() throws ResourceNotFoundException {
+//        when(rentalRepository.findAll()).thenReturn(Arrays.asList(rental));
+//
+//        List<RentalDTO> rentals = rentalService.getRentalsByCustomerId(1L);
+//        assertFalse(rentals.isEmpty());
+//        assertEquals(rental.getRentalId(), rentals.get(0).getRentalId());
+//    }
+
+    @Test
+    public void testGetTopTenFilms() {
+        when(rentalRepository.findAll()).thenReturn(Arrays.asList(rental));
+
+        List<RentalDTO> topTenFilms = rentalService.getTopTenFilms();
+        assertFalse(topTenFilms.isEmpty());
+        assertEquals(rental.getRentalId(), topTenFilms.get(0).getRentalId());
+    }
+
+ 
+}

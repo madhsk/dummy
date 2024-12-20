@@ -1,0 +1,23 @@
+package com.springboot.filmrentalstore.dao;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+@Embeddable
+public class FilmActorId {
+	
+
+	@ManyToOne
+	@JsonBackReference
+	@JoinColumn(name = "actor_id", referencedColumnName = "actor_id", nullable = false)
+	private Actor actor;
+	
+	@ManyToOne
+	@JsonBackReference
+	@JoinColumn(name = "film_id", referencedColumnName = "film_id", nullable = false)
+	private Film film;	
+
+}

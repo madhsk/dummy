@@ -1,2 +1,18 @@
 1734542876840	Delete element
 1734545290150	Rename field 'rentalRepository'
+1734592588052	Rename field 'actorRepository'
+1734592983199	Move compilation unit
+1734620097591	Rename field 'filmActorRepository'
+1734620110853	Rename field 'filmRepository'
+1734625251357	Rename field 'staffRepository'
+1734625269349	Rename field 'customerRepository'
+1734631084644	Delete element
+1734631090381	Delete element
+1734631093273	Delete element
+1734631484961	Delete element
+1734631657967	Rename field 'paymentRepository'
+1734632373346	Rename field 'filmRepository'
+1734632385401	Rename field 'storeRepository'
+1734671480311	Rename field 'actorRepository'
+1734671661064	Rename field 'filmActorRepository'
+1734671670868	Rename field 'filmRepository'

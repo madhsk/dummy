@@ -8,53 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface FilmDAO extends JpaRepository<Film, Integer> {
-
-    // Search Films by Title
-    List<Film> findByTitleContaining(String title);
-
-    // Search Films by Release Year
-    List<Film> findByReleaseYear(int releaseYear);
-
-    // Search Films with Rental Duration greater than given value
-    List<Film> findByRentalDurationGreaterThan(int rentalDuration);
-
-    // Search Films with Rental Rate greater than given value
-    List<Film> findByRentalRateGreaterThan(double rentalRate);
-
-    // Search Films with Length greater than given value
-    List<Film> findByLengthGreaterThan(int length);
-
-    // Search Films with Rental Duration less than given value
-    List<Film> findByRentalDurationLessThan(int rentalDuration);
-
-    // Search Films with Rental Rate less than given value
-    List<Film> findByRentalRateLessThan(double rentalRate);
-
-    // Search Films with Length less than given value
-    List<Film> findByLengthLessThan(int length);
-
-    // Search Films released between two years
-    List<Film> findByReleaseYearBetween(int fromYear, int toYear);
-
-    // Search Films with Rating less than the given value
-    List<Film> findByRatingLessThan(double rating);
-
-    // Search Films with Rating greater than the given value
-    List<Film> findByRatingGreaterThan(double rating);
-
-    // Search Films by Language
-    List<Film> findByLanguage(String language);
-
-    // Count Films released by Year
-    @Query("SELECT f.releaseYear, COUNT(f) FROM Film f GROUP BY f.releaseYear")
-    List<Object[]> countFilmsByYear();
-
-    // Find all Actors by Film ID
-    @Query("SELECT a FROM Actor a JOIN a.films f WHERE f.filmId = :filmId")
-    List<Actor> findActorsByFilmId(@Param("filmId") int filmId);
-
-    // Find all Films by Category
-    @Query("SELECT f FROM Film f JOIN f.categories c WHERE c.categoryName = :category")
-    List<Film> findFilmsByCategory(@Param("category") String category);
+public interface FilmDAO extends JpaRepository<Film, Long> {
+	public Film findFilmByTitle(String title);
 }

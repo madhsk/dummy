@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.springboot.filmrentalstore.model.Country;
 
 @Repository
-public interface CountryDAO extends JpaRepository<Country, Integer> {
+public interface CountryDAO extends JpaRepository<Country, Long> {
 
 }

@@ -1,53 +1,62 @@
 package com.springboot.filmrentalstore.model;
-
-import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
-
+ 
 import java.time.LocalDateTime;
 
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+ 
 @Entity
-@Table(name = "actor")
-@NoArgsConstructor
+@Data
 public class Actor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="actor_id")
-    private int actorId;
-
-    @Column(name = "first_name", nullable = false, length = 45)
+    private Long actorId;
+ 
+    @NotBlank(message = "First name cannot be empty")
     private String firstName;
-
-    @Column(name = "last_name", nullable = false, length = 45)
+ 
+    @NotBlank(message = "Last name cannot be empty")
     private String lastName;
-
-    @Column(name = "last_update", nullable = false)
-    @Convert(converter = LocalDateTimeAttributeConverter.class)
+ 
+    @NotNull(message = "Last update timestamp cannot be null")
     private LocalDateTime lastUpdate;
 
-	public void setFirstName(String firstName2) {
-		this.firstName=firstName2;
-	}
-	public void setLastName(String lastName2) {
-		this.lastName=lastName2;
-	}
-	public int getActorId() {
+	public Long getActorId() {
 		return actorId;
 	}
-	public void setActorId(int actorId) {
+
+	public void setActorId(Long actorId) {
 		this.actorId = actorId;
 	}
-	public LocalDateTime getLastUpdate() {
-		return lastUpdate;
-	}
-	public void setLastUpdate(LocalDateTime lastUpdate) {
-		this.lastUpdate = lastUpdate;
-	}
+
 	public String getFirstName() {
 		return firstName;
 	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
 	public String getLastName() {
 		return lastName;
 	}
-	
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public LocalDateTime getLastUpdate() {
+		return lastUpdate;
+	}
+
+	public void setLastUpdate(LocalDateTime lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
+    
+    
 }

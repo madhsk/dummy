@@ -1,0 +1,172 @@
+package com.Project.service;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.Project.DTO.ActorDto;
+import com.Project.Exception.InvalidInputException;
+import com.Project.Exception.ResourceNotFoundException;
+import com.Project.Repo.ActorRepository;
+import com.Project.Repo.FilmActorRepository;
+import com.Project.Repo.FilmRepository;
+import com.Project.model.Actor;
+import com.Project.model.Film;
+import com.Project.model.FilmActor;
+
+@Service
+public class ActorService implements ActorServiceInterface {
+	@Autowired
+	private ActorRepository actorRepository;
+
+
+
+	@Autowired
+	private FilmActorRepository filmActorRepository;
+
+	@Autowired
+	private FilmRepository filmRepository;	
+
+
+
+	public List<ActorDto> getActorsByLastName(String lastName) throws InvalidInputException, ResourceNotFoundException {
+		if (lastName == null) {
+			throw new InvalidInputException("Last name cannot be null or empty");
+		}
+		List<Actor> actors = actorRepository.findByLastName(lastName);
+		if (actors.isEmpty()) {
+			throw new ResourceNotFoundException("No actors found with last name: " + lastName);
+		}
+		return actors.stream()
+				.map(this::convertToDTO)
+				.collect(Collectors.toList());
+	}
+
+	public List<ActorDto> getActorsByFirstName(String firstName) throws InvalidInputException, ResourceNotFoundException {
+		if (firstName == null) {
+			throw new InvalidInputException("First name cannot be null or empty");
+		}
+		List<Actor> actors = actorRepository.findByFirstName(firstName);
+		if (actors.isEmpty()) {
+			throw new ResourceNotFoundException("No actors found with first name: " + firstName);
+		}
+		return actors.stream()
+				.map(this::convertToDTO)
+				.collect(Collectors.toList());
+	}
+
+	public void updateLastName(Long id, String lastName) throws ResourceNotFoundException, InvalidInputException {
+		if (lastName == null || lastName.isEmpty()) {
+			throw new InvalidInputException("Last name cannot be null or empty");
+		}
+		Actor actor = actorRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Actor not found with id: " + id));
+		actor.setLastName(lastName);
+		actorRepository.save(actor);
+	}
+
+	public void updateFirstName(Long id, String firstName) throws ResourceNotFoundException, InvalidInputException {
+		if (firstName == null || firstName.isEmpty()) {
+			throw new InvalidInputException("First name cannot be null or empty");
+		}
+		Actor actor = actorRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Actor not found with id: " + id));
+		actor.setFirstName(firstName);
+		actorRepository.save(actor);
+	}
+
+	public List<ActorDto> getTopTenActorsByFilmCount() throws ResourceNotFoundException {
+		List<Actor> actors = actorRepository.findAll();
+		if (actors.isEmpty()) {
+			throw new ResourceNotFoundException("No actors found");
+		}
+		return actors.stream().limit(10)
+				.map(this::convertToDTO).collect(Collectors.toList());
+	}
+
+	public String addActor(ActorDto actorDTO) throws InvalidInputException {
+		if (actorDTO.getFirstName() == null || actorDTO.getFirstName().isEmpty() ||
+				actorDTO.getLastName() == null || actorDTO.getLastName().isEmpty()) {
+			throw new InvalidInputException("First name and Last name cannot be null or empty");
+		}
+		Actor actor = convertToEntity(actorDTO);
+		actorRepository.save(actor);
+		return "Record Created Successfully";
+	}
+
+
+	private ActorDto convertToDTO(Actor actor) {
+		return new ActorDto(actor.getActorId(), actor.getFirstName(), actor.getLastName());
+	}
+
+	private Actor convertToEntity(ActorDto actorDTO) {
+		Actor actor = new Actor();
+		actor.setActorId(actorDTO.getActorId());
+		actor.setFirstName(actorDTO.getFirstName());
+		actor.setLastName(actorDTO.getLastName());
+		return actor;
+	}
+
+	@Override
+	public void assignFilmToActor(Long actorId, Collection<Long> filmIds) throws ResourceNotFoundException {
+		// TODO Auto-generated method stub
+
+		Actor actor = actorRepository.findById(actorId)
+				.orElseThrow(() -> new ResourceNotFoundException("Actor with ID " + actorId + " not found"));
+
+
+		for(long filmId : filmIds) {
+			Film film = filmRepository.findById(filmId)
+					.orElseThrow(()-> new ResourceNotFoundException("Film with Id "+filmId+" not found")) ;
+
+			if (!filmActorRepository.existsByFilmAndActor(film, actor)) {
+				FilmActor filmActor = new FilmActor();
+				filmActor.setFilm(film);
+				filmActor.setActor(actor);
+				filmActor.setLastUpdate(LocalDateTime.now());
+
+				filmActorRepository.save(filmActor);
+
+			}
+
+
+
+		}
+
+
+	}
+
+	@Override
+	public List<Film> getFilmsByActorId(Long id) throws ResourceNotFoundException {
+		// TODO Auto-generated method stub
+
+		List<FilmActor> filmActor_list = filmActorRepository.findAll();
+
+		List<Film> film_list = new ArrayList<>();
+
+		for(FilmActor filmActor : filmActor_list) {
+			if(filmActor.getActor().getActorId()==id) {
+				film_list.add(filmActor.getFilm());
+
+			}
+		}
+		
+		if(film_list.isEmpty()) {
+			throw new ResourceNotFoundException("No films found for the given actor");
+		}
+		return film_list;
+	}
+}
+
+
+
+
+
+
+
+

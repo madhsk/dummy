@@ -1,0 +1,74 @@
+package com.springboot.filmrentalstore.model;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+@Entity
+@Table(name = "film_category")
+@Data
+@NoArgsConstructor
+public class FilmCategory {
+	@EmbeddedId
+	private FilmCategoryId filmcategoryId;
+	
+    @Column(name = "last_update", nullable = false)
+    @Convert(converter = LocalDateTimeAttributeConverter.class)
+    private LocalDateTime lastUpdate;
+
+	public FilmCategoryId getFilmcategoryId() {
+		return filmcategoryId;
+	}
+
+	public void setFilmcategoryId(FilmCategoryId filmcategoryId) {
+		this.filmcategoryId = filmcategoryId;
+	}
+
+	public LocalDateTime getLastUpdate() {
+		return lastUpdate;
+	}
+
+	public void setLastUpdate(LocalDateTime lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
+    
+    
+}
+
+
+@Embeddable
+class FilmCategoryId {
+	@ManyToOne
+	@JsonBackReference
+	@JoinColumn(name = "film_id", referencedColumnName = "film_id", nullable = false)
+	private Film film;
+	
+	@ManyToOne
+	@JsonBackReference
+	@JoinColumn(name = "category_id", referencedColumnName = "category_id", nullable = false)
+	private Category category;
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(category, film);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FilmCategoryId other = (FilmCategoryId) obj;
+		return Objects.equals(category, other.category) && Objects.equals(film, other.film);
+	}
+	
+	
+}

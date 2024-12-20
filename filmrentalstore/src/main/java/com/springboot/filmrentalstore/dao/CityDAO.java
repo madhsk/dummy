@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.springboot.filmrentalstore.model.City;
 
 @Repository
-public interface CityDAO extends JpaRepository<City, Integer>{
+public interface CityDAO extends JpaRepository<City, Long>{
 
 }
 

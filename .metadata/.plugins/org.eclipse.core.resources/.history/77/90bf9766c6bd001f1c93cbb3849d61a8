@@ -1,0 +1,36 @@
+package com.springboot.filmrentalstore.dao;
+
+import com.springboot.filmrentalstore.model.Staff;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface StaffDAO extends JpaRepository<Staff, Integer> {
+
+    // Find Staff by Last Name
+    List<Staff> findByLastName(String lastName);
+
+    // Find Staff by First Name
+    List<Staff> findByFirstName(String firstName);
+
+    // Find Staff by Email
+    Staff findByEmail(String email);
+
+    // Find Staff by City (Using Join with Address)
+    @Query("SELECT s FROM Staff s JOIN s.address a WHERE a.city = :city")
+    List<Staff> findByCity(@Param("city") String city);
+
+    // Find Staff by Country (Using Join with Address)
+    @Query("SELECT s FROM Staff s JOIN s.address a WHERE a.country = :country")
+    List<Staff> findByCountry(@Param("country") String country);
+
+    // Find Staff by Phone Number
+    @Query("SELECT s FROM Staff s JOIN s.address a WHERE s.phone = :phone")
+    Staff findByPhone(@Param("phone") String phone);
+
+    // Find Staff by Store ID
+    @Query("SELECT s FROM Staff s WHERE s.store.storeId = :storeId")
+    List<Staff> findByStoreId(@Param("storeId") int storeId);
+}

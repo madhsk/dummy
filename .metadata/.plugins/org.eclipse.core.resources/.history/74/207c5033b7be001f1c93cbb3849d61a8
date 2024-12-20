@@ -1,0 +1,49 @@
+//package com.springboot.filmrentalstore.controller;
+//
+//import com.springboot.filmrentalstore.model.Film;
+//import com.springboot.filmrentalstore.model.Store;
+//import com.springboot.filmrentalstore.service.InventoryService;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.web.bind.annotation.*;
+//
+//import java.util.Map;
+//
+//@RestController
+//@RequestMapping("/api/inventory")
+//public class InventoryController {
+//
+//    @Autowired
+//    private InventoryService inventoryService;
+//
+//    @PostMapping("/add")
+//    public String addFilmToStore(@RequestParam int filmId, @RequestParam int storeId) {
+//        // Assuming Film and Store are fetched from the database by their IDs
+//        Film film = new Film(); // fetch Film by filmId
+//        Store store = new Store(); // fetch Store by storeId
+//        return inventoryService.addFilmToStore(film, store);
+//    }
+//
+//    @GetMapping("/films")
+//    public Map<String, Long> getAllFilmsInventory() {
+//        return inventoryService.getAllFilmsInventory();
+//    }
+//
+//    @GetMapping("/store/{id}")
+//    public Map<String, Long> getInventoryByStore(@PathVariable int id) {
+//        Store store = new Store(); // fetch Store by id
+//        return inventoryService.getInventoryByStore(store);
+//    }
+//
+//    @GetMapping("/film/{id}")
+//    public Map<String, Long> getInventoryByFilm(@PathVariable int id) {
+//        Film film = new Film(); // fetch Film by id
+//        return inventoryService.getInventoryByFilm(film);
+//    }
+//
+//    @GetMapping("/film/{id}/store/{storeId}")
+//    public Map<String, Long> getInventoryByFilmInStore(@PathVariable int id, @PathVariable int storeId) {
+//        Film film = new Film(); // fetch Film by id
+//        Store store = new Store(); // fetch Store by storeId
+//        return inventoryService.getInventoryByFilmInStore(film, store);
+//    }
+//}

@@ -1,46 +1,105 @@
 package com.springboot.filmrentalstore.service;
 
+import com.springboot.filmrentalstore.DTO.PaymentDTO;
 import com.springboot.filmrentalstore.dao.*;
 import com.springboot.filmrentalstore.model.Payment;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
+
 
 @Service
-public class PaymentService {
+public class PaymentService implements IPaymentService{
+	 @Autowired
+	 private PaymentDAO paymentDAO;
 
-    @Autowired
-    private PaymentDAO paymentRepository;
+	 private ModelMapper modelMapper = new ModelMapper();
 
-    // Add a payment record
-    public String addPayment(Payment payment) {
-        paymentRepository.save(payment);
-        return "Record Created Successfully";
-    }
+	 @Override
+	 public PaymentDTO addPayment(PaymentDTO paymentDTO) {
+	   Payment payment = modelMapper.map(paymentDTO, Payment.class);
+	    payment.setPaymentDate(paymentDTO.getPaymentDate());
+	    payment.setLastUpdate(paymentDTO.getLastUpdate());
+	    Payment savedPayment = paymentDAO.save(payment);
+	    return modelMapper.map(savedPayment, PaymentDTO.class);
+	 }
+	 @Override
+	 public Map<LocalDate, Double> getCumulativeRevenueDatewise() {
+	     List<Payment> payments = paymentDAO.findAll();
+	     Map<LocalDate, Double> revenueMap = new HashMap<>();
+	      
+	     for (Payment payment : payments) {
+	         LocalDate paymentDate = payment.getPaymentDate().toLocalDate();
+	         revenueMap.put(paymentDate, revenueMap.getOrDefault(paymentDate, 0.0) + payment.getAmount());
+	     }
+	        
+	     return revenueMap;
+	 }
 
-    // Get cumulative revenue of all stores (date-wise)
-    public List<Object[]> getRevenueByDate() {
-        return paymentRepository.findRevenueByDate();
-    }
+	     
+	 @Override
+	 public Map<LocalDate, Double> getCumulativeRevenueByStoreDatewise(Long storeId) {
+	 List<Payment> payments = paymentDAO.findAll();
+	 Map<LocalDate, Double> revenueMap = new HashMap<>();
+	       
+	 for (Payment payment : payments) {
+	      if (payment.getRental().getInventory().getStore().getStoreId().equals(storeId)) {
+	                LocalDate paymentDate = payment.getPaymentDate().toLocalDate();
+	                revenueMap.put(paymentDate, revenueMap.getOrDefault(paymentDate, 0.0) + payment.getAmount());
+	            }
+	        }
+	        
+	        return revenueMap;
+	    }
+	    @Override
+	    public Map<String, Double> getCumulativeRevenueFilmwise() {
+	        List<Payment> payments = paymentDAO.findAll();
+	        Map<String, Double> filmRevenueMap = new HashMap<>();
+	        
+	        for (Payment payment : payments) {
+	            String filmTitle = payment.getRental().getInventory().getFilm().getTitle();
+	            filmRevenueMap.put(filmTitle, filmRevenueMap.getOrDefault(filmTitle, 0.0) + payment.getAmount());
+	        }
+	        
+	        return filmRevenueMap;
+	    }
 
-    // Get cumulative revenue of a store (date-wise)
-    public List<Object[]> getRevenueByStoreAndDate(int storeId) {
-        return paymentRepository.findRevenueByStoreAndDate(storeId);
-    }
+	    @Override
+	    public Map<String, Double> getCumulativeRevenueByFilmStorewise(Long filmId) {
+	        List<Payment> payments = paymentDAO.findAll();
+	        Map<String, Double> filmStoreRevenueMap = new HashMap<>();
+	        
+	        for (Payment payment : payments) {
+	            if (payment.getRental().getInventory().getFilm().getFilmId().equals(filmId)) {
+	                String filmName = payment.getRental().getInventory().getFilm().getTitle();  // Get film name
+	                String storeAddress = payment.getRental().getInventory().getStore().getAddress().getAddress();  // Get store address
+	                
+	                String key = filmName + " - " + storeAddress;  // Create a composite key
+	                filmStoreRevenueMap.put(key, filmStoreRevenueMap.getOrDefault(key, 0.0) + payment.getAmount());
+	            }
+	        }
+	        
+	        return filmStoreRevenueMap;
+	    }
 
-    // Get cumulative revenue of all films (across all stores)
-    public List<Object[]> getRevenueByFilm() {
-        return paymentRepository.findRevenueByFilm();
-    }
+	    @Override
+	    public Map<String, Double> getCumulativeRevenueFilmsByStore(Long storeId) {
+	        List<Payment> payments = paymentDAO.findAll();
+	        Map<String, Double> filmRevenueMap = new HashMap<>();
+	        
+	        for (Payment payment : payments) {
+	            if (payment.getRental().getInventory().getStore().getStoreId().equals(storeId)) {
+	                String filmTitle = payment.getRental().getInventory().getFilm().getTitle();
+	                filmRevenueMap.put(filmTitle, filmRevenueMap.getOrDefault(filmTitle, 0.0) + payment.getAmount());
+	            }
+	        }
+	        
+	        return filmRevenueMap;
+	    }
 
-    // Get cumulative revenue of a film (store-wise)
-    public List<Object[]> getRevenueByFilmAndStore(int filmId) {
-        return paymentRepository.findRevenueByFilmAndStore(filmId);
-    }
-
-    // Get cumulative revenue of all films by a specific store
-    public List<Object[]> getRevenueByStore(int storeId) {
-        return paymentRepository.findRevenueByStore(storeId);
-    }
+ 
 }

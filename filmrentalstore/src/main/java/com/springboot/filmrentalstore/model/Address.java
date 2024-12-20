@@ -1,46 +1,56 @@
 package com.springboot.filmrentalstore.model;
 
-import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 @Entity
 @Table(name = "address")
-@NoArgsConstructor
 public class Address {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="address_id")
-    private int addressId;
+    private Long addressId;
 
-    @Column(name="address",nullable = false, length = 50)
     private String address;
 
-    @Column(name = "address2", length = 50)
     private String address2;
 
-    @Column(name="district",nullable = false, length = 20)
     private String district;
 
     @ManyToOne
-    @JoinColumn(name = "city_id", nullable = false)
+    @JsonBackReference
+    @JoinColumn(name = "city_id")
     private City city;
 
-    @Column(name = "postal_code", length = 10)
     private String postalCode;
 
-    @Column(nullable = false, length = 20)
     private String phone;
 
-    @Column(name = "last_update", nullable = false)
-    @Convert(converter = LocalDateTimeAttributeConverter.class)
     private LocalDateTime lastUpdate;
+    
+    @OneToMany(mappedBy = "address", cascade = CascadeType.ALL)
+    @JsonIgnore
+    //@JsonManagedReference  // Prevents infinite recursion; handles serialization of stores
+    private List<Store> stores;
 
-	public int getAddressId() {
+	public Long getAddressId() {
 		return addressId;
 	}
 
-	public void setAddressId(int addressId) {
+	public void setAddressId(Long addressId) {
 		this.addressId = addressId;
 	}
 
@@ -98,6 +108,14 @@ public class Address {
 
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
+	}
+
+	public List<Store> getStores() {
+		return stores;
+	}
+
+	public void setStores(List<Store> stores) {
+		this.stores = stores;
 	}
     
     

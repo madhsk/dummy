@@ -1,103 +1,108 @@
 package com.springboot.filmrentalstore.controller;
 
-import com.springboot.filmrentalstore.model.Staff;
+import com.springboot.filmrentalstore.DTO.StaffDTO;
+import com.springboot.filmrentalstore.exception.ResourceNotFoundException;
+import com.springboot.filmrentalstore.model.*;
 import com.springboot.filmrentalstore.model.Address;
-import com.springboot.filmrentalstore.service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.springboot.filmrentalstore.service.*;
+
+import jakarta.validation.Valid;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/staff")
+//updated code
 public class StaffController {
+	@Autowired
+    IStaffService staffService;
 
-    @Autowired
-    private StaffService staffService;
 
-    // Add a new Staff
-    @PostMapping("/post")
-    public ResponseEntity<String> addStaff(@RequestBody Staff staff) {
-        String message = staffService.addStaff(staff);
-        return ResponseEntity.ok(message);
+	@PostMapping("/create")
+    public ResponseEntity<?> addStaff(@Valid @RequestBody StaffDTO staffDTO) {
+        StaffDTO createdStaff = staffService.addStaff(staffDTO);
+        return new ResponseEntity<>("Staff successfully posted", HttpStatus.CREATED);
     }
-
-    // Search Staff by Last Name
-    @GetMapping("/lastname/{ln}")
-    public ResponseEntity<List<Staff>> getStaffByLastName(@PathVariable String ln) {
-        List<Staff> staffList = staffService.getStaffByLastName(ln);
-        return ResponseEntity.ok(staffList);
+ 
+    @GetMapping("/lastname/{lastName}")
+    public ResponseEntity<List<StaffDTO>> findByLastName(@PathVariable("lastName") String lastName) throws ResourceNotFoundException {
+        List<StaffDTO> staffList = staffService.findStaffByLastName(lastName);
+        return new ResponseEntity<>(staffList, HttpStatus.OK);
     }
-
-    // Search Staff by First Name
-    @GetMapping("/firstname/{fn}")
-    public ResponseEntity<List<Staff>> getStaffByFirstName(@PathVariable String fn) {
-        List<Staff> staffList = staffService.getStaffByFirstName(fn);
-        return ResponseEntity.ok(staffList);
+ 
+    @GetMapping("/firstname/{firstName}")
+    public ResponseEntity<List<StaffDTO>> findByFirstName(@PathVariable("firstName") String firstName) throws ResourceNotFoundException {
+        List<StaffDTO> staffList = staffService.findStaffByFirstName(firstName);
+        return new ResponseEntity<>(staffList, HttpStatus.OK);
     }
-
-    // Search Staff by Email
+ 
     @GetMapping("/email/{email}")
-    public ResponseEntity<Staff> getStaffByEmail(@PathVariable String email) {
-        Staff staff = staffService.getStaffByEmail(email);
-        return ResponseEntity.ok(staff);
+    public ResponseEntity<List<StaffDTO>> findByEmail(@PathVariable("email") String email) throws ResourceNotFoundException {
+        List<StaffDTO> staffList = staffService.findStaffByEmail(email);
+        return new ResponseEntity<>(staffList, HttpStatus.OK);
     }
-
-    // Assign Address to a Staff
-    @PutMapping("/{id}/address")
-    public ResponseEntity<Staff> assignAddressToStaff(@PathVariable int id, @RequestBody Address address) {
-        Staff updatedStaff = staffService.assignAddressToStaff(id, address);
-        return ResponseEntity.ok(updatedStaff);
-    }
-
-    // Search Staff by City
+ 
     @GetMapping("/city/{city}")
-    public ResponseEntity<List<Staff>> getStaffByCity(@PathVariable String city) {
-        List<Staff> staffList = staffService.getStaffByCity(city);
-        return ResponseEntity.ok(staffList);
+    public ResponseEntity<List<StaffDTO>> findByAddress_City_CityName(@PathVariable("city") String city) throws ResourceNotFoundException {
+        List<StaffDTO> staffList = staffService.findByAddress_City_CityName(city);
+        return new ResponseEntity<>(staffList, HttpStatus.OK);
     }
-
-    // Search Staff by Country
+ 
     @GetMapping("/country/{country}")
-    public ResponseEntity<List<Staff>> getStaffByCountry(@PathVariable String country) {
-        List<Staff> staffList = staffService.getStaffByCountry(country);
-        return ResponseEntity.ok(staffList);
+    public ResponseEntity<List<StaffDTO>> findByAddress_City_Country_CountryName(@PathVariable String country) throws ResourceNotFoundException {
+        List<StaffDTO> staffList = staffService.findByAddress_City_Country_CountryName(country);
+        return new ResponseEntity<>(staffList, HttpStatus.OK);
     }
-
-    // Search Staff by Phone Number
+ 
     @GetMapping("/phone/{phone}")
-    public ResponseEntity<Staff> getStaffByPhone(@PathVariable String phone) {
-        Staff staff = staffService.getStaffByPhone(phone);
-        return ResponseEntity.ok(staff);
+    public ResponseEntity<List<StaffDTO>> findByPhoneNumber(@PathVariable("phone") String phone) throws ResourceNotFoundException {
+        List<StaffDTO> staffDTOList = staffService.findStaffByPhoneNumber(phone);
+        if (staffDTOList.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+ 
+        return new ResponseEntity<>(staffDTOList, HttpStatus.OK);
     }
-
-    // Update First Name of a Staff
-    @PutMapping("/update/fn/{id}")
-    public ResponseEntity<Staff> updateStaffFirstName(@PathVariable int id, @PathVariable String fn) {
-        Staff updatedStaff = staffService.updateStaffFirstName(id, fn);
-        return ResponseEntity.ok(updatedStaff);
+    
+ 
+ 
+    @PutMapping("/update/firstName/{id}")
+    public ResponseEntity<StaffDTO> updateFirstName(@PathVariable("id") Long id, @RequestBody String firstName) throws ResourceNotFoundException {
+        StaffDTO updatedStaff = staffService.updateFirstName(id, firstName);
+        return new ResponseEntity<>(updatedStaff, HttpStatus.OK);
     }
-
-    // Update Last Name of a Staff
-    @PutMapping("/update/ln/{id}")
-    public ResponseEntity<Staff> updateStaffLastName(@PathVariable int id, @PathVariable String ln) {
-        Staff updatedStaff = staffService.updateStaffLastName(id, ln);
-        return ResponseEntity.ok(updatedStaff);
+ 
+    @PutMapping("/update/lastName/{id}")
+    public ResponseEntity<StaffDTO> updateLastName(@PathVariable Long id, @RequestBody String lastName) throws ResourceNotFoundException {
+        StaffDTO updatedStaff = staffService.updateLastName(id, lastName);
+        return new ResponseEntity<>(updatedStaff, HttpStatus.OK);
     }
-
-    // Update Email of a Staff
+ 
     @PutMapping("/update/email/{id}")
-    public ResponseEntity<Staff> updateStaffEmail(@PathVariable int id, @PathVariable String email) {
-        Staff updatedStaff = staffService.updateStaffEmail(id, email);
-        return ResponseEntity.ok(updatedStaff);
+    public ResponseEntity<StaffDTO> updateEmail(@PathVariable("id") Long id, @RequestBody String email) throws ResourceNotFoundException {
+        StaffDTO updatedStaff = staffService.updateEmail(id, email);
+        return new ResponseEntity<>(updatedStaff, HttpStatus.OK);
     }
-
-    // Assign Store to a Staff
-    @PutMapping("/update/store/{id}")
-    public ResponseEntity<Staff> updateStaffStore(@PathVariable int id, @RequestBody int storeId) {
-        Staff updatedStaff = staffService.updateStaffStore(id, storeId);
-        return ResponseEntity.ok(updatedStaff);
+ 
+    @PutMapping("/update/phone/{id}")
+    public ResponseEntity<StaffDTO> updatePhoneNumberInAddress(@PathVariable("id") Long id, @RequestBody String phoneNumber) throws ResourceNotFoundException {
+        StaffDTO updatedStaff = staffService.updatePhoneNumberInAddress(id, phoneNumber);
+        return new ResponseEntity<>(updatedStaff, HttpStatus.OK);
+    }
+ 
+ 
+    @PutMapping("/update/address/{staffId}")
+    public ResponseEntity<StaffDTO> assignAddressToStaff(@PathVariable("staffId") Long staffId, @RequestBody Address address) throws ResourceNotFoundException {
+        StaffDTO staffWithAddress = staffService.assignAddress(staffId, address);
+        return new ResponseEntity<>(staffWithAddress, HttpStatus.OK);
+    }
+    @PutMapping("/{id}/store")
+    public ResponseEntity<StaffDTO> updateStore(@PathVariable("id") Long id, @RequestBody Store store) throws ResourceNotFoundException {
+        return new ResponseEntity<>(staffService.updateStore(id, store), HttpStatus.OK);
     }
 
 }

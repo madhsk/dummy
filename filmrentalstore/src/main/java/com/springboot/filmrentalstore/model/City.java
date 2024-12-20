@@ -1,45 +1,51 @@
 package com.springboot.filmrentalstore.model;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 
 @Entity
 @Table(name = "city")
-@NoArgsConstructor
 public class City {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="city_id",nullable = false)
-    private int cityId;
+    private Long cityId;
 
-    @Column(name="city",nullable = false, length = 50)
-    private String city;
+    @Column(name = "city", length = 100, nullable = false)
+    private String cityName;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "country_id", nullable = false)
     private Country country;
 
-    @Column(name = "last_update", nullable = false)
-    @Convert(converter = LocalDateTimeAttributeConverter.class)
+    @Column(name = "last_update")
     private LocalDateTime lastUpdate;
 
-	public int getCityId() {
+	public Long getCityId() {
 		return cityId;
 	}
 
-	public void setCityId(int cityId) {
+	public void setCityId(Long cityId) {
 		this.cityId = cityId;
 	}
 
-	public String getCity() {
-		return city;
+	public String getCityName() {
+		return cityName;
 	}
 
-	public void setCity(String city) {
-		this.city = city;
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
 	}
 
 	public Country getCountry() {

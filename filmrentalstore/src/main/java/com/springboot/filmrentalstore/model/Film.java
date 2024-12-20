@@ -1,211 +1,181 @@
 package com.springboot.filmrentalstore.model;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
 @Entity
-@Table(name = "film")
 @Data
-@NoArgsConstructor
 public class Film {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="film_id")
-    private int filmId;
+	@Id
+	@GeneratedValue(strategy  =  GenerationType.IDENTITY)
+	private Long filmId;
+ 
+	@NotBlank(message = "Title is mandatory")
+//	@Size(max = 255, message = "Title cannot exceed 255 characters")
+	private String title;
+ 
+//	@Size(max = 1000, message = "Description cannot exceed 1000 characters")
+	private String description;
+ 
+ 
+//	@Min(value = 1900, message = "Release Year must be at least 1900")
+//	@Max(value = 2100, message = "Release Year must be no later than 2100")
+	private Integer release_year;
+ 
+	@ManyToOne
+	@JoinColumn(name = "language_id")
+	private Language language;
+ 
+//	@NotNull
+//	private int lang_id;
+//	@ManyToOne
+//	@JoinColumn(name = "category_id")
+//	private Category category;
+//	//@Min(value = 1, message = "Original Language ID must be greater than or equal to 1")
+//	private int original_lang_id;
+	
+	@Column(name = "original_language_id", columnDefinition = "SMALLINT")
+	private Integer original_language_id;
+ 
+	//@Min(value = 1, message = "Rental Duration must be at least 1")
+	private double rental_duration;
+ 
+	//@Min(value = 0, message = "Rental Rate must be a non-negative value")
+	private double rental_rate;
+ 
+	//@Min(value = 1, message = "Length must be at least 1")
+	private int length;
+ 
+	//@Min(value = 0, message = "Replacement Cost must be a non-negative value")
+	private int replacement_cost;
+ 
+	//@Min(value = 0, message = "Rating must be a non-negative value")
+//	private int rating;
+	private int rating;
+ 
+	//@Size(max = 500, message = "Special Features cannot exceed 500 characters")
+	private String special_features;
+ 
+	@Column(name = "lastUpdate")
+	private LocalDateTime lastUpdate;
 
-    @Column(name="title", length = 255)
-    private String title;
-
-    @Column(name="description",columnDefinition = "TEXT",nullable = false)
-    private String description;
-
-    @Column(name = "release_year",nullable = false,length = 4)
-    private int releaseYear;
-
-    @ManyToOne
-    @JoinColumn(name = "language_id", nullable = false)
-    private Language languageId;
-
-    @ManyToOne
-    @JoinColumn(name = "original_language_id",nullable = false)
-    private Language originalLanguageId;
-
-    @Column(name = "rental_duration",length = 22)
-    private int rentalDuration;
-
-    @Column(name = "rental_rate", precision = 4, scale = 2)
-    private int rentalRate;
-
-    @Column(name = "length",length = 22,nullable = false)
-    private int length;
-
-    @Column(name = "replacement_cost", precision = 5, scale = 2)
-    private int replacementCost;
-
-    @Column(name = "rating",length = 10,nullable = false)
-    private String rating;
-    
-    @Column(name = "special_features",length = 100,nullable = false)
-    private String specialFeatures;
-
-    @Column(name = "last_update", nullable = false)
-    @Convert(converter = LocalDateTimeAttributeConverter.class)
-    private LocalDateTime lastUpdate;
-    
-    @ManyToMany
-    @JoinTable(
-        name = "film_actor", 
-        joinColumns = @JoinColumn(name = "film_id"), 
-        inverseJoinColumns = @JoinColumn(name = "actor_id")
-    )
-    private Set<Actor> actors = new HashSet<>();
-
-    
-	public Set<Actor> getActors() {
-		return actors;
-	}
-
-
-	public int getFilmId() {
+	public Long getFilmId() {
 		return filmId;
 	}
 
-
-	public void setFilmId(int filmId) {
+	public void setFilmId(Long filmId) {
 		this.filmId = filmId;
 	}
-
 
 	public String getTitle() {
 		return title;
 	}
 
-
 	public void setTitle(String title) {
 		this.title = title;
 	}
-
 
 	public String getDescription() {
 		return description;
 	}
 
-
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
-
-	public int getReleaseYear() {
-		return releaseYear;
+	public Integer getRelease_year() {
+		return release_year;
 	}
 
-
-	public void setReleaseYear(int releaseYear) {
-		this.releaseYear = releaseYear;
+	public void setRelease_year(Integer release_year) {
+		this.release_year = release_year;
 	}
 
-
-	public Language getLanguageId() {
-		return languageId;
+	public Language getLanguage() {
+		return language;
 	}
 
-
-	public void setLanguageId(Language languageId) {
-		this.languageId = languageId;
+	public void setLanguage(Language language) {
+		this.language = language;
 	}
 
-
-	public Language getOriginalLanguageId() {
-		return originalLanguageId;
+	public Integer getOriginal_language_id() {
+		return original_language_id;
 	}
 
-
-	public void setOriginalLanguageId(Language originalLanguageId) {
-		this.originalLanguageId = originalLanguageId;
+	public void setOriginal_language_id(Integer original_language_id) {
+		this.original_language_id = original_language_id;
 	}
 
-
-	public int getRentalDuration() {
-		return rentalDuration;
+	public double getRental_duration() {
+		return rental_duration;
 	}
 
-
-	public void setRentalDuration(int rentalDuration) {
-		this.rentalDuration = rentalDuration;
+	public void setRental_duration(double rental_duration) {
+		this.rental_duration = rental_duration;
 	}
 
-
-	public int getRentalRate() {
-		return rentalRate;
+	public double getRental_rate() {
+		return rental_rate;
 	}
 
-
-	public void setRentalRate(int rentalRate) {
-		this.rentalRate = rentalRate;
+	public void setRental_rate(double rental_rate) {
+		this.rental_rate = rental_rate;
 	}
-
 
 	public int getLength() {
 		return length;
 	}
 
-
 	public void setLength(int length) {
 		this.length = length;
 	}
 
-
-	public int getReplacementCost() {
-		return replacementCost;
+	public int getReplacement_cost() {
+		return replacement_cost;
 	}
 
-
-	public void setReplacementCost(int replacementCost) {
-		this.replacementCost = replacementCost;
+	public void setReplacement_cost(int replacement_cost) {
+		this.replacement_cost = replacement_cost;
 	}
 
-
-	public String getRating() {
+	public int getRating() {
 		return rating;
 	}
 
-
-	public void setRating(String rating) {
+	public void setRating(int rating) {
 		this.rating = rating;
 	}
 
-
-	public String getSpecialFeatures() {
-		return specialFeatures;
+	public String getSpecial_features() {
+		return special_features;
 	}
 
-
-	public void setSpecialFeatures(String specialFeatures) {
-		this.specialFeatures = specialFeatures;
+	public void setSpecial_features(String special_features) {
+		this.special_features = special_features;
 	}
-
 
 	public LocalDateTime getLastUpdate() {
 		return lastUpdate;
 	}
 
-
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
 
-
-	public void setActors(Set<Actor> actors) {
-		this.actors = actors;
+	public Film() {
+		super();
 	}
 
 	
-	
-    
+
 }

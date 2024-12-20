@@ -1,90 +1,95 @@
 package com.springboot.filmrentalstore.controller;
 
-import com.springboot.filmrentalstore.model.Store;
-import com.springboot.filmrentalstore.model.Staff;
-import com.springboot.filmrentalstore.model.Address;
-import com.springboot.filmrentalstore.model.Customer;
+import com.springboot.filmrentalstore.model.*;
+import com.springboot.filmrentalstore.DTO.*;
+import com.springboot.filmrentalstore.exception.*;
 import com.springboot.filmrentalstore.service.StoreService;
+
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/store")
+@RequestMapping("/api/stores")
+@Valid
 public class StoreController {
-
+	
     @Autowired
-    private StoreService storeService;
-
-    // Add a new Store
-    @PostMapping("/post")
-    public ResponseEntity<String> addStore(@RequestBody Store store) {
-        String message = storeService.addStore(store);
-        return ResponseEntity.ok(message);
+    StoreService storeService;
+   
+    //Get all Store Info
+    @GetMapping("/all")
+    public List<Store> getAllStores() {
+        return storeService.getAllStores();
     }
+   
+    
+    //Add New Store 
+    @PostMapping("/add")
+    public ResponseEntity<Store> addStore(@Validated @RequestBody StoreCreateDTO storecreateDTO) throws ResourceNotFoundException {
+        Store newStore = storeService.addStore(storecreateDTO);
+        return new ResponseEntity<>(newStore, HttpStatus.CREATED);
+    }
+    
 
-    // Assign Address to a Store
+    //Assign address to store
     @PutMapping("/{storeId}/address/{addressId}")
-    public ResponseEntity<Store> assignAddressToStore(@PathVariable int storeId, @RequestBody Address address) {
-        Store updatedStore = storeService.assignAddressToStore(storeId, address);
+    public ResponseEntity<StoreDTO> assignAddressToStore(
+        @PathVariable Long storeId, 
+        @PathVariable Long addressId) throws ResourceNotFoundException {
+        
+        StoreDTO updatedStore = storeService.assignAddressToStore(storeId, addressId);
         return ResponseEntity.ok(updatedStore);
     }
-
-    // Search Store by City
+    
+    
+    //Get Store By City
     @GetMapping("/city/{city}")
-    public ResponseEntity<List<Store>> getStoresByCity(@PathVariable String city) {
-        List<Store> storeList = storeService.getStoresByCity(city);
-        return ResponseEntity.ok(storeList);
+    public List<StoreDTO> getStoresByCity(@PathVariable String city) throws ResourceNotFoundException{
+        return storeService.getStoresByCity(city);
     }
-
-    // Search Store by Country
+    
+    
+    //Getting Store By Country
     @GetMapping("/country/{country}")
-    public ResponseEntity<List<Store>> getStoresByCountry(@PathVariable String country) {
-        List<Store> storeList = storeService.getStoresByCountry(country);
-        return ResponseEntity.ok(storeList);
+    public List<StoreIdDTO> getStoresByCountry(@PathVariable String country) throws ResourceNotFoundException {
+        return storeService.getStoreIdsByCountry(country);
     }
-
-    // Search Store by Phone Number
+    
+    
+    //Getting Store By Phone Number
     @GetMapping("/phone/{phone}")
-    public ResponseEntity<Store> getStoreByPhone(@PathVariable String phone) {
-        Store store = storeService.getStoreByPhone(phone);
+    public ResponseEntity<StoreDTO> getStoreByPhone(@PathVariable("phone") String phone) throws ResourceNotFoundException {
+        StoreDTO store = storeService.getStoreByPhone(phone);
         return ResponseEntity.ok(store);
     }
-
-    // Assign Manager to Store
-    @PutMapping("/{storeId}/manager/{manager_staff_id}")
-    public ResponseEntity<Store> assignManagerToStore(@PathVariable int storeId, @RequestBody Staff manager) {
-        Store updatedStore = storeService.assignManagerToStore(storeId, manager);
-        return ResponseEntity.ok(updatedStore);
+    
+    
+    @PutMapping("/update/{storeId}/{phone}")
+    public ResponseEntity<String> updateStorePhoneNumber(@PathVariable("storeId") Long storeId,@PathVariable("phone") String phone) throws InvalidInputException {
+        try {
+            String message = storeService.updatePhoneNumber(storeId, phone);
+            return ResponseEntity.ok(message);
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
-
-    // Display all Staff of a Store
+    
+    
     @GetMapping("/staff/{storeId}")
-    public ResponseEntity<List<Staff>> getStaffByStoreId(@PathVariable int storeId) {
-        List<Staff> staffList = storeService.getStaffByStoreId(storeId);
-        return ResponseEntity.ok(staffList);
+    public List<Staff> getStaffByStoreId(@PathVariable long storeId) throws ResourceNotFoundException {
+        return storeService.getStaffByStoreId((long) storeId);
     }
-
-    // Display all Customers of a Store
+    
+    
     @GetMapping("/customer/{storeId}")
-    public ResponseEntity<List<Customer>> getCustomersByStoreId(@PathVariable int storeId) {
-        List<Customer> customerList = storeService.getCustomersByStoreId(storeId);
-        return ResponseEntity.ok(customerList);
-    }
-
-    // Display Manager Details of a Store
-    @GetMapping("/manager/{storeId}")
-    public ResponseEntity<Staff> getManagerByStoreId(@PathVariable int storeId) {
-        Staff manager = storeService.getManagerByStoreId(storeId);
-        return ResponseEntity.ok(manager);
-    }
-
-    // Display Manager details and Store details of all stores
-    @GetMapping("/managers")
-    public ResponseEntity<List<Object[]>> getAllManagersWithStoreDetails() {
-        List<Object[]> managerDetails = storeService.getAllManagersWithStoreDetails();
-        return ResponseEntity.ok(managerDetails);
+    public ResponseEntity<List<CustomerDTO>> getCustomersByStore(@PathVariable Long storeId) throws ResourceNotFoundException {
+        List<CustomerDTO> customers = storeService.getCustomersByStoreId(storeId);
+        return ResponseEntity.ok(customers);
     }
 }

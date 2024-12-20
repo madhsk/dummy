@@ -1,36 +1,25 @@
 package com.springboot.filmrentalstore.dao;
-
-import com.springboot.filmrentalstore.model.Staff;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
+ 
 import java.util.List;
+ 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import com.springboot.filmrentalstore.model.*;
+@Repository
+public interface StaffDAO extends JpaRepository<Staff,Long>{
+   
 
-public interface StaffDAO extends JpaRepository<Staff, Integer> {
-
-    // Find Staff by Last Name
-    List<Staff> findByLastName(String lastName);
-
-    // Find Staff by First Name
+	List<Staff> findByLastName(String lastName);
+    List<Staff> findByEmail(String email);
     List<Staff> findByFirstName(String firstName);
+    List<Staff> findByAddress_Phone_(String phoneNumber);
+    //List<Staff> findByAddress_PhoneNumber_(String phoneNumber);
+    List<Staff> findByAddress_City_CityName(String city);
+    List<Staff> findByAddress_City_Country_Country(String country);
+	Staff findByUsername(String username);
 
-    // Find Staff by Email
-    Staff findByEmail(String email);
-
-    // Find Staff by City (Using Join with Address)
-    @Query("SELECT s FROM Staff s JOIN s.address a WHERE a.city = :city")
-    List<Staff> findByCity(@Param("city") String city);
-
-    // Find Staff by Country (Using Join with Address)
-    @Query("SELECT s FROM Staff s JOIN s.address a WHERE a.country = :country")
-    List<Staff> findByCountry(@Param("country") String country);
-
-    // Find Staff by Phone Number
-    @Query("SELECT s FROM Staff s JOIN s.address a WHERE s.phone = :phone")
-    Staff findByPhone(@Param("phone") String phone);
-
-    // Find Staff by Store ID
-    @Query("SELECT s FROM Staff s WHERE s.store.storeId = :storeId")
-    List<Staff> findByStoreId(@Param("storeId") int storeId);
+	
+	
 }
+ 
+ 

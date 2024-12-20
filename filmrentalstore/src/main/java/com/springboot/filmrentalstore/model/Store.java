@@ -1,55 +1,72 @@
 package com.springboot.filmrentalstore.model;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
-@Table(name = "store")
-@Data
-@NoArgsConstructor
 public class Store {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "store_id")
-    private int storeId;
+    private Long storeId;
 
     @ManyToOne
-    @JoinColumn(name = "staff_id")
-    private Staff staffId;
+    @JsonBackReference
+    @JoinColumn(name = "address_id")
+    private Address address;
 
-    @ManyToOne
-    @JoinColumn(name = "addres_id")
-    private Address addressId;
+     @OneToMany(mappedBy="store")
+     @JsonManagedReference
+     private List<Customer> customers;
+    
+     
+     @OneToMany(mappedBy = "store")
+     @JsonManagedReference
+     private List<Staff> staff_list;
 
-    @Column(name = "last_update", nullable = false)
-    @Convert(converter = LocalDateTimeAttributeConverter.class)
-    private LocalDateTime lastUpdate;
+     private LocalDateTime lastUpdate;
 
-	public int getStoreId() {
+	public Long getStoreId() {
 		return storeId;
 	}
 
-	public void setStoreId(int storeId) {
+	public void setStoreId(Long storeId) {
 		this.storeId = storeId;
 	}
 
-	public Staff getStaffId() {
-		return staffId;
+	public Address getAddress() {
+		return address;
 	}
 
-	public void setStaffId(Staff staffId) {
-		this.staffId = staffId;
+	public void setAddress(Address address) {
+		this.address = address;
 	}
 
-	public Address getAddressId() {
-		return addressId;
+	public List<Customer> getCustomers() {
+		return customers;
 	}
 
-	public void setAddressId(Address addressId) {
-		this.addressId = addressId;
+	public void setCustomers(List<Customer> customers) {
+		this.customers = customers;
+	}
+
+	public List<Staff> getStaff_list() {
+		return staff_list;
+	}
+
+	public void setStaff_list(List<Staff> staff_list) {
+		this.staff_list = staff_list;
 	}
 
 	public LocalDateTime getLastUpdate() {
@@ -59,8 +76,6 @@ public class Store {
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
-
-	
     
-    
+     
 }

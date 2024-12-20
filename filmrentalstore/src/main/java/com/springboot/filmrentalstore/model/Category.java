@@ -1,32 +1,28 @@
 package com.springboot.filmrentalstore.model;
-import jakarta.persistence.*;
-
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import lombok.Data;
+
 @Entity
-@Table(name = "category")
-@NoArgsConstructor
+@Data
 public class Category {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="category_id",nullable = false)
-    private int categoryId;
+	
+	@Id
+	private long category_id;
+	
+	private String name;
+	
+	private LocalDateTime last_update;
 
-    @Column(name="name",nullable = false, length = 25)
-    private String name;
-
-    @Column(name = "last_update", nullable = false)
-    @Convert(converter = LocalDateTimeAttributeConverter.class)
-    private LocalDateTime lastUpdate;
-
-	public int getCategoryId() {
-		return categoryId;
+	public long getCategory_id() {
+		return category_id;
 	}
 
-	public void setCategoryId(int categoryId) {
-		this.categoryId = categoryId;
+	public void setCategory_id(long category_id) {
+		this.category_id = category_id;
 	}
 
 	public String getName() {
@@ -37,13 +33,13 @@ public class Category {
 		this.name = name;
 	}
 
-	public LocalDateTime getLastUpdate() {
-		return lastUpdate;
+	public LocalDateTime getLast_update() {
+		return last_update;
 	}
 
-	public void setLastUpdate(LocalDateTime lastUpdate) {
-		this.lastUpdate = lastUpdate;
+	public void setLast_update(LocalDateTime last_update) {
+		this.last_update = last_update;
 	}
-
-    
+	
+	
 }

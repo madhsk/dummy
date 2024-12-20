@@ -1,36 +1,22 @@
 package com.springboot.filmrentalstore.dao;
+ 
 
-import com.springboot.filmrentalstore.model.Customer;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import com.springboot.filmrentalstore.model.*;
 
 import java.util.List;
 
-public interface CustomerDAO extends JpaRepository<Customer, Integer> {
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    // Find Customers by Last Name
-    List<Customer> findByLastName(String lastName);
-
-    // Find Customers by First Name
-    List<Customer> findByFirstName(String firstName);
-
-    // Find Customer by Email
-    Customer findByEmail(String email);
-
-    // Find Customers by City
-    //@Query("SELECT c FROM Customer c JOIN c.address a WHERE a.city = :city")
-    List<Customer> findByCustomer_Address_City_name(@Param("city") String city);
-
-    // Find Customers by Country
-    //@Query("SELECT c FROM Customer c JOIN c.address.city.country.name a WHERE a.country = :country")
-    public abstract List<Customer> findByAddress_City_Country_name(String country);
-
-
-    // Find Customers by Active Status
-    List<Customer> findByActive(Boolean active);
-
-    // Find Customers by Store ID
-    //@Query("SELECT c FROM Customer c WHERE c.store.storeId = :storeId")
-    List<Customer> findByStoreId(@Param("storeId") int storeId);
+ 
+public interface CustomerDAO extends JpaRepository<Customer, Long> {
+	List<Customer> findByFirstName(String firstName);
+	List<Customer> findByLastName(String lastName);
+	List<Customer> findByAddressPhone(String phone);
+    List<Customer> findByEmail(String email);
+    List<Customer> findByAddressCityCityName(String cityName);
+    List<Customer> findByAddressCityCountryCountry(String countryName);
+    List<Customer> findByActive(boolean active);
+    List<Customer> findByStore_StoreId(Long storeId); 
 }
+
+ 

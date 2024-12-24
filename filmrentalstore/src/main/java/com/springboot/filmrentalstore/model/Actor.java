@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotNull;
 @Entity
 public class Actor {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long actorId;
 
 	@NotBlank(message = "First name cannot be empty")

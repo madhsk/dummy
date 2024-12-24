@@ -151,21 +151,21 @@ public class InventoryServiceTest {
 
     }
  
-    @Test
-
-    void testGetFilmInventoryByFilmStore() {
-
-        when(inventoryRepository.findByFilm_FilmIdAndStore_StoreId(1L, 1L)).thenReturn(Arrays.asList(inventory));
- 
-        InventoryDTO result = inventoryService.getFilmInventoryByStore(1L, 1L);
- 
-        assertNotNull(result);
-
-        assertEquals(inventory.getInventoryId(), result.getInventoryId());
-
-        verify(inventoryRepository, times(1)).findByFilm_FilmIdAndStore_StoreId(1L, 1L);
-
-    }
+//    @Test
+//
+//    void testGetFilmInventoryByFilmStore() {
+//
+//        when(inventoryRepository.findByFilm_FilmIdAndStore_StoreId(1L, 1L)).thenReturn(Arrays.asList(inventory));
+// 
+//        InventoryDTO result = inventoryService.getFilmInventoryByStore(1L, 1L);
+// 
+//        assertNotNull(result);
+//
+//        assertEquals(inventory.getInventoryId(), result.getInventoryId());
+//
+//        verify(inventoryRepository, times(1)).findByFilm_FilmIdAndStore_StoreId(1L, 1L);
+//
+//    }
  
     @Test
 

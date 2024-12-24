@@ -14,7 +14,7 @@ public class JwtToken {
 	}
 
 	public void generateToken(String userName, String password, String role) {
-		this.token = Jwts.builder().claim("username", userName).claim("passowrd", password).claim("role", role)
+		this.token = Jwts.builder().claim("userName", userName).claim("password", password).claim("role", role)
 				.signWith(SignatureAlgorithm.HS256, SECRETKEY).compact();
 	}
 

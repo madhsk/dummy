@@ -212,11 +212,8 @@ public class FilmService implements IFilmService {
 		// TODO Auto-generated method stub
 		Film film = filmRepo.findById(id)
 				.orElseThrow(() -> new InvalidInputException("Film with ID " + id + " not found"));
-
 		film.setRelease_year(year);
-
 		Film updatedFilm = filmRepo.save(film);
-
 		return modelMapper.map(updatedFilm, FilmDTO.class);
 	}
 
@@ -227,7 +224,6 @@ public class FilmService implements IFilmService {
 				.orElseThrow(() -> new InvalidInputException("Film with ID " + id + " not found"));
 		film.setRental_duration(rental_duration);
 		Film updatedFilm = filmRepo.save(film);
-
 		return modelMapper.map(updatedFilm, FilmDTO.class);
 	}
 

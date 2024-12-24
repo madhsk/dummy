@@ -36,9 +36,9 @@ public class InventoryService implements IInventoryService {
 		return inventories.stream().map(this::convertToDto).collect(Collectors.toList());
 	}
 
-	public InventoryDTO getFilmInventoryByStore(Long filmId, Long storeId) {
+	public List<InventoryDTO> getFilmInventoryByStore(Long filmId, Long storeId) {
 		List<Inventory> inventories = inventoryRepo.findByFilm_FilmIdAndStore_StoreId(filmId, storeId);
-		return inventories.stream().map(this::convertToDto).findFirst().orElse(null);
+		return inventories.stream().map(this::convertToDto).collect(Collectors.toList());
 	}
 
 	public Inventory addFilmToStore(InventoryDTO inventoryDTO) throws ResourceNotFoundException {

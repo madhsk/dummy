@@ -14,7 +14,7 @@ import jakarta.validation.constraints.NotBlank;
 @Entity
 public class Film {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long filmId;
 
 	@NotBlank(message = "Title is mandatory")

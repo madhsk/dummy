@@ -18,7 +18,7 @@ import jakarta.persistence.Column;
 public class City {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long cityId;
 
 	@Column(name = "city", length = 100, nullable = false)

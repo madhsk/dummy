@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,7 +19,7 @@ import jakarta.persistence.OneToMany;
 public class Store {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long storeId;
 
 	@ManyToOne
@@ -30,11 +32,11 @@ public class Store {
 	@JoinColumn(name = "staff_id")
 	private Staff manager;
 
-	@OneToMany(mappedBy = "store")
+	@OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	private List<Customer> customers;
 
-	@OneToMany(mappedBy = "store")
+	@OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	private List<Staff> staff_list;
 

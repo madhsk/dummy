@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class Rental {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long rentalId;
 
 	private LocalDateTime rentalDate;

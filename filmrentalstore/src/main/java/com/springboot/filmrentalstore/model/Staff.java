@@ -14,7 +14,7 @@ import jakarta.persistence.ManyToOne;
 public class Staff {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE) // Auto-generate IDs
+	@GeneratedValue(strategy = GenerationType.AUTO) // Auto-generate IDs
 	private Long staffId;
 
 	private String firstName;

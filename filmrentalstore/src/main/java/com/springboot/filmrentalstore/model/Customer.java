@@ -14,7 +14,7 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class Customer {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long customerId;
 	@ManyToOne
 	@JsonBackReference

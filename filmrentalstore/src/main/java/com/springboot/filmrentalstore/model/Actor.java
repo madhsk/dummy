@@ -1,5 +1,5 @@
 package com.springboot.filmrentalstore.model;
- 
+
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -8,23 +8,35 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
- 
+
 @Entity
-@Data
 public class Actor {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long actorId;
- 
-    @NotBlank(message = "First name cannot be empty")
-    private String firstName;
- 
-    @NotBlank(message = "Last name cannot be empty")
-    private String lastName;
- 
-    @NotNull(message = "Last update timestamp cannot be null")
-    private LocalDateTime lastUpdate;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long actorId;
+
+	@NotBlank(message = "First name cannot be empty")
+	private String firstName;
+
+	@NotBlank(message = "Last name cannot be empty")
+	private String lastName;
+
+	@NotNull(message = "Last update timestamp cannot be null")
+	private LocalDateTime lastUpdate;
+
+	public Actor(Long actorId, @NotBlank(message = "First name cannot be empty") String firstName,
+			@NotBlank(message = "Last name cannot be empty") String lastName,
+			@NotNull(message = "Last update timestamp cannot be null") LocalDateTime lastUpdate) {
+		super();
+		this.actorId = actorId;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.lastUpdate = lastUpdate;
+	}
+
+	public Actor() {
+
+	}
 
 	public Long getActorId() {
 		return actorId;
@@ -55,8 +67,7 @@ public class Actor {
 	}
 
 	public void setLastUpdate(LocalDateTime lastUpdate) {
-		this.lastUpdate = lastUpdate;
+		this.lastUpdate = LocalDateTime.now();
 	}
-    
-    
+
 }

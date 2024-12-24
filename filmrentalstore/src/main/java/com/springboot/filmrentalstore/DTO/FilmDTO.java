@@ -7,47 +7,43 @@ import com.springboot.filmrentalstore.model.*;
 import jakarta.validation.constraints.*;
 
 public class FilmDTO {
+
 	private Long filmId;
- 
+
 	@NotNull(message = "Title is mandatory")
 	@Size(max = 255, message = "Title cannot exceed 255 characters")
 	private String title;
- 
+
 	@Size(max = 1000, message = "Description cannot exceed 1000 characters")
 	private String description;
- 
+
 	@Min(value = 1900, message = "Release Year must be at least 1900")
 	@Max(value = 2100, message = "Release Year must be no later than 2100")
 	private Integer release_year;
- 
-//	@NotNull(message = "Language ID is mandatory")
+
 	private Language language;
-	
-//	@NotNull(message = "Category ID is mandatory")
-//	private Category category;
- 
-	//@Min(value = 1, message = "Original Language ID must be greater than or equal to 1")
+
 	private int original_language_id;
- 
+
 	@Min(value = 1, message = "Rental Duration must be at least 1")
 	private Integer rental_duration;
- 
+
 	@Min(value = 0, message = "Rental Rate must be a non-negative value")
 	@NotNull
 	private Double rental_rate;
- 
+
 	@Min(value = 1, message = "Length must be at least 1")
 	private int length;
- 
+
 	@Min(value = 0, message = "Replacement Cost must be a non-negative value")
-	private int replacement_cost;
- 
+	private double replacement_cost;
+
 	@Min(value = 0, message = "Rating must be a non-negative value")
 	private int rating;
- 
+
 	@Size(max = 500, message = "Special Features cannot exceed 500 characters")
 	private String special_features;
- 
+
 	private LocalDateTime lastUpdate;
 
 	public Long getFilmId() {
@@ -122,11 +118,11 @@ public class FilmDTO {
 		this.length = length;
 	}
 
-	public int getReplacement_cost() {
+	public double getReplacement_cost() {
 		return replacement_cost;
 	}
 
-	public void setReplacement_cost(int replacement_cost) {
+	public void setReplacement_cost(double replacement_cost) {
 		this.replacement_cost = replacement_cost;
 	}
 
@@ -153,7 +149,5 @@ public class FilmDTO {
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
-	
-	
-}
 
+}

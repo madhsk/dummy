@@ -7,25 +7,33 @@ import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.Data;
 
-@Data
 @Entity
 @IdClass(FilmCategoryId.class)
 public class FilmCategory {
-	
+
 	@Id
 	@ManyToOne
-	@JoinColumn(name="film_id")
+	@JoinColumn(name = "film_id")
 	private Film film;
-	
-	
+
 	@Id
 	@ManyToOne
-	@JoinColumn(name="category_id")
+	@JoinColumn(name = "category_id")
 	private Category category;
-	
+
 	private LocalDateTime lastUpdate;
+
+	public FilmCategory() {
+		super();
+	}
+
+	public FilmCategory(Film film, Category category, LocalDateTime lastUpdate) {
+		super();
+		this.film = film;
+		this.category = category;
+		this.lastUpdate = lastUpdate;
+	}
 
 	public Film getFilm() {
 		return film;
@@ -50,8 +58,5 @@ public class FilmCategory {
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
-	
-	
-	
 
 }

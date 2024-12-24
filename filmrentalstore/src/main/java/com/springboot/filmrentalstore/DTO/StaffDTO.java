@@ -5,25 +5,25 @@ import com.springboot.filmrentalstore.model.*;
 import jakarta.validation.constraints.*;
 
 public class StaffDTO {
-	 
-    private Long staffId;
- 
-    @NotBlank
-    @Size(max = 100)
-    private String firstName;
- 
-    @NotBlank
-    @Size(max = 100)
-    private String lastName;
- 
-    @Email
-    @NotBlank
-    @Size(max = 255)
-    private String email;
- 
-    private Store store;
- 
-    private Address address;
+
+	private Long staffId;
+
+	@NotBlank
+	@Size(max = 100)
+	private String firstName;
+
+	@NotBlank
+	@Size(max = 100)
+	private String lastName;
+
+	@Email
+	@NotBlank
+	@Size(max = 255)
+	private String email;
+
+	private Store store;
+
+	private Address address;
 
 	public Long getStaffId() {
 		return staffId;
@@ -72,7 +72,5 @@ public class StaffDTO {
 	public void setAddress(Address address) {
 		this.address = address;
 	}
-    
 
 }
-

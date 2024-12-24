@@ -11,17 +11,23 @@ import jakarta.persistence.ManyToOne;
 @IdClass(FilmActorId.class)
 public class FilmActor {
 
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "actor_id")
-    private Actor actor;
+	@Id
+	@ManyToOne
+	@JoinColumn(name = "actor_id")
+	private Actor actor;
 
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "film_id")
-    private Film film;
+	@Id
+	@ManyToOne
+	@JoinColumn(name = "film_id")
+	private Film film;
 
-    private LocalDateTime lastUpdate;
+	private LocalDateTime lastUpdate;
+
+	public FilmActor(Film mockFilm, Actor mockActor, LocalDateTime now) {
+		this.film = mockFilm;
+		this.actor = mockActor;
+		this.lastUpdate = now;
+	}
 
 	public Actor getActor() {
 		return actor;
@@ -46,6 +52,9 @@ public class FilmActor {
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
-    
-    
+
+	public FilmActor() {
+		super();
+	}
+
 }

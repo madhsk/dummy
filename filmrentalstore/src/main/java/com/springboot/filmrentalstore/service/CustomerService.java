@@ -1,10 +1,10 @@
 package com.springboot.filmrentalstore.service;
 
 import com.springboot.filmrentalstore.DTO.CustomerDTO;
-import com.springboot.filmrentalstore.dao.*;
 import com.springboot.filmrentalstore.exception.ResourceNotFoundException;
 import com.springboot.filmrentalstore.model.Customer;
 import com.springboot.filmrentalstore.model.Store;
+import com.springboot.filmrentalstore.repo.*;
 import com.springboot.filmrentalstore.model.Address;
 
 import org.modelmapper.ModelMapper;
@@ -19,24 +19,24 @@ import java.util.stream.Collectors;
 public class CustomerService implements ICustomerService{
 
 	@Autowired
-    private CustomerDAO customerRepository;
+    private CustomerRepo customerRepo;
     @Autowired
-    AddressDAO addressRepository;
+    AddressRepo addressRepo;
     @Autowired
-    private StoreDAO storeRepository;
+    private StoreRepo storeRepo;
     @Autowired
-    ModelMapper modelMapper = new ModelMapper();
+    private ModelMapper modelMapper;
 
     @Override
     public CustomerDTO getCustomerById(Long id) throws ResourceNotFoundException {
-        Customer customer = customerRepository.findById(id)
+        Customer customer = customerRepo.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
         return modelMapper.map(customer, CustomerDTO.class);
     }
 
     @Override
     public List<CustomerDTO> getAllCustomers() {
-        return customerRepository.findAll().stream()
+        return customerRepo.findAll().stream()
             .map(customer -> modelMapper.map(customer, CustomerDTO.class))
             .collect(Collectors.toList());
     }
@@ -44,46 +44,46 @@ public class CustomerService implements ICustomerService{
     @Override
     public CustomerDTO createCustomer(CustomerDTO customerDTO) {
         Customer customer = modelMapper.map(customerDTO, Customer.class);
-        Customer savedCustomer = customerRepository.save(customer);
+        Customer savedCustomer = customerRepo.save(customer);
         return modelMapper.map(savedCustomer, CustomerDTO.class);
     }
 
     @Override
     public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) throws ResourceNotFoundException {
-        Customer customer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
+        Customer customer = customerRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
         modelMapper.map(customerDTO, customer);
-        Customer updatedCustomer = customerRepository.save(customer);
+        Customer updatedCustomer = customerRepo.save(customer);
         return modelMapper.map(updatedCustomer, CustomerDTO.class);
     }
 
     @Override
     public CustomerDTO assignAddressToCustomer(Long customerId, Long addressId) throws ResourceNotFoundException {
-        Customer customer = customerRepository.findById(customerId)
+        Customer customer = customerRepo.findById(customerId)
             .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
-        Address address = addressRepository.findById(addressId)
+        Address address = addressRepo.findById(addressId)
             .orElseThrow(() -> new ResourceNotFoundException("Address not found with id: " + addressId));
         customer.setAddress(address);
-        Customer updatedCustomer = customerRepository.save(customer);
+        Customer updatedCustomer = customerRepo.save(customer);
         return modelMapper.map(updatedCustomer, CustomerDTO.class);
     }
     
     @Override
     public CustomerDTO assignNewAddressToCustomer(Long customerId, Address address) throws ResourceNotFoundException {
-        Customer customer = customerRepository.findById(customerId)
+        Customer customer = customerRepo.findById(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
 
-        Address savedAddress = addressRepository.save(address);
+        Address savedAddress = addressRepo.save(address);
         customer.setAddress(savedAddress);
-        Customer updatedCustomer = customerRepository.save(customer);
+        Customer updatedCustomer = customerRepo.save(customer);
         return modelMapper.map(updatedCustomer, CustomerDTO.class);
     }
 
     @Override
-    public List<CustomerDTO> getCustomersByLastName(String ln) throws ResourceNotFoundException {
-    	String lastName = ln.toUpperCase();
-        List<Customer> customers = customerRepository.findByLastName(lastName);
+    public List<CustomerDTO> getCustomersByLastName(String lastname) throws ResourceNotFoundException {
+    	//String lastName = ln.toUpperCase();
+        List<Customer> customers = customerRepo.findByLastName(lastname);
         if (customers.isEmpty()) {
-            throw new ResourceNotFoundException("No customers found with last name: " + lastName);
+            throw new ResourceNotFoundException("No customers found with last name: " + lastname);
         }
         return customers.stream()
                 .map(customer -> modelMapper.map(customer, CustomerDTO.class))
@@ -91,9 +91,9 @@ public class CustomerService implements ICustomerService{
     }
 
     @Override
-    public List<CustomerDTO> getCustomersByFirstName(String fn) throws ResourceNotFoundException {
-    	String firstName = fn.toUpperCase();
-        List<Customer> customers = customerRepository.findByFirstName(firstName);
+    public List<CustomerDTO> getCustomersByFirstName(String firstName) throws ResourceNotFoundException {
+    	//String firstName = fn.toUpperCase();
+        List<Customer> customers = customerRepo.findByFirstName(firstName);
         if (customers.isEmpty()) {
             throw new ResourceNotFoundException("No customers found with first name: " + firstName);
         }
@@ -104,7 +104,7 @@ public class CustomerService implements ICustomerService{
 
     @Override
     public List<CustomerDTO> getCustomersByEmail(String email) throws ResourceNotFoundException {
-        List<Customer> customers = customerRepository.findByEmail(email);
+        List<Customer> customers = customerRepo.findByEmail(email);
         if (customers.isEmpty()) {
             throw new ResourceNotFoundException("No customer found with email: " + email);
         }
@@ -115,7 +115,7 @@ public class CustomerService implements ICustomerService{
 
     @Override
     public List<CustomerDTO> getCustomersByCityName(String cityName) throws ResourceNotFoundException {
-        List<Customer> customers = customerRepository.findByAddressCityCityName(cityName);
+        List<Customer> customers = customerRepo.findByAddressCityCityName(cityName);
         if (customers.isEmpty()) {
             throw new ResourceNotFoundException("No customers found in " + cityName);
         }
@@ -126,7 +126,7 @@ public class CustomerService implements ICustomerService{
 
     @Override
     public List<CustomerDTO> getCustomersByCountryName(String countryName) throws ResourceNotFoundException {
-        List<Customer> customers = customerRepository.findByAddressCityCountryCountry(countryName);
+        List<Customer> customers = customerRepo.findByAddressCityCountryCountry(countryName);
         if (customers.isEmpty()) {
             throw new ResourceNotFoundException("No customers found in " + countryName);
         }
@@ -137,39 +137,39 @@ public class CustomerService implements ICustomerService{
 
     @Override
     public List<CustomerDTO> getActiveCustomers() {
-        return customerRepository.findByActive(true).stream()
+        return customerRepo.findByActive(true).stream()
             .map(customer -> modelMapper.map(customer, CustomerDTO.class))
             .collect(Collectors.toList());
     }
 
     @Override
     public List<CustomerDTO> getInactiveCustomers() {
-        return customerRepository.findByActive(false).stream()
+        return customerRepo.findByActive(false).stream()
             .map(customer -> modelMapper.map(customer, CustomerDTO.class))
             .collect(Collectors.toList());
     }
 
     @Override
     public CustomerDTO updateFirstName(Long id, String firstName) throws ResourceNotFoundException {
-        Customer customer = customerRepository.findById(id)
+        Customer customer = customerRepo.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
         customer.setFirstName(firstName);
-        Customer updatedCustomer = customerRepository.save(customer);
+        Customer updatedCustomer = customerRepo.save(customer);
         return modelMapper.map(updatedCustomer, CustomerDTO.class);
     }
 
     @Override
     public CustomerDTO updateLastName(Long id, String lastName) throws ResourceNotFoundException {
-        Customer customer = customerRepository.findById(id)
+        Customer customer = customerRepo.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
         customer.setLastName(lastName);
-        Customer updatedCustomer = customerRepository.save(customer);
+        Customer updatedCustomer = customerRepo.save(customer);
         return modelMapper.map(updatedCustomer, CustomerDTO.class);
     }
  
     @Override
-    public List<CustomerDTO> getCustomersByPhone(String phone) throws ResourceNotFoundException {
-        List<Customer> customers = customerRepository.findByAddressPhone(phone);
+	public List<CustomerDTO> getCustomersByPhone(String phone) throws ResourceNotFoundException {
+        List<Customer> customers = customerRepo.findByAddress_Phone(phone);
         if (customers.isEmpty()) {
             throw new ResourceNotFoundException("No customers found with phone " + phone);
         }
@@ -182,53 +182,50 @@ public class CustomerService implements ICustomerService{
 
     @Override
     public CustomerDTO updateEmail(Long id, String email) throws ResourceNotFoundException {
-        Customer customer = customerRepository.findById(id)
+        Customer customer = customerRepo.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
         customer.setEmail(email);
-        Customer updatedCustomer = customerRepository.save(customer);
+        Customer updatedCustomer = customerRepo.save(customer);
         return modelMapper.map(updatedCustomer, CustomerDTO.class);
     }
  
     @Override
     public CustomerDTO updateCustomerPhone(Long customerId, String phone) throws ResourceNotFoundException {
-        Customer customer = customerRepository.findById(customerId)
+        Customer customer = customerRepo.findById(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
         customer.getAddress().setPhone(phone);
-        Customer updatedCustomer = customerRepository.save(customer);
+        Customer updatedCustomer = customerRepo.save(customer);
         return modelMapper.map(updatedCustomer, CustomerDTO.class);
     }
 
     @Override
- 
     public CustomerDTO assignStoreToCustomer(Long customerId, Store store) throws ResourceNotFoundException {
         // Fetch the customer by ID
-        Customer customer = customerRepository.findById(customerId)
+        Customer customer = customerRepo.findById(customerId)
             .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
         
-        Store existingStore = storeRepository.findById(store.getStoreId())
+        Store existingStore = storeRepo.findById(store.getStoreId())
             .orElseThrow(() -> new ResourceNotFoundException("Store not found with id: " + store.getStoreId()));
         
         customer.setStore(existingStore);
         
-        Customer updatedCustomer = customerRepository.save(customer);
+        Customer updatedCustomer = customerRepo.save(customer);
         
 
         return modelMapper.map(updatedCustomer, CustomerDTO.class);
     }
 
 
-	@Override
-	public List<Customer> findByStore_StoreId(long storeId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public List<CustomerDTO> findByStore_StoreId(long storeId) throws ResourceNotFoundException {
+        List<Customer> customers = customerRepo.findByStore_StoreId(storeId);
+        if (customers.isEmpty()) {
+            throw new ResourceNotFoundException("No customers found for store with id: " + storeId);
+        }
+        return customers.stream()
+                .map(customer -> modelMapper.map(customer, CustomerDTO.class))
+                .collect(Collectors.toList());
+    }
 
-//    public CustomerDTO assignStoreToCustomer(Long customerId, Store store) throws ResourceNotFoundException {
-//        Customer customer = customerRepository.findById(customerId)
-//            .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
-//        customer.setStore(store);
-//        Customer updatedCustomer = customerRepository.save(customer);
-//        return modelMapper.map(updatedCustomer, CustomerDTO.class);
-//    }
 
 }

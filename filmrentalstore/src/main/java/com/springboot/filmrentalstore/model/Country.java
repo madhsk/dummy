@@ -17,59 +17,59 @@ import jakarta.persistence.Table;
 @Table(name = "country")
 public class Country {
 
-	
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long countryId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long countryId;
 
-    private String country;
+	private String country;
 
-    private LocalDateTime lastUpdate;
-    
- 
-    @OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<City> cities;
+	private LocalDateTime lastUpdate;
 
+	@OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private List<City> cities;
+
+	public Country(Long countryId, String country, LocalDateTime lastUpdate) {
+		super();
+		this.countryId = countryId;
+		this.country = country;
+		this.lastUpdate = lastUpdate;
+	}
+
+	public Country() {
+		super();
+	}
 
 	public Long getCountryId() {
 		return countryId;
 	}
 
-
 	public void setCountryId(Long countryId) {
 		this.countryId = countryId;
 	}
-
 
 	public String getCountry() {
 		return country;
 	}
 
-
 	public void setCountry(String country) {
 		this.country = country;
 	}
-
 
 	public LocalDateTime getLastUpdate() {
 		return lastUpdate;
 	}
 
-
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
-
 
 	public List<City> getCities() {
 		return cities;
 	}
 
-
 	public void setCities(List<City> cities) {
 		this.cities = cities;
 	}
-    
-    
+
 }

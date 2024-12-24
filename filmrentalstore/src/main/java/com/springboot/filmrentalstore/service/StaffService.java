@@ -2,11 +2,11 @@ package com.springboot.filmrentalstore.service;
 
 
 import com.springboot.filmrentalstore.DTO.StaffDTO;
-import com.springboot.filmrentalstore.dao.StaffDAO;
-import com.springboot.filmrentalstore.dao.StoreDAO;
 import com.springboot.filmrentalstore.exception.ResourceNotFoundException;
 import com.springboot.filmrentalstore.model.Staff;
 import com.springboot.filmrentalstore.model.Store;
+import com.springboot.filmrentalstore.repo.StaffRepo;
+import com.springboot.filmrentalstore.repo.StoreRepo;
 
 import jakarta.transaction.Transactional;
 
@@ -23,22 +23,22 @@ import java.util.List;
 @Service
 public class StaffService implements IStaffService {
 	@Autowired
-    private StaffDAO staffRepository;
+    private StaffRepo staffRepo;
 	@Autowired
-	private StoreDAO storeRepository;
+	private StoreRepo storeRepo;
 	
 	ModelMapper modelMapper = new ModelMapper();
 	// Add new staff
 	@Override
     public StaffDTO addStaff(StaffDTO staffDTO) {
         Staff staff = modelMapper.map(staffDTO, Staff.class);
-        Staff savedStaff = staffRepository.save(staff);
+        Staff savedStaff = staffRepo.save(staff);
         return modelMapper.map(savedStaff, StaffDTO.class);
     }
  
     // Find staff by last name
     public List<StaffDTO> findStaffByLastName(String lastName) throws ResourceNotFoundException {
-        List<Staff> staffList = staffRepository.findByLastName(lastName);
+        List<Staff> staffList = staffRepo.findByLastName(lastName);
         if (staffList.isEmpty()) {
             throw new ResourceNotFoundException("No staff found with last name: " + lastName);
         }
@@ -52,7 +52,7 @@ public class StaffService implements IStaffService {
  
     // Find staff by first name
     public List<StaffDTO> findStaffByFirstName(String firstName) throws ResourceNotFoundException {
-        List<Staff> staffList = staffRepository.findByFirstName(firstName);
+        List<Staff> staffList = staffRepo.findByFirstName(firstName);
         if (staffList.isEmpty()) {
             throw new ResourceNotFoundException("No staff found with first name: " + firstName);
         }
@@ -66,7 +66,7 @@ public class StaffService implements IStaffService {
  
     // Find staff by email
     public List<StaffDTO> findStaffByEmail(String email) throws ResourceNotFoundException {
-        List<Staff> staffList = staffRepository.findByEmail(email);
+        List<Staff> staffList = staffRepo.findByEmail(email);
         if (staffList.isEmpty()) {
             throw new ResourceNotFoundException("No staff found with email: " + email);
         }
@@ -80,7 +80,7 @@ public class StaffService implements IStaffService {
  
     // Find staff by city
     public List<StaffDTO> findByAddress_City_CityName(String city) throws ResourceNotFoundException {
-        List<Staff> staffList = staffRepository.findByAddress_City_CityName(city);
+        List<Staff> staffList = staffRepo.findByAddress_City_CityName(city);
         if (staffList.isEmpty()) {
             throw new ResourceNotFoundException("No staff found in city: " + city);
         }
@@ -94,7 +94,7 @@ public class StaffService implements IStaffService {
  
     // Find staff by country
     public List<StaffDTO> findByAddress_City_Country_CountryName(String country) throws ResourceNotFoundException {
-        List<Staff> staffList = staffRepository.findByAddress_City_Country_Country(country);
+        List<Staff> staffList = staffRepo.findByAddress_City_Country_Country(country);
         if (staffList.isEmpty()) {
             throw new ResourceNotFoundException("No staff found in country: " + country);
         }
@@ -108,7 +108,7 @@ public class StaffService implements IStaffService {
  
     // Find staff by phone number
     public List<StaffDTO> findStaffByPhoneNumber(String phone) throws ResourceNotFoundException {
-        List<Staff> staffList = staffRepository.findByAddress_Phone_(phone);
+        List<Staff> staffList = staffRepo.findByAddress_Phone_(phone);
         if (staffList.isEmpty()) {
             throw new ResourceNotFoundException("No staff found with phone number: " + phone);
         }
@@ -122,28 +122,28 @@ public class StaffService implements IStaffService {
  
     // Update staff first name
     public StaffDTO updateFirstName(Long id, String firstName) throws ResourceNotFoundException {
-        Staff staff = staffRepository.findById(id)
+        Staff staff = staffRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Staff not found with id: " + id));
         staff.setFirstName(firstName);
-        Staff updatedStaff = staffRepository.save(staff);
+        Staff updatedStaff = staffRepo.save(staff);
         return modelMapper.map(updatedStaff, StaffDTO.class);
     }
  
     // Update staff last name
     public StaffDTO updateLastName(Long id, String lastName) throws ResourceNotFoundException {
-        Staff staff = staffRepository.findById(id)
+        Staff staff = staffRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Staff not found with id: " + id));
         staff.setLastName(lastName);
-        Staff updatedStaff = staffRepository.save(staff);
+        Staff updatedStaff = staffRepo.save(staff);
         return modelMapper.map(updatedStaff, StaffDTO.class);
     }
  
     // Update staff email
     public StaffDTO updateEmail(Long id, String email) throws ResourceNotFoundException {
-        Staff staff = staffRepository.findById(id)
+        Staff staff = staffRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Staff not found with id: " + id));
         staff.setEmail(email);
-        Staff updatedStaff = staffRepository.save(staff);
+        Staff updatedStaff = staffRepo.save(staff);
         return modelMapper.map(updatedStaff, StaffDTO.class);
     }
  
@@ -151,20 +151,20 @@ public class StaffService implements IStaffService {
     @Transactional
     @Override
     public StaffDTO updateStore(Long id, Store store) throws ResourceNotFoundException {
-        Staff staff = staffRepository.findById(id)
+        Staff staff = staffRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Staff not found with id: " + id));
  
-        Store existingStore = storeRepository.findById(store.getStoreId())
+        Store existingStore = storeRepo.findById(store.getStoreId())
                 .orElseThrow(() -> new ResourceNotFoundException("Store not found with id: " + store.getStoreId()));
  
         staff.setStore(existingStore);
-        Staff updatedStaff = staffRepository.save(staff);
+        Staff updatedStaff = staffRepo.save(staff);
         return modelMapper.map(updatedStaff, StaffDTO.class);
     }
  
     // Update staff phone number in address
     public StaffDTO updatePhoneNumberInAddress(Long staffId, String phoneNumber) throws ResourceNotFoundException {
-        Staff staff = staffRepository.findById(staffId)
+        Staff staff = staffRepo.findById(staffId)
                 .orElseThrow(() -> new ResourceNotFoundException("Staff not found with id: " + staffId));
  
         Address address = staff.getAddress();
@@ -174,25 +174,25 @@ public class StaffService implements IStaffService {
             throw new ResourceNotFoundException("Address not found for Staff with id: " + staffId);
         }
  
-        staffRepository.save(staff);
+        staffRepo.save(staff);
         return modelMapper.map(staff, StaffDTO.class);
     }
  
     // Assign address to staff
     @Transactional
     public StaffDTO assignAddress(Long staffId, Address address) throws ResourceNotFoundException {
-        Staff staff = staffRepository.findById(staffId)
+        Staff staff = staffRepo.findById(staffId)
                 .orElseThrow(() -> new ResourceNotFoundException("Staff not found with id: " + staffId));
 //        Address savedAddress = addressRepository.save(address);
         staff.setAddress(address);
-        Staff updatedStaff = staffRepository.save(staff);
+        Staff updatedStaff = staffRepo.save(staff);
         return modelMapper.map(updatedStaff, StaffDTO.class);
     }
 
     @Override
     public StaffDTO authenticateStaff(String username, String password) {
         // Find the staff by username
-        Staff staff = staffRepository.findByUsername(username);
+        Staff staff = staffRepo.findByUsername(username);
 
         // Check if staff exists and the password matches
         if (staff != null && staff.getPassword().equals(password)) {

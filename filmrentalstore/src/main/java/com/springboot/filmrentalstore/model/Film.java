@@ -10,61 +10,39 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 
 @Entity
-@Data
 public class Film {
 	@Id
-	@GeneratedValue(strategy  =  GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long filmId;
- 
+
 	@NotBlank(message = "Title is mandatory")
-//	@Size(max = 255, message = "Title cannot exceed 255 characters")
 	private String title;
- 
-//	@Size(max = 1000, message = "Description cannot exceed 1000 characters")
+
 	private String description;
- 
- 
-//	@Min(value = 1900, message = "Release Year must be at least 1900")
-//	@Max(value = 2100, message = "Release Year must be no later than 2100")
+
 	private Integer release_year;
- 
+
 	@ManyToOne
 	@JoinColumn(name = "language_id")
 	private Language language;
- 
-//	@NotNull
-//	private int lang_id;
-//	@ManyToOne
-//	@JoinColumn(name = "category_id")
-//	private Category category;
-//	//@Min(value = 1, message = "Original Language ID must be greater than or equal to 1")
-//	private int original_lang_id;
-	
+
 	@Column(name = "original_language_id", columnDefinition = "SMALLINT")
 	private Integer original_language_id;
- 
-	//@Min(value = 1, message = "Rental Duration must be at least 1")
+
 	private double rental_duration;
- 
-	//@Min(value = 0, message = "Rental Rate must be a non-negative value")
+
 	private double rental_rate;
- 
-	//@Min(value = 1, message = "Length must be at least 1")
+
 	private int length;
- 
-	//@Min(value = 0, message = "Replacement Cost must be a non-negative value")
+
 	private int replacement_cost;
- 
-	//@Min(value = 0, message = "Rating must be a non-negative value")
-//	private int rating;
+
 	private int rating;
- 
-	//@Size(max = 500, message = "Special Features cannot exceed 500 characters")
+
 	private String special_features;
- 
+
 	@Column(name = "lastUpdate")
 	private LocalDateTime lastUpdate;
 
@@ -176,6 +154,17 @@ public class Film {
 		super();
 	}
 
-	
+	public Film(long id, String title, String description, LocalDateTime now) {
+		// TODO Auto-generated constructor stub
+		this.filmId = id;
+		this.title = title;
+		this.description = description;
+		this.lastUpdate = now;
+	}
+
+	public Film(long id, String title) {
+		this.filmId = id;
+		this.title = title;
+	}
 
 }

@@ -16,29 +16,31 @@ public class ActorController {
 	@Autowired
 	private ActorService actorService;
 
-
-
 	@GetMapping("/lastname/{ln}")
-	public ResponseEntity<List<ActorDTO>> getActorsByLastName(@PathVariable String ln) throws InvalidInputException, ResourceNotFoundException {
+	public ResponseEntity<List<ActorDTO>> getActorsByLastName(@PathVariable String ln)
+			throws InvalidInputException, ResourceNotFoundException {
 		List<ActorDTO> actors = actorService.getActorsByLastName(ln);
 		return new ResponseEntity<>(actors, HttpStatus.OK);
 	}
 
 	@GetMapping("/firstname/{fn}")
-	public ResponseEntity<List<ActorDTO>> getActorsByFirstName(@PathVariable String fn) throws InvalidInputException, ResourceNotFoundException {
+	public ResponseEntity<List<ActorDTO>> getActorsByFirstName(@PathVariable String fn)
+			throws InvalidInputException, ResourceNotFoundException {
 		List<ActorDTO> actors = actorService.getActorsByFirstName(fn);
 		return new ResponseEntity<>(actors, HttpStatus.OK);
 	}
 
 	@PutMapping("/update/lastname/{id}")
-	public ResponseEntity<Void> updateLastName(@PathVariable Long id, @RequestBody Map<String, String> requestBody) throws ResourceNotFoundException, InvalidInputException {
+	public ResponseEntity<Void> updateLastName(@PathVariable Long id, @RequestBody Map<String, String> requestBody)
+			throws ResourceNotFoundException, InvalidInputException {
 		String lastName = requestBody.get("lastName");
 		actorService.updateLastName(id, lastName);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@PutMapping("/update/firstname/{id}")
-	public ResponseEntity<Void> updateFirstName(@PathVariable Long id, @RequestBody Map<String, String> requestBody) throws ResourceNotFoundException, InvalidInputException {
+	public ResponseEntity<Void> updateFirstName(@PathVariable Long id, @RequestBody Map<String, String> requestBody)
+			throws ResourceNotFoundException, InvalidInputException {
 		String firstName = requestBody.get("firstName");
 		actorService.updateFirstName(id, firstName);
 		return new ResponseEntity<>(HttpStatus.OK);
@@ -57,28 +59,19 @@ public class ActorController {
 	}
 
 	@PutMapping("/{actorId}/film")
-	public ResponseEntity<String> assignFilmToActor(@PathVariable Long actorId, @RequestBody Collection<Long> filmIds) throws ResourceNotFoundException {
+	public ResponseEntity<String> assignFilmToActor(@PathVariable Long actorId, @RequestBody Collection<Long> filmIds)
+			throws ResourceNotFoundException {
 		try {
-			actorService.assignFilmToActor(actorId,filmIds);
+			actorService.assignFilmToActor(actorId, filmIds);
 			return ResponseEntity.ok("Films assigned to Actor successfully");
 		} catch (ResourceNotFoundException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
-	
-	
+
 	@GetMapping("/{id}/films")
-
-    public ResponseEntity<List<Film>> getFilmsByActorId(@PathVariable Long id) throws ResourceNotFoundException {
-
-        List<Film> films = actorService.getFilmsByActorId(id); // Adjust service method accordingly
-
-        return ResponseEntity.ok(films);
-
-    }
- 
-
-
-
-
+	public ResponseEntity<List<Film>> getFilmsByActorId(@PathVariable Long id) throws ResourceNotFoundException {
+		List<Film> films = actorService.getFilmsByActorId(id); // Adjust service method accordingly
+		return ResponseEntity.ok(films);
+	}
 }

@@ -44,8 +44,8 @@ public interface ICustomerService {
 	CustomerDTO createCustomer(CustomerDTO customerDTO);
 
 	List<CustomerDTO> getAllCustomers();
-	
-	List<Customer> findByStore_StoreId(long storeId);
+
+	List<CustomerDTO> findByStore_StoreId(long storeId) throws ResourceNotFoundException;
 
 	CustomerDTO getCustomerById(Long id) throws ResourceNotFoundException;
 }

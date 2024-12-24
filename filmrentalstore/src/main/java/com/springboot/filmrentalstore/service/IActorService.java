@@ -22,6 +22,6 @@ public interface IActorService {
 
 	void assignFilmToActor(Long actorId, Collection<Long> filmIds) throws ResourceNotFoundException;
 
-	List<Film> getFilmsByActorId(Long id)throws ResourceNotFoundException;
+	List<Film> getFilmsByActorId(Long id) throws ResourceNotFoundException;
 
 }

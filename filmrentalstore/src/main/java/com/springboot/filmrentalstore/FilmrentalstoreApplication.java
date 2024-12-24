@@ -1,22 +1,139 @@
 package com.springboot.filmrentalstore;
 
-import java.util.TimeZone;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import com.springboot.filmrentalstore.filter.JwtFilter;
+import com.springboot.filmrentalstore.service.CustomUserDetailsService;
 
 @SpringBootApplication
 public class FilmrentalstoreApplication {
-	private static final String ZONE_ID_INDIA = "Asia/Kolkata";
 	public static void main(String[] args) {
-		TimeZone.setDefault(TimeZone.getTimeZone(ZONE_ID_INDIA));
-        System.out.println("Application time zone: " + TimeZone.getDefault().getID());
 		SpringApplication.run(FilmrentalstoreApplication.class, args);
 	}
+
 	@Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
+	public ModelMapper modelMapper() {
+		return new ModelMapper();
+	}
+
+	@Bean
+	@DependsOn("userDetailsService")
+	public DaoAuthenticationProvider daoAuthenticationProvider() {
+		CustomUserDetailsService service = userDetailsService();
+
+		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+		provider.setUserDetailsService(service);
+		provider.setPasswordEncoder(passwordEncoder());
+		return provider;
+	}
+
+	@Bean
+	public CustomUserDetailsService userDetailsService() {
+
+		return new CustomUserDetailsService(); // Implement your own user details service
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(); // Use a password encoder of your choice
+	}
+
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		System.out.println("invoked");
+		http.csrf().disable() // Disable CSRF protection
+				.authorizeRequests().requestMatchers("/api/auth").permitAll().requestMatchers("/api/user/register")
+				.permitAll().requestMatchers(HttpMethod.POST, "/api/actors/post").hasRole("STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/actors/lastname/{ln}").hasRole("USER")
+				.requestMatchers(HttpMethod.GET, "/api/actors/firstname/{fn}").hasRole("USER")
+				.requestMatchers(HttpMethod.PUT, "/api/actors/update/*").hasRole("STAFF")
+				.requestMatchers(HttpMethod.PUT, "/api/actors/{id}/films").hasRole("STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/actors/{id}/film").hasRole("USER")
+				.requestMatchers(HttpMethod.PUT, "/api/actors/toptenbyfilmcount").hasRole("STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/actors/{id}/film").hasRole("USER")
+
+				.requestMatchers(HttpMethod.POST, "/api/customers/post").hasAnyRole("ADMIN", "STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/customers/lastname/{ln}").hasAnyRole("ADMIN", "STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/customers/firstname/{fn}").hasAnyRole("ADMIN", "STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/customers/email/{email}").hasAnyRole("ADMIN", "STAFF")
+				.requestMatchers(HttpMethod.PUT, "/api/customers/{id}/{addressId}").hasRole("STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/customers/city/{city}").hasRole("STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/customers/country/{country}").hasRole("STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/customers/active").hasRole("STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/customers/inactive").hasRole("STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/customers/phone/{phone}").hasRole("STAFF")
+				.requestMatchers(HttpMethod.PUT, "/api/customers/update/{id}/*").hasRole("STAFF")
+
+				.requestMatchers(HttpMethod.POST, "/api/staff/post").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.GET, "/api/staff/*").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.PUT, "/api/staff/update/*").hasRole("ADMIN")
+
+				.requestMatchers(HttpMethod.POST, "/api/store/post").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.PUT, "/api/store/{storeId}/address/{addressId}").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.GET, "/api/store/city/{city}").hasAnyRole("USER", "STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/store/country/{country}").hasAnyRole("USER", "STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/store/phone/{phone}").hasAnyRole("USER", "STAFF")
+				.requestMatchers(HttpMethod.PUT, "/api/store/update/{storeId}/{phone}").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.PUT, "/api/store/{storeId}/manager/{manager_staff_id}").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.GET, "/api/store/staff/{storeId}").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.GET, "/api/store/customer/{storeId}").hasRole("STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/store/manager/{storeId}").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.GET, "/api/store/managers").hasRole("ADMIN")
+
+				.requestMatchers(HttpMethod.POST, "/api/inventory/add").hasRole("STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/inventory/films").hasAnyRole("ADMIN", "STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/inventory/store/{id}").hasAnyRole("USER", "STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/inventory/film/{id}").hasRole("STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/inventory/film/{id}/store/{id}").hasAnyRole("USER", "STAFF")
+
+				.requestMatchers(HttpMethod.POST, "/api/rental/add").hasAnyRole("STAFF", "USER")
+				.requestMatchers(HttpMethod.GET, "/api/rental/customer/{id}").hasRole("STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/rental/toptenfilms").hasAnyRole("STAFF", "USER", "ADMIN")
+				.requestMatchers(HttpMethod.GET, "/api/rental/toptenfilms/store/{id}").hasAnyRole("STAFF", "USER")
+				.requestMatchers(HttpMethod.GET, "/api/rental/due/store/{id}").hasRole("STAFF")
+				.requestMatchers(HttpMethod.POST, "/api/rental/update/returndate/{id}").hasRole("STAFF")
+
+				.requestMatchers(HttpMethod.POST, "/api/payment/add").hasAnyRole("STAFF", "USER")
+				.requestMatchers(HttpMethod.GET, "/api/payment/revenue/datewise").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.GET, "/api/payment/revenue/datewise/store/{id}").hasRole("STAFF")
+				.requestMatchers(HttpMethod.GET, "/api/payment/revenue/filmwise").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.GET, "/api/payment/revenue/film/{id}").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.GET, "/api/payment/revenue/films/store/{id}").hasRole("ADMIN")
+
+				.requestMatchers(HttpMethod.POST, "/api/films/post").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.GET, "/api/films/title/{title}").hasRole("USER")
+				.requestMatchers(HttpMethod.GET, "/api/films/year/{year}").hasRole("USER")
+				.requestMatchers(HttpMethod.GET, "/api/films/duration/gt/{rd}").hasRole("USER")
+				.requestMatchers(HttpMethod.GET, "/api/films/rate/gt/{rate}").hasRole("USER")
+				.requestMatchers(HttpMethod.GET, "/api/films/length/gt/{length}").hasRole("USER")
+				.requestMatchers(HttpMethod.GET, "/api/films/betweenyear/{from}/{to}").hasRole("USER")
+				.requestMatchers(HttpMethod.GET, "/api/films/rating/lt/{rating}").hasRole("USER")
+				.requestMatchers(HttpMethod.GET, "/api/films/rating/gt/{rating}").hasRole("USER")
+				.requestMatchers(HttpMethod.GET, "/api/films/language/{lang}").hasRole("USER")
+				.requestMatchers(HttpMethod.GET, "/api/films/countbyyear").hasRole("USER")
+				.requestMatchers(HttpMethod.GET, "/api/films/{id}/actors").hasRole("USER")
+				.requestMatchers(HttpMethod.GET, "/api/films/category/{category}").hasRole("USER")
+
+				.requestMatchers(HttpMethod.PUT, "/api/films/update/*").hasAnyRole("ADMIN", "STAFF")
+
+				.anyRequest().authenticated().and()
+				.addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class).sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().sessionManagement().disable()
+
+				.authenticationManager(new ProviderManager(daoAuthenticationProvider()));
+
+		return http.build();
+	}
 }

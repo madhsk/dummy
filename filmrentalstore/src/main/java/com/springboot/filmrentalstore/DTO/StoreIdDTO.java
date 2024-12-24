@@ -2,30 +2,29 @@ package com.springboot.filmrentalstore.DTO;
 
 public class StoreIdDTO {
 
-	    private Long storeId;
-	    
-	    private String phone;
+	private Long storeId;
 
-	    public StoreIdDTO(Long storeId,String phone) {
-	        this.storeId = storeId;
-	        this.phone=phone;
-	    }
+	private String phone;
 
-		public Long getStoreId() {
-			return storeId;
-		}
+	public StoreIdDTO(Long storeId, String phone) {
+		this.storeId = storeId;
+		this.phone = phone;
+	}
 
-		public void setStoreId(Long storeId) {
-			this.storeId = storeId;
-		}
+	public Long getStoreId() {
+		return storeId;
+	}
 
-		public String getPhone() {
-			return phone;
-		}
+	public void setStoreId(Long storeId) {
+		this.storeId = storeId;
+	}
 
-		public void setPhone(String phone) {
-			this.phone = phone;
-		}
-	    
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 
 }

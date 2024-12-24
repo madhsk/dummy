@@ -1,8 +1,7 @@
 package com.springboot.filmrentalstore.model;
- 
- 
+
 import java.time.LocalDateTime;
- 
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,24 +10,35 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
- 
 @Entity
 @Table(name = "inventory")
 public class Inventory {
- 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long inventoryId;
- 
-    @ManyToOne
-    @JoinColumn(name = "film_id") 
-    private Film film;
- 
-    @ManyToOne
-    @JoinColumn(name = "store_id")
-    private Store store;
- 
-    private LocalDateTime lastUpdate;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long inventoryId;
+
+	@ManyToOne
+	@JoinColumn(name = "film_id")
+	private Film film;
+
+	@ManyToOne
+	@JoinColumn(name = "store_id")
+	private Store store;
+
+	private LocalDateTime lastUpdate;
+
+	public Inventory() {
+		super();
+	}
+
+	public Inventory(Long inventoryId, Film film, Store store, LocalDateTime lastUpdate) {
+		super();
+		this.inventoryId = inventoryId;
+		this.film = film;
+		this.store = store;
+		this.lastUpdate = lastUpdate;
+	}
 
 	public Long getInventoryId() {
 		return inventoryId;
@@ -61,8 +71,5 @@ public class Inventory {
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
-    
-    
-}
 
- 
+}

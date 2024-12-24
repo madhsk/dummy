@@ -11,27 +11,43 @@ import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Rental {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long rentalId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long rentalId;
 
-    private LocalDateTime rentalDate;
+	private LocalDateTime rentalDate;
 
-    @ManyToOne
-    @JoinColumn(name = "inventory_id")
-    private Inventory inventory;
+	@ManyToOne
+	@JoinColumn(name = "inventory_id")
+	private Inventory inventory;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+	@ManyToOne
+	@JoinColumn(name = "customer_id")
+	private Customer customer;
 
-    private LocalDateTime returnDate;
+	private LocalDateTime returnDate;
 
-    @ManyToOne
-    @JoinColumn(name = "staff_id")
-    private Staff staff;
+	@ManyToOne
+	@JoinColumn(name = "staff_id")
+	private Staff staff;
 
-    private LocalDateTime lastUpdate;
+	private LocalDateTime lastUpdate;
+
+	public Rental() {
+		super();
+	}
+
+	public Rental(Long rentalId, LocalDateTime rentalDate, Inventory inventory, Customer customer,
+			LocalDateTime returnDate, Staff staff, LocalDateTime lastUpdate) {
+		super();
+		this.rentalId = rentalId;
+		this.rentalDate = rentalDate;
+		this.inventory = inventory;
+		this.customer = customer;
+		this.returnDate = returnDate;
+		this.staff = staff;
+		this.lastUpdate = lastUpdate;
+	}
 
 	public Long getRentalId() {
 		return rentalId;
@@ -88,7 +104,5 @@ public class Rental {
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
-    
-    
+
 }
- 

@@ -17,20 +17,20 @@ import jakarta.persistence.Column;
 @Table(name = "city")
 public class City {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cityId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long cityId;
 
-    @Column(name = "city", length = 100, nullable = false)
-    private String cityName;
+	@Column(name = "city", length = 100, nullable = false)
+	private String cityName;
 
-    @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "country_id", nullable = false)
-    private Country country;
+	@ManyToOne
+	@JsonBackReference
+	@JoinColumn(name = "country_id", nullable = false)
+	private Country country;
 
-    @Column(name = "last_update")
-    private LocalDateTime lastUpdate;
+	@Column(name = "last_update")
+	private LocalDateTime lastUpdate;
 
 	public Long getCityId() {
 		return cityId;
@@ -63,6 +63,17 @@ public class City {
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
-    
-    
+
+	public City(Long cityId, String cityName, Country country, LocalDateTime lastUpdate) {
+		super();
+		this.cityId = cityId;
+		this.cityName = cityName;
+		this.country = country;
+		this.lastUpdate = lastUpdate;
+	}
+
+	public City() {
+		super();
+	}
+
 }

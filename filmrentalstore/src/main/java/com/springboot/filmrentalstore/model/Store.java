@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,25 +16,49 @@ import jakarta.persistence.OneToMany;
 @Entity
 public class Store {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long storeId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long storeId;
 
-    @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "address_id")
-    private Address address;
+	@ManyToOne
+	@JsonBackReference
+	@JoinColumn(name = "address_id")
+	private Address address;
 
-     @OneToMany(mappedBy="store")
-     @JsonManagedReference
-     private List<Customer> customers;
-    
-     
-     @OneToMany(mappedBy = "store")
-     @JsonManagedReference
-     private List<Staff> staff_list;
+	@ManyToOne
+	@JsonBackReference
+	@JoinColumn(name = "staff_id")
+	private Staff manager;
 
-     private LocalDateTime lastUpdate;
+	@OneToMany(mappedBy = "store")
+	@JsonManagedReference
+	private List<Customer> customers;
+
+	@OneToMany(mappedBy = "store")
+	@JsonManagedReference
+	private List<Staff> staff_list;
+
+	private LocalDateTime lastUpdate;
+
+	public Store() {
+		super();
+	}
+
+	public Store(Long storeId, Address address, Staff manager, LocalDateTime lastUpdate) {
+		super();
+		this.storeId = storeId;
+		this.address = address;
+		this.manager = manager;
+		this.lastUpdate = lastUpdate;
+	}
+
+	public Staff getManager() {
+		return manager;
+	}
+
+	public void setManager(Staff manager) {
+		this.manager = manager;
+	}
 
 	public Long getStoreId() {
 		return storeId;
@@ -76,6 +99,5 @@ public class Store {
 	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
-    
-     
+
 }

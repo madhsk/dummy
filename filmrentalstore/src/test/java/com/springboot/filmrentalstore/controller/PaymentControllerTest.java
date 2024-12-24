@@ -1,0 +1,204 @@
+package com.springboot.filmrentalstore.controller;
+
+import com.springboot.filmrentalstore.DTO.PaymentDTO;
+import com.springboot.filmrentalstore.exception.InvalidInputException;
+import com.springboot.filmrentalstore.exception.ResourceNotFoundException;
+import com.springboot.filmrentalstore.service.PaymentService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class PaymentControllerTest {
+
+    @InjectMocks
+    private PaymentController paymentController;
+
+    @Mock
+    private PaymentService paymentService;
+
+    @Test
+    void addPayment_ShouldReturnSuccessMessage() throws InvalidInputException {
+        // Create a sample PaymentDTO
+        PaymentDTO paymentDTO = new PaymentDTO();
+        paymentDTO.setAmount(100.0);  // Setting a valid amount
+
+        // Mock the void method in the service to do nothing
+        doNothing().when(paymentService).addPayment(paymentDTO);
+
+        // Call the controller method
+        ResponseEntity<String> response = paymentController.addPayment(paymentDTO);
+
+        // Assertions
+        assertNotNull(response);
+        assertEquals("Record Created Successfully", response.getBody());
+
+        // Verify the service was called once
+        verify(paymentService, times(1)).addPayment(paymentDTO);
+    }
+
+
+
+    @Test
+    void addPayment_ShouldThrowInvalidInputException_WhenAmountIsZeroOrNegative() {
+        PaymentDTO paymentDTO = new PaymentDTO();
+        paymentDTO.setAmount(0.0);  // Setting an invalid amount
+
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () -> {
+            paymentController.addPayment(paymentDTO);
+        });
+
+        assertEquals("Payment amount must be greater than zero.", exception.getMessage());
+    }
+
+    @Test
+    void getRevenueDatewise_ShouldReturnRevenueMap() {
+        Map<LocalDate, Double> expectedRevenue = new HashMap<>();
+        expectedRevenue.put(LocalDate.now(), 1000.0);
+
+        when(paymentService.getCumulativeRevenueDatewise()).thenReturn(expectedRevenue);
+
+        ResponseEntity<Map<LocalDate, Double>> response = paymentController.getRevenueDatewise();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedRevenue, response.getBody());
+        verify(paymentService, times(1)).getCumulativeRevenueDatewise();
+    }
+
+    @Test
+    void getRevenueByStoreDatewise_ShouldReturnRevenueMap() throws ResourceNotFoundException {
+        Long storeId = 1L;
+        Map<LocalDate, Double> expectedRevenue = new HashMap<>();
+        expectedRevenue.put(LocalDate.now(), 500.0);
+
+        when(paymentService.getCumulativeRevenueByStoreDatewise(storeId)).thenReturn(expectedRevenue);
+
+        ResponseEntity<Map<LocalDate, Double>> response = paymentController.getRevenueByStoreDatewise(storeId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedRevenue, response.getBody());
+        verify(paymentService, times(1)).getCumulativeRevenueByStoreDatewise(storeId);
+    }
+
+    @Test
+    void getRevenueByStoreDatewise_ShouldThrowResourceNotFoundException_WhenNoRevenueFound() throws ResourceNotFoundException {
+        Long storeId = 1L;
+        when(paymentService.getCumulativeRevenueByStoreDatewise(storeId)).thenReturn(new HashMap<>());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            paymentController.getRevenueByStoreDatewise(storeId);
+        });
+
+        assertEquals("No revenue found for the store ID: " + storeId, exception.getMessage());
+        verify(paymentService, times(1)).getCumulativeRevenueByStoreDatewise(storeId);
+    }
+
+    @Test
+    void getRevenueFilmwise_ShouldReturnRevenueMap() {
+        Map<String, Double> expectedRevenue = new HashMap<>();
+        expectedRevenue.put("Film A", 1000.0);
+
+        when(paymentService.getCumulativeRevenueFilmwise()).thenReturn(expectedRevenue);
+
+        ResponseEntity<Map<String, Double>> response = paymentController.getRevenueFilmwise();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedRevenue, response.getBody());
+        verify(paymentService, times(1)).getCumulativeRevenueFilmwise();
+    }
+
+    @Test
+    void getRevenueByFilmStorewise_ShouldReturnRevenueMap() throws ResourceNotFoundException {
+        Long filmId = 1L;
+        Map<String, Double> expectedRevenue = new HashMap<>();
+        expectedRevenue.put("Film A", 500.0);
+
+        when(paymentService.getCumulativeRevenueByFilmStorewise(filmId)).thenReturn(expectedRevenue);
+
+        ResponseEntity<Map<String, Double>> response = paymentController.getRevenueByFilmStorewise(filmId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedRevenue, response.getBody());
+        verify(paymentService, times(1)).getCumulativeRevenueByFilmStorewise(filmId);
+    }
+
+    @Test
+    void getRevenueByFilmStorewise_ShouldThrowResourceNotFoundException_WhenNoRevenueFound() throws ResourceNotFoundException {
+        Long filmId = 1L;
+        when(paymentService.getCumulativeRevenueByFilmStorewise(filmId)).thenReturn(new HashMap<>());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            paymentController.getRevenueByFilmStorewise(filmId);
+        });
+
+        assertEquals("No revenue found for the film ID: " + filmId, exception.getMessage());
+        verify(paymentService, times(1)).getCumulativeRevenueByFilmStorewise(filmId);
+    }
+
+    @Test
+    void getRevenueFilmsByStore_ShouldReturnRevenueMap() throws ResourceNotFoundException {
+        Long storeId = 1L;
+        Map<String, Double> expectedRevenue = new HashMap<>();
+        expectedRevenue.put("Film A", 500.0);
+
+        when(paymentService.getCumulativeRevenueFilmsByStore(storeId)).thenReturn(expectedRevenue);
+
+        ResponseEntity<Map<String, Double>> response = paymentController.getRevenueFilmsByStore(storeId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedRevenue, response.getBody());
+        verify(paymentService, times(1)).getCumulativeRevenueFilmsByStore(storeId);
+    }
+
+    @Test
+    void getRevenueFilmsByStore_ShouldThrowResourceNotFoundException_WhenNoRevenueFound() throws ResourceNotFoundException {
+        Long storeId = 1L;
+        when(paymentService.getCumulativeRevenueFilmsByStore(storeId)).thenReturn(new HashMap<>());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            paymentController.getRevenueFilmsByStore(storeId);
+        });
+
+        assertEquals("No revenue found for the store ID: " + storeId, exception.getMessage());
+        verify(paymentService, times(1)).getCumulativeRevenueFilmsByStore(storeId);
+    }
+
+    @Test
+    void handleInvalidInputException_ShouldReturnBadRequest() {
+        InvalidInputException exception = new InvalidInputException("Invalid payment amount");
+        ResponseEntity<String> response = paymentController.handleInvalidInputException(exception);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Invalid input: Invalid payment amount", response.getBody());
+    }
+
+    @Test
+    void handleResourceNotFoundException_ShouldReturnNotFound() {
+        ResourceNotFoundException exception = new ResourceNotFoundException("Resource not found");
+        ResponseEntity<String> response = paymentController.handleResourceNotFoundException(exception);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Error: Resource not found", response.getBody());
+    }
+
+    @Test
+    void handleGenericException_ShouldReturnInternalServerError() {
+        Exception exception = new Exception("Unexpected error");
+        ResponseEntity<String> response = paymentController.handleGenericException(exception);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("An unexpected error occurred: Unexpected error", response.getBody());
+    }
+}

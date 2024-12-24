@@ -16,35 +16,53 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
 @Entity
 @Table(name = "address")
 public class Address {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long addressId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long addressId;
 
-    private String address;
+	private String address;
 
-    private String address2;
+	private String address2;
 
-    private String district;
+	private String district;
 
-    @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "city_id")
-    private City city;
+	@ManyToOne
+	@JsonBackReference
+	@JoinColumn(name = "city_id")
+	private City city;
 
-    private String postalCode;
+	private String postalCode;
 
-    private String phone;
+	private String phone;
 
-    private LocalDateTime lastUpdate;
-    
-    @OneToMany(mappedBy = "address", cascade = CascadeType.ALL)
-    @JsonIgnore
-    //@JsonManagedReference  // Prevents infinite recursion; handles serialization of stores
-    private List<Store> stores;
+	private LocalDateTime lastUpdate;
+
+	@OneToMany(mappedBy = "address", cascade = CascadeType.ALL)
+	@JsonIgnore
+	// @JsonManagedReference // Prevents infinite recursion; handles serialization
+	// of stores
+	private List<Store> stores;
+
+	public Address() {
+		super();
+	}
+
+	public Address(Long addressId, String address, String district, City city, String postalCode, String phone,
+			LocalDateTime lastUpdate) {
+		super();
+		this.addressId = addressId;
+		this.address = address;
+		this.district = district;
+		this.city = city;
+		this.postalCode = postalCode;
+		this.phone = phone;
+		this.lastUpdate = lastUpdate;
+	}
 
 	public Long getAddressId() {
 		return addressId;
@@ -117,6 +135,5 @@ public class Address {
 	public void setStores(List<Store> stores) {
 		this.stores = stores;
 	}
-    
-    
+
 }

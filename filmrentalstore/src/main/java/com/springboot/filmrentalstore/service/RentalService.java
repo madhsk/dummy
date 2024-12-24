@@ -1,9 +1,9 @@
 package com.springboot.filmrentalstore.service;
 
 import com.springboot.filmrentalstore.DTO.RentalDTO;
-import com.springboot.filmrentalstore.dao.*;
 import com.springboot.filmrentalstore.exception.ResourceNotFoundException;
 import com.springboot.filmrentalstore.model.*;
+import com.springboot.filmrentalstore.repo.*;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class RentalService implements IRentalService {
  
     @Autowired
-    private RentalDAO rentalRepository;
+	private RentalRepo rentalRepo;
     
     @Autowired
     private ModelMapper modelMapper;
@@ -27,13 +27,13 @@ public class RentalService implements IRentalService {
         Rental rental = modelMapper.map(rentalDTO, Rental.class);
         rental.setRentalDate(LocalDateTime.now());
         rental.setLastUpdate(LocalDateTime.now());
-        Rental savedRental = rentalRepository.save(rental);
+        Rental savedRental = rentalRepo.save(rental);
         return modelMapper.map(savedRental, RentalDTO.class);
     }
  
     @Override
     public List<RentalDTO> getRentalsByCustomerId(Long customerId) throws ResourceNotFoundException {
-        List<RentalDTO> rentals = rentalRepository.findAll().stream()
+        List<RentalDTO> rentals = rentalRepo.findAll().stream()
             .filter(rental -> rental.getCustomer().getCustomerId().equals(customerId))
             .map(rental -> modelMapper.map(rental, RentalDTO.class))
             .collect(Collectors.toList());
@@ -47,7 +47,7 @@ public class RentalService implements IRentalService {
  
     @Override
     public List<RentalDTO> getTopTenFilms() {
-        return rentalRepository.findAll().stream()
+        return rentalRepo.findAll().stream()
             .sorted((r1, r2) -> r2.getRentalDate().compareTo(r1.getRentalDate()))
             .limit(10)
             .map(rental -> modelMapper.map(rental, RentalDTO.class))
@@ -56,7 +56,7 @@ public class RentalService implements IRentalService {
  
     @Override
     public List<RentalDTO> getTopTenFilmsByStore(Long storeId) {
-        return rentalRepository.findAll().stream()
+        return rentalRepo.findAll().stream()
             .filter(rental -> rental.getInventory().getStore().getStoreId().equals(storeId))
             .sorted((r1, r2) -> r2.getRentalDate().compareTo(r1.getRentalDate()))
             .limit(10)
@@ -66,7 +66,7 @@ public class RentalService implements IRentalService {
  
     @Override
     public Map<Long, String> getCustomersWithPendingReturnsByStore(Long storeId) {
-        return rentalRepository.findAll().stream()
+        return rentalRepo.findAll().stream()
             .filter(rental -> rental.getReturnDate() == null)
             .filter(rental -> rental.getInventory().getStore().getStoreId().equals(storeId))
             .collect(Collectors.toMap(
@@ -77,11 +77,11 @@ public class RentalService implements IRentalService {
  
     @Override
     public RentalDTO updateReturnDate(Long rentalId, LocalDateTime returnDate) throws ResourceNotFoundException {
-        Rental rental = rentalRepository.findById(rentalId)
+        Rental rental = rentalRepo.findById(rentalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Rental not found with id: " + rentalId));
         rental.setReturnDate(returnDate);
         rental.setLastUpdate(LocalDateTime.now());
-        Rental updatedRental = rentalRepository.save(rental);
+        Rental updatedRental = rentalRepo.save(rental);
         return modelMapper.map(updatedRental, RentalDTO.class);
     }
 }

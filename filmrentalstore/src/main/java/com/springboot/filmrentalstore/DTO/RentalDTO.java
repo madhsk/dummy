@@ -9,25 +9,24 @@ import jakarta.validation.constraints.*;
 public class RentalDTO {
 	private Long rentalId;
 
-    @NotNull(message = "Rental date is required")
-    @PastOrPresent(message = "Rental date cannot be in the future")
-    private LocalDateTime rentalDate;
+	@NotNull(message = "Rental date is required")
+	@PastOrPresent(message = "Rental date cannot be in the future")
+	private LocalDateTime rentalDate;
 
-    @NotNull(message = "Inventory is required")
-    private Inventory inventory;
+	@NotNull(message = "Inventory is required")
+	private Inventory inventory;
 
-    @NotNull(message = "Customer is required")
-    private Customer customer;
+	@NotNull(message = "Customer is required")
+	private Customer customer;
 
-    @FutureOrPresent(message = "Return date cannot be in the past")
-    private LocalDateTime returnDate;
+	@FutureOrPresent(message = "Return date cannot be in the past")
+	private LocalDateTime returnDate;
 
-//    @NotNull(message = "Staff is required")
-    private Staff staff;
+	private Staff staff;
 
-    @NotNull(message = "Last update is required")
-    @PastOrPresent(message = "Last update cannot be in the future")
-    private LocalDateTime lastUpdate;
+	@NotNull(message = "Last update is required")
+	@PastOrPresent(message = "Last update cannot be in the future")
+	private LocalDateTime lastUpdate;
 
 	public Long getRentalId() {
 		return rentalId;

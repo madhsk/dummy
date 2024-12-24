@@ -9,13 +9,24 @@ import lombok.Data;
 @Entity
 @Data
 public class Category {
-	
+
 	@Id
 	private long category_id;
-	
+
 	private String name;
-	
+
 	private LocalDateTime last_update;
+
+	public Category() {
+		super();
+	}
+
+	public Category(long category_id, String name, LocalDateTime last_update) {
+		super();
+		this.category_id = category_id;
+		this.name = name;
+		this.last_update = last_update;
+	}
 
 	public long getCategory_id() {
 		return category_id;
@@ -40,6 +51,5 @@ public class Category {
 	public void setLast_update(LocalDateTime last_update) {
 		this.last_update = last_update;
 	}
-	
-	
+
 }

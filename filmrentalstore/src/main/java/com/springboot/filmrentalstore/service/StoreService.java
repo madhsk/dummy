@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -127,10 +128,10 @@ public class StoreService implements IStoreService {
 		Store store = storeRepo.findById(storeId)
 				.orElseThrow(() -> new ResourceNotFoundException("Store With ID " + storeId + " Not Found"));
 
-		return store.getStaff_list();
+		return store.getStaffList();
 	}
 
-	public List<CustomerDTO> getCustomersByStoreId(Long storeId) throws ResourceNotFoundException {
+	public List<CustomerStoreDTO> getCustomersByStoreId(Long storeId) throws ResourceNotFoundException {
 		Store store = storeRepo.findById(storeId)
 				.orElseThrow(() -> new ResourceNotFoundException("Store With ID " + storeId + " Not Found"));
 
@@ -139,7 +140,7 @@ public class StoreService implements IStoreService {
 			throw new ResourceNotFoundException("No Customers Found For Store With ID " + storeId);
 		}
 
-		return customers.stream().map(customer -> modelMapper.map(customer, CustomerDTO.class))
+		return customers.stream().map(customer -> modelMapper.map(customer, CustomerStoreDTO.class))
 				.collect(Collectors.toList());
 	}
 
@@ -156,15 +157,36 @@ public class StoreService implements IStoreService {
 	}
 
 	public List<ManagerDetailsDTO> getAllManagerAndStoreDetails() {
-		return storeRepo.findAll().stream().map(store -> {
-			ManagerDetailsDTO dto = new ManagerDetailsDTO();
-			dto.setFirstName(store.getManager().getFirstName());
-			dto.setLastName(store.getManager().getLastName());
-			dto.setEmail(store.getManager().getEmail());
-			dto.setStore(store);
-			return dto;
-		}).collect(Collectors.toList());
+	    List<Store> stores = storeRepo.findAll();
+	    List<ManagerDetailsDTO> detailsList = new ArrayList<>();
+
+	    for (Store store : stores) {
+	        ManagerDetailsDTO dto = new ManagerDetailsDTO();
+	        dto.setStore(store);
+
+	        if (store.getManager() != null) {
+	            // If the manager is not null, populate manager details
+	            dto.setStaffId(store.getManager().getStaffId());
+	            dto.setFirstName(store.getManager().getFirstName());
+	            dto.setLastName(store.getManager().getLastName());
+	            dto.setAddress(store.getManager().getAddress());
+	            dto.setEmail(store.getManager().getEmail());
+	        } else {
+	            // Handle the case where manager is null
+	            dto.setStaffId(null);
+	            dto.setFirstName("No manager assigned");
+	            dto.setLastName("No manager assigned");
+	            dto.setAddress(null);
+	            dto.setEmail(null);
+	        }
+
+	        detailsList.add(dto);
+	    }
+
+	    return detailsList;
 	}
+
+
 
 	public StoreDTO assignManagerToStore(Long storeId, Long managerStaffId) throws ResourceNotFoundException {
 		Store store = storeRepo.findById(storeId)

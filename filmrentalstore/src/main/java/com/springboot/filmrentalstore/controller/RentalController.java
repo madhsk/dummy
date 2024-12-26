@@ -49,7 +49,7 @@ public class RentalController {
 		return ResponseEntity.ok(pendingReturns);
 	}
 
-	@PostMapping("/update/returndate/{id}")
+	@PutMapping("/update/returndate/{id}")
 	public ResponseEntity<RentalDTO> updateReturnDate(@PathVariable Long id, @RequestBody LocalDateTime returnDate)
 			throws ResourceNotFoundException {
 		RentalDTO updatedRental = rentalService.updateReturnDate(id, returnDate);

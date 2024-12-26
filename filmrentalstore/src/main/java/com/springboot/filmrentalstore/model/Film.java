@@ -2,6 +2,8 @@ package com.springboot.filmrentalstore.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,7 +16,7 @@ import jakarta.validation.constraints.NotBlank;
 @Entity
 public class Film {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long filmId;
 
 	@NotBlank(message = "Title is mandatory")
@@ -26,6 +28,7 @@ public class Film {
 
 	@ManyToOne
 	@JoinColumn(name = "language_id")
+	@JsonIgnore
 	private Language language;
 
 	@Column(name = "original_language_id", columnDefinition = "SMALLINT")
@@ -37,7 +40,7 @@ public class Film {
 
 	private int length;
 
-	private int replacement_cost;
+	private double replacement_cost;
 
 	private int rating;
 
@@ -118,11 +121,13 @@ public class Film {
 		this.length = length;
 	}
 
-	public int getReplacement_cost() {
+	
+
+	public double getReplacement_cost() {
 		return replacement_cost;
 	}
 
-	public void setReplacement_cost(int replacement_cost) {
+	public void setReplacement_cost(double replacement_cost) {
 		this.replacement_cost = replacement_cost;
 	}
 

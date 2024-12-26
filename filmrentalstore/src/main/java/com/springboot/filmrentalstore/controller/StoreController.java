@@ -81,9 +81,9 @@ public class StoreController {
 	}
 
 	@GetMapping("/customer/{storeId}")
-	public ResponseEntity<List<CustomerDTO>> getCustomersByStore(@PathVariable Long storeId)
+	public ResponseEntity<List<CustomerStoreDTO>> getCustomersByStore(@PathVariable Long storeId)
 			throws ResourceNotFoundException {
-		List<CustomerDTO> customers = storeService.getCustomersByStoreId(storeId);
+		List<CustomerStoreDTO> customers = storeService.getCustomersByStoreId(storeId);
 		return ResponseEntity.ok(customers);
 	}
 
@@ -97,7 +97,15 @@ public class StoreController {
 	@GetMapping("/managers")
 	public ResponseEntity<List<ManagerDetailsDTO>> getAllManagerAndStoreDetails() {
 		List<ManagerDetailsDTO> managerAndStoreDetails = storeService.getAllManagerAndStoreDetails();
-		return ResponseEntity.ok(managerAndStoreDetails);
+	    
+	    // Check for null values and handle them gracefully
+	    for (ManagerDetailsDTO dto : managerAndStoreDetails) {
+	        if (dto.getStaffId() == null) {
+	            dto.setFirstName("No manager assigned");
+	        }
+	    }
+	    
+	    return ResponseEntity.ok(managerAndStoreDetails);
 	}
 
 	@PutMapping("/{storeId}/manager/{managerStaffId}")

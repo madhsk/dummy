@@ -2,6 +2,8 @@ package com.springboot.filmrentalstore.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,10 +22,12 @@ public class Inventory {
 
 	@ManyToOne
 	@JoinColumn(name = "film_id")
+	@JsonIgnore
 	private Film film;
 
 	@ManyToOne
 	@JoinColumn(name = "store_id")
+	@JsonIgnore
 	private Store store;
 
 	private LocalDateTime lastUpdate;

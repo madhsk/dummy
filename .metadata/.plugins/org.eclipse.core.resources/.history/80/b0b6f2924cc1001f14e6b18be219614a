@@ -1,0 +1,187 @@
+package com.springboot.filmrentalstore.controller;
+
+import com.springboot.filmrentalstore.DTO.FilmDTO;
+import com.springboot.filmrentalstore.controller.FilmController;
+import com.springboot.filmrentalstore.exception.InvalidInputException;
+import com.springboot.filmrentalstore.exception.ResourceNotFoundException;
+import com.springboot.filmrentalstore.model.FilmCategory;
+import com.springboot.filmrentalstore.service.IFilmService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
+ 
+import java.util.*;
+ 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+ 
+@ExtendWith(MockitoExtension.class)
+class FilmControllerTest {
+ 
+    @Mock
+    private IFilmService filmService;
+ 
+    @InjectMocks
+    private FilmController filmController;
+ 
+    @Test
+    void addFilm_ShouldReturnSuccessMessage() throws InvalidInputException {
+        FilmDTO filmDTO = new FilmDTO();
+        filmDTO.setTitle("Test Film");
+ 
+        doNothing().when(filmService).addFilm(filmDTO);
+ 
+        ResponseEntity<String> response = filmController.addFilm(filmDTO);
+ 
+        assertNotNull(response);
+        assertEquals("Record Saved", response.getBody());
+        assertEquals(200, response.getStatusCodeValue());
+        verify(filmService, times(1)).addFilm(filmDTO);
+    }
+ 
+    @Test
+    void deleteFilmById_ShouldReturnSuccessMessage() throws ResourceNotFoundException {
+        int filmId = 1;
+ 
+        when(filmService.deleteFilmById(filmId)).thenReturn(true);
+ 
+        ResponseEntity<String> response = filmController.deleteFilmById(filmId);
+ 
+        assertNotNull(response);
+        assertEquals("Film record deleted", response.getBody());
+        assertEquals(200, response.getStatusCodeValue());
+        verify(filmService, times(1)).deleteFilmById(filmId);
+    }
+ 
+    @Test
+    void deleteFilmById_ShouldThrowResourceNotFoundException() {
+        int filmId = 1;
+ 
+        when(filmService.deleteFilmById(filmId)).thenReturn(false);
+ 
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            filmController.deleteFilmById(filmId);
+        });
+ 
+        assertEquals("Film record not found.", exception.getMessage());
+    }
+ 
+    @Test
+    void getAllFilm_ShouldReturnListOfFilms() {
+        List<FilmDTO> films = Arrays.asList(new FilmDTO(), new FilmDTO());
+ 
+        when(filmService.getAllFilm()).thenReturn(films);
+ 
+        List<FilmDTO> response = filmController.getAllFilm();
+ 
+        assertNotNull(response);
+        assertEquals(2, response.size());
+        verify(filmService, times(1)).getAllFilm();
+    }
+ 
+    @Test
+    void findByTitle_ShouldReturnFilm() throws ResourceNotFoundException {
+        String title = "Test Film";
+        FilmDTO filmDTO = new FilmDTO();
+        filmDTO.setTitle(title);
+ 
+        when(filmService.findFilmsByTitle(title)).thenReturn(filmDTO);
+ 
+        ResponseEntity<FilmDTO> response = filmController.findByTitle(title);
+ 
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(filmDTO, response.getBody());
+        verify(filmService, times(1)).findFilmsByTitle(title);
+    }
+ 
+    @Test
+    void findByTitle_ShouldThrowResourceNotFoundException() {
+        String title = "Non-existent Film";
+ 
+        when(filmService.findFilmsByTitle(title)).thenReturn(null);
+ 
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            filmController.findByTitle(title);
+        });
+ 
+        assertEquals("Film with title Non-existent Film not found", exception.getMessage());
+    }
+ 
+    @Test
+    void findFilmsByReleaseYear_ShouldReturnFilms() throws ResourceNotFoundException {
+        int year = 2020;
+        List<FilmDTO> films = Arrays.asList(new FilmDTO(), new FilmDTO());
+ 
+        when(filmService.findFilmsByReleaseYear(year)).thenReturn(films);
+ 
+        ResponseEntity<List<FilmDTO>> response = filmController.findFilmsByReleaseYear(year);
+ 
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(films, response.getBody());
+        verify(filmService, times(1)).findFilmsByReleaseYear(year);
+    }
+ 
+    @Test
+    void findFilmsByReleaseYear_ShouldThrowResourceNotFoundException() {
+        int year = 2020;
+ 
+        when(filmService.findFilmsByReleaseYear(year)).thenReturn(Collections.emptyList());
+ 
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            filmController.findFilmsByReleaseYear(year);
+        });
+ 
+        assertEquals("No records of films found for 2020 release year", exception.getMessage());
+    }
+ 
+    @Test
+    void assignActorsToFilm_ShouldReturnSuccessMessage() throws InvalidInputException {
+        Long filmId = 1L;
+        Collection<Long> actorIds = Arrays.asList(1L, 2L);
+ 
+        doNothing().when(filmService).assignActorsToFilm(filmId, actorIds);
+ 
+        ResponseEntity<String> response = filmController.assignActorsToFilm(filmId, actorIds);
+ 
+        assertNotNull(response);
+        assertEquals("Actors assigned to film successfully", response.getBody());
+        assertEquals(200, response.getStatusCodeValue());
+        verify(filmService, times(1)).assignActorsToFilm(filmId, actorIds);
+    }
+ 
+    @Test
+    void assignActorsToFilm_ShouldReturnErrorMessage() throws InvalidInputException {
+        Long filmId = 1L;
+        Collection<Long> actorIds = Arrays.asList(1L, 2L);
+ 
+        doThrow(new InvalidInputException("Invalid actor IDs"))
+                .when(filmService).assignActorsToFilm(filmId, actorIds);
+ 
+        ResponseEntity<String> response = filmController.assignActorsToFilm(filmId, actorIds);
+ 
+        assertNotNull(response);
+        assertEquals(400, response.getStatusCodeValue());
+        assertEquals("Invalid actor IDs", response.getBody());
+    }
+ 
+    @Test
+    void updateCategory_ShouldReturnUpdatedCategory() throws InvalidInputException {
+        long filmId = 1L;
+        long categoryId = 2L;
+        FilmCategory updatedCategory = new FilmCategory();
+ 
+        when(filmService.updateCategory(filmId, categoryId)).thenReturn(updatedCategory);
+ 
+        ResponseEntity<FilmCategory> response = filmController.updateCategory(filmId, categoryId);
+ 
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(updatedCategory, response.getBody());
+        verify(filmService, times(1)).updateCategory(filmId, categoryId);
+    }
+}

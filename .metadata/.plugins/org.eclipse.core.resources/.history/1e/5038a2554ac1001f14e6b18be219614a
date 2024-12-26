@@ -1,0 +1,121 @@
+package com.springboot.filmrentalstore.controller;
+
+import com.springboot.filmrentalstore.DTO.CustomerDTO;
+import com.springboot.filmrentalstore.controller.CustomerController;
+import com.springboot.filmrentalstore.model.Store;
+import com.springboot.filmrentalstore.service.CustomerService;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.ResponseEntity;
+ 
+import java.util.Arrays;
+import java.util.List;
+ 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+ 
+class CustomerControllerTest {
+ 
+    @Mock
+    private CustomerService customerService;
+ 
+    @InjectMocks
+    private CustomerController customerController;
+ 
+    public CustomerControllerTest() {
+        MockitoAnnotations.openMocks(this);
+    }
+ 
+    @Test
+    void testCreateCustomer() {
+        CustomerDTO customerDTO = new CustomerDTO();
+        customerDTO.setFirstName("John");
+        customerDTO.setLastName("Doe");
+ 
+        doNothing().when(customerService).createCustomer(customerDTO);
+ 
+        ResponseEntity<String> response = customerController.createCustomer(customerDTO);
+ 
+        assertEquals(201, response.getStatusCodeValue());
+        assertEquals("Record Created Successfully", response.getBody());
+        verify(customerService, times(1)).createCustomer(customerDTO);
+    }
+ 
+    @Test
+    void testGetCustomersByLastName() throws Exception {
+        String lastName = "Doe";
+        CustomerDTO customer1 = new CustomerDTO();
+        customer1.setFirstName("John");
+        customer1.setLastName("Doe");
+ 
+        CustomerDTO customer2 = new CustomerDTO();
+        customer2.setFirstName("Jane");
+        customer2.setLastName("Doe");
+ 
+        when(customerService.getCustomersByLastName(lastName)).thenReturn(Arrays.asList(customer1, customer2));
+ 
+        ResponseEntity<List<CustomerDTO>> response = customerController.getCustomersByLastName(lastName);
+ 
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().size());
+        verify(customerService, times(1)).getCustomersByLastName(lastName);
+    }
+ 
+    @Test
+    void testUpdateFirstName() throws Exception {
+        Long customerId = 1L;
+        String newFirstName = "UpdatedFirstName";
+ 
+        CustomerDTO updatedCustomer = new CustomerDTO();
+        updatedCustomer.setFirstName(newFirstName);
+ 
+        when(customerService.updateFirstName(customerId, newFirstName)).thenReturn(updatedCustomer);
+ 
+        ResponseEntity<CustomerDTO> response = customerController.updateFirstName(customerId, newFirstName);
+ 
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        assertEquals(newFirstName, response.getBody().getFirstName());
+        verify(customerService, times(1)).updateFirstName(customerId, newFirstName);
+    }
+ 
+    @Test
+    void testUpdateCustomerStore() throws Exception {
+        Long customerId = 1L;
+        Store newStore = new Store();
+        newStore.setStoreId(2L);
+ 
+        CustomerDTO updatedCustomer = new CustomerDTO();
+        updatedCustomer.setStore(newStore);
+ 
+        when(customerService.assignStoreToCustomer(customerId, newStore)).thenReturn(updatedCustomer);
+ 
+        ResponseEntity<CustomerDTO> response = customerController.updateCustomerStore(customerId, newStore);
+ 
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        assertEquals(newStore.getStoreId(), response.getBody().getStore());
+        verify(customerService, times(1)).assignStoreToCustomer(customerId, newStore);
+    }
+ 
+    @Test
+    void testGetActiveCustomers() {
+        CustomerDTO customer1 = new CustomerDTO();
+        customer1.setFirstName("John");
+ 
+        CustomerDTO customer2 = new CustomerDTO();
+        customer2.setFirstName("Jane");
+ 
+        when(customerService.getActiveCustomers()).thenReturn(Arrays.asList(customer1, customer2));
+ 
+        ResponseEntity<List<CustomerDTO>> response = customerController.getActiveCustomers();
+ 
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().size());
+        verify(customerService, times(1)).getActiveCustomers();
+    }
+}

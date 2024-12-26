@@ -1,7 +1,8 @@
 package com.springboot.filmrentalstore.DTO;
 
 import java.time.LocalDateTime;
-
+import java.util.List;
+import com.springboot.filmrentalstore.model.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -27,6 +28,15 @@ public class PaymentDTO {
 	private Double amount;
 
 	private LocalDateTime lastUpdate;
+
+	// In Customer entity
+	// Back-reference to avoid circular references
+	private List<Payment> payments;
+
+	// Similarly, in Staff and Rental entities, add the corresponding @JsonBackReference annotations:
+	private List<Payment> staffPayments;
+
+	private List<Payment> rentalPayments;
 
 	// Getter and Setter methods
 

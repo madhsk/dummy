@@ -44,6 +44,8 @@ public class CustomerService implements ICustomerService{
     @Override
     public CustomerDTO createCustomer(CustomerDTO customerDTO) {
         Customer customer = modelMapper.map(customerDTO, Customer.class);
+        Store addStore = storeRepo.findById(customerDTO.getStore().getStoreId()).get();
+        customer.setStore(addStore);
         Customer savedCustomer = customerRepo.save(customer);
         return modelMapper.map(savedCustomer, CustomerDTO.class);
     }

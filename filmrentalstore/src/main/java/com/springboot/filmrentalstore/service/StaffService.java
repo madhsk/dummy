@@ -5,6 +5,7 @@ import com.springboot.filmrentalstore.DTO.StaffDTO;
 import com.springboot.filmrentalstore.exception.ResourceNotFoundException;
 import com.springboot.filmrentalstore.model.Staff;
 import com.springboot.filmrentalstore.model.Store;
+import com.springboot.filmrentalstore.repo.AddressRepo;
 import com.springboot.filmrentalstore.repo.StaffRepo;
 import com.springboot.filmrentalstore.repo.StoreRepo;
 
@@ -26,14 +27,42 @@ public class StaffService implements IStaffService {
     private StaffRepo staffRepo;
 	@Autowired
 	private StoreRepo storeRepo;
+	@Autowired
+	private AddressRepo addressRepo;
 	
 	ModelMapper modelMapper = new ModelMapper();
 	// Add new staff
 	@Override
-    public StaffDTO addStaff(StaffDTO staffDTO) {
-        Staff staff = modelMapper.map(staffDTO, Staff.class);
-        Staff savedStaff = staffRepo.save(staff);
-        return modelMapper.map(savedStaff, StaffDTO.class);
+	public StaffDTO addStaff(StaffDTO staffDTO) {
+        Staff staff = new Staff();
+        staff.setFirstName(staffDTO.getFirstName());
+        staff.setLastName(staffDTO.getLastName());
+        staff.setEmail(staffDTO.getEmail());
+        Store store;
+		try {
+			store = storeRepo.findById(staffDTO.getStore().getStoreId())
+			        .orElseThrow(() -> new ResourceNotFoundException("Store not found"));
+			staff.setStore(store);
+		} catch (ResourceNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        // Fetch the Address entity from the database
+        Address address;
+		try {
+			address = addressRepo.findById(staffDTO.getAddress().getAddressId())
+			        .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
+			staff.setAddress(address);
+		} catch (ResourceNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+        // Save the Staff entity
+        staffRepo.save(staff);
+
+        // Return the saved StaffDTO (or map it back)
+        return staffDTO;
     }
  
     // Find staff by last name
@@ -148,17 +177,22 @@ public class StaffService implements IStaffService {
     }
  
     // Update staff store
-    @Transactional
-    @Override
     public StaffDTO updateStore(Long id, Store store) throws ResourceNotFoundException {
+        // Fetch the staff entity
         Staff staff = staffRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Staff not found with id: " + id));
- 
+
+        // Fetch the store entity (ensures the store is managed by the persistence context)
         Store existingStore = storeRepo.findById(store.getStoreId())
                 .orElseThrow(() -> new ResourceNotFoundException("Store not found with id: " + store.getStoreId()));
- 
+
+        // Associate the fetched store with the staff
         staff.setStore(existingStore);
+
+        // Save the updated staff
         Staff updatedStaff = staffRepo.save(staff);
+
+        // Map the updated entity to StaffDTO and return
         return modelMapper.map(updatedStaff, StaffDTO.class);
     }
  
@@ -203,17 +237,4 @@ public class StaffService implements IStaffService {
         // Return null if authentication fails
         return null;
     }
-
-	
-
-	
-
-
-    
-
-
-    
-
-
-
 }

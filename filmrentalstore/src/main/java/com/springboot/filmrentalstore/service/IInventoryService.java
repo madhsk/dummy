@@ -16,5 +16,5 @@ public interface IInventoryService {
 
     List<InventoryDTO> getFilmInventoriesByStore(Long filmId);
 
-    InventoryDTO getFilmInventoryByStore(Long filmId, Long storeId);
+    List<InventoryDTO> getFilmInventoryByStore(Long filmId, Long storeId);
 }

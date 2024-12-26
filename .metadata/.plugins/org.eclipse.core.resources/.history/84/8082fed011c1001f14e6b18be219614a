@@ -1,0 +1,5 @@
+package com.springboot.filmrentalstore.repo;
+
+public class RoleRepo {
+
+}

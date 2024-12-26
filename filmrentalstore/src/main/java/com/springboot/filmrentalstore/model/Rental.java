@@ -1,6 +1,10 @@
 package com.springboot.filmrentalstore.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,31 +12,40 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Rental {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long rentalId;
 
 	private LocalDateTime rentalDate;
 
 	@ManyToOne
 	@JoinColumn(name = "inventory_id")
+	@JsonIgnore
 	private Inventory inventory;
 
 	@ManyToOne
 	@JoinColumn(name = "customer_id")
+	@JsonIgnore
 	private Customer customer;
 
 	private LocalDateTime returnDate;
 
 	@ManyToOne
 	@JoinColumn(name = "staff_id")
+	@JsonIgnore
 	private Staff staff;
 
 	private LocalDateTime lastUpdate;
+	
 
+	@OneToMany(mappedBy = "rental")
+	@JsonIgnore
+	private List<Payment> rentalPayments;
+	
 	public Rental() {
 		super();
 	}
@@ -47,6 +60,14 @@ public class Rental {
 		this.returnDate = returnDate;
 		this.staff = staff;
 		this.lastUpdate = lastUpdate;
+	}
+	
+	public List<Payment> getRentalPayments() {
+		return rentalPayments;
+	}
+
+	public void setRentalPayments(List<Payment> rentalPayments) {
+		this.rentalPayments = rentalPayments;
 	}
 
 	public Long getRentalId() {

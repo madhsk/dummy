@@ -33,7 +33,7 @@ public interface IStoreService {
 	List<Staff> getStaffByStoreId(Long storeId) throws ResourceNotFoundException;
 
 	// Get all customers Information By Store Id
-	List<CustomerDTO> getCustomersByStoreId(Long storeId) throws ResourceNotFoundException;
+	List<CustomerStoreDTO> getCustomersByStoreId(Long storeId) throws ResourceNotFoundException;
 
 	List<ManagerDetailsDTO> getAllManagerAndStoreDetails();
 

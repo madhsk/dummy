@@ -105,10 +105,13 @@ public class StaffController {
 		return new ResponseEntity<>(staffWithAddress, HttpStatus.OK);
 	}
 
-	@PutMapping("/{id}/store")
-	public ResponseEntity<StaffDTO> updateStore(@PathVariable Long id, @RequestBody Store store)
-			throws ResourceNotFoundException {
-		return new ResponseEntity<>(staffService.updateStore(id, store), HttpStatus.OK);
+	@PutMapping("/{id}/update-store")
+	public ResponseEntity<?> updateStore(@PathVariable Long id, @RequestBody Store store) throws ResourceNotFoundException {
+	    System.out.println("Updating store for staff ID: " + id);
+	    System.out.println("Store ID: " + store.getStoreId());
+	    StaffDTO updatedStaff = staffService.updateStore(id, store);
+	    return ResponseEntity.ok(updatedStaff);
 	}
+
 
 }

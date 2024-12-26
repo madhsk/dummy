@@ -2,6 +2,7 @@ package com.springboot.filmrentalstore.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,20 +13,23 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class Payment {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long paymentId;
 
 	private LocalDateTime paymentDate;
 
 	@ManyToOne
+	@JsonIgnore
 	@JoinColumn(name = "customer_id")
 	private Customer customer;
 
 	@ManyToOne
+	@JsonIgnore
 	@JoinColumn(name = "staff_id")
 	private Staff staff;
 
 	@ManyToOne
+	@JsonIgnore
 	@JoinColumn(name = "rental_id")
 	private Rental rental;
 

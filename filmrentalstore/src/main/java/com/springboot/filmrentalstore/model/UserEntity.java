@@ -14,13 +14,13 @@ import jakarta.persistence.OneToMany;
 public class UserEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long user_id;
 	@Column(unique = true, nullable = false)
 	private String username;
 	@Column(nullable = false)
 	private String password;
-	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Role> roles;
 
 	public UserEntity(String username, String password, List<Role> role) {

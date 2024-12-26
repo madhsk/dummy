@@ -2,6 +2,8 @@ package com.springboot.filmrentalstore.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -15,11 +17,13 @@ public class FilmCategory {
 	@Id
 	@ManyToOne
 	@JoinColumn(name = "film_id")
+	@JsonIgnore
 	private Film film;
 
 	@Id
 	@ManyToOne
 	@JoinColumn(name = "category_id")
+	@JsonIgnore
 	private Category category;
 
 	private LocalDateTime lastUpdate;

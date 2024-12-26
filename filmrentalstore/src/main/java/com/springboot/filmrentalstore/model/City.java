@@ -3,6 +3,7 @@ package com.springboot.filmrentalstore.model;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,14 +19,14 @@ import jakarta.persistence.Column;
 public class City {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long cityId;
 
 	@Column(name = "city", length = 100, nullable = false)
 	private String cityName;
 
 	@ManyToOne
-	@JsonBackReference
+	@JsonIgnore
 	@JoinColumn(name = "country_id", nullable = false)
 	private Country country;
 

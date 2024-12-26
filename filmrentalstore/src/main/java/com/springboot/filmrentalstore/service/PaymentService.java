@@ -2,7 +2,7 @@ package com.springboot.filmrentalstore.service;
 
 import com.springboot.filmrentalstore.DTO.PaymentDTO;
 import com.springboot.filmrentalstore.exception.InvalidInputException;
-import com.springboot.filmrentalstore.model.Payment;
+import com.springboot.filmrentalstore.model.*;
 import com.springboot.filmrentalstore.repo.*;
 
 import org.modelmapper.ModelMapper;
@@ -21,20 +21,21 @@ public class PaymentService implements IPaymentService {
 	ModelMapper modelMapper;
 
 	@Override
-	public PaymentDTO addPayment(PaymentDTO paymentDTO) throws InvalidInputException {
-	    if (paymentDTO.getAmount() <= 0) {
-	        throw new InvalidInputException("Payment amount must be greater than zero.");
-	    }
+	public void addPayment(PaymentDTO paymentDTO) throws InvalidInputException {
+        if (paymentDTO.getAmount() <= 0) {
+            throw new InvalidInputException("Amount must be greater than zero.");
+        }
+        Payment payment = new Payment();
+        payment.setPaymentId(paymentDTO.getPaymentId());
+        payment.setPaymentDate(paymentDTO.getPaymentDate());
+        payment.setAmount(paymentDTO.getAmount());
+        payment.setLastUpdate(paymentDTO.getLastUpdate());
+        payment.setCustomer(modelMapper.map(paymentDTO.getCustomer(),Customer.class));
+        payment.setStaff(modelMapper.map(paymentDTO.getStaff(),Staff.class));
+        payment.setRental(modelMapper.map(paymentDTO.getRental(),Rental.class));
+        paymentRepo.save(payment);
+    }
 
-	    // Map PaymentDTO to Payment entity
-	    Payment payment = modelMapper.map(paymentDTO, Payment.class);
-
-	    // Save payment using paymentDAO
-	    payment = paymentRepo.save(payment);
-
-	    // Map saved Payment back to PaymentDTO and return
-	    return modelMapper.map(payment, PaymentDTO.class);
-	}
 
 
 	@Override

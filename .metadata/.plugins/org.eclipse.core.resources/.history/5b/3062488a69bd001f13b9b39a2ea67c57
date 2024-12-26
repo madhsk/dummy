@@ -1,5 +1,0 @@
-package com.springboot.filmrentalstore.controller;
-
-public class InventoryController {
-
-}

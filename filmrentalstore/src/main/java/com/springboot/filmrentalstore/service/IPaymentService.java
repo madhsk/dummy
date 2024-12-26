@@ -7,7 +7,7 @@ import com.springboot.filmrentalstore.DTO.PaymentDTO;
 import com.springboot.filmrentalstore.exception.InvalidInputException;
 
 public interface IPaymentService {
-	PaymentDTO addPayment(PaymentDTO paymentDTO) throws InvalidInputException;
+	void addPayment(PaymentDTO paymentDTO) throws InvalidInputException;
 
 	Map<LocalDate, Double> getCumulativeRevenueDatewise();
 

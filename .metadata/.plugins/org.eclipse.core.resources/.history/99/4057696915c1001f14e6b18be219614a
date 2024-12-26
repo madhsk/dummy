@@ -1,0 +1,5 @@
+package com.springboot.filmrentalstore.initializer;
+
+public class DataInitializer {
+
+}

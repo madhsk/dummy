@@ -54,27 +54,27 @@ public class CustomerServiceTest {
     private Address address;
     private Store store;
  
-    @BeforeEach
-    void setUp() {
-        customer = new Customer();
-        customer.setCustomerId(1L);
-        customer.setFirstName("John");
-        customer.setLastName("Doe");
- 
-        customerDTO = new CustomerDTO();
-        customerDTO.setCustomerId(1L);
-        customerDTO.setFirstName("John");
-        customerDTO.setLastName("Doe");
- 
-        address = new Address();
-        address.setAddressId(1L);
-        address.setCity(new City(1L,"chennai", new Country(1L,"india",LocalDateTime.now()), LocalDateTime.now()));
- 
-        store = new Store();
-        store.setStoreId(1L);
-        store.setManager(new Staff(1L,"hajira","babu","hajira@gmail.com", address));
-        store.setAddress(address);
-    }
+//    @BeforeEach
+//    void setUp() {
+//        customer = new Customer();
+//        customer.setCustomerId(1L);
+//        customer.setFirstName("John");
+//        customer.setLastName("Doe");
+// 
+//        customerDTO = new CustomerDTO();
+//        customerDTO.setCustomerId(1L);
+//        customerDTO.setFirstName("John");
+//        customerDTO.setLastName("Doe");
+// 
+//        address = new Address();
+//        address.setAddressId(1L);
+//        address.setCity(new City(1L,"chennai", new Country(1L,"india",LocalDateTime.now()), LocalDateTime.now()));
+// 
+//        store = new Store();
+//        store.setStoreId(1L);
+//        store.setManager(new Staff(1L,"hajira","babu","hajira@gmail.com", address));
+//        store.setAddress(address);
+//    }
  
     @Test
     void testGetCustomerByIdSuccess() throws ResourceNotFoundException {

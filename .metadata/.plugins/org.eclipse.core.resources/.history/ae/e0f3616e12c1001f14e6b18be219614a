@@ -1,0 +1,9 @@
+package com.springboot.filmrentalstore.repo;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.springboot.filmrentalstore.model.*;
+
+public interface FilmActorRepo extends JpaRepository<FilmActor, FilmActorId>{
+	 boolean existsByFilmAndActor(Film film, Actor actor);
+}

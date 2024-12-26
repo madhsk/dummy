@@ -3,6 +3,7 @@ package com.springboot.filmrentalstore.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -18,7 +19,7 @@ import jakarta.persistence.Table;
 public class Country {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long countryId;
 
 	private String country;
@@ -26,7 +27,7 @@ public class Country {
 	private LocalDateTime lastUpdate;
 
 	@OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
-	@JsonManagedReference
+	@JsonIgnore
 	private List<City> cities;
 
 	public Country(Long countryId, String country, LocalDateTime lastUpdate) {

@@ -40,7 +40,7 @@ public class InventoryController {
 	}
 
 	@GetMapping("/film/{filmId}/store/{storeId}")
-	public InventoryDTO getFilmInventoryByStore(@PathVariable Long filmId, @PathVariable Long storeId) {
+	public List<InventoryDTO> getFilmInventoryByStore(@PathVariable Long filmId, @PathVariable Long storeId) {
 		return inventoryService.getFilmInventoryByStore(filmId, storeId);
 	}
 }

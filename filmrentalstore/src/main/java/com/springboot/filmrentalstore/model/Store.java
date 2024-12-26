@@ -1,10 +1,13 @@
 package com.springboot.filmrentalstore.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,88 +19,85 @@ import jakarta.persistence.OneToMany;
 @Entity
 public class Store {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long storeId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long storeId;
 
-	@ManyToOne
-	@JsonBackReference
-	@JoinColumn(name = "address_id")
-	private Address address;
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    @JsonIgnore
+    private Address address;
 
-	@ManyToOne
-	@JsonBackReference
-	@JoinColumn(name = "staff_id")
-	private Staff manager;
+    @ManyToOne
+    @JoinColumn(name = "staff_id")
+    @JsonManagedReference // Handle bidirectional relationships
+    private Staff manager;
 
-	@OneToMany(mappedBy = "store")
-	@JsonManagedReference
-	private List<Customer> customers;
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference // Handle bidirectional relationships
+    private List<Staff> staffList;
 
-	@OneToMany(mappedBy = "store")
-	@JsonManagedReference
-	private List<Staff> staff_list;
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Customer> customers;
 
-	private LocalDateTime lastUpdate;
+    private LocalDateTime lastUpdate;
 
-	public Store() {
-		super();
-	}
+    public Store() {
+    }
 
-	public Store(Long storeId, Address address, Staff manager, LocalDateTime lastUpdate) {
-		super();
-		this.storeId = storeId;
-		this.address = address;
-		this.manager = manager;
-		this.lastUpdate = lastUpdate;
-	}
+    public Store(Long storeId, Address address, Staff manager, LocalDateTime lastUpdate) {
+        this.storeId = storeId;
+        this.address = address;
+        this.manager = manager;
+        this.lastUpdate = lastUpdate;
+    }
 
-	public Staff getManager() {
-		return manager;
-	}
+    public Long getStoreId() {
+        return storeId;
+    }
 
-	public void setManager(Staff manager) {
-		this.manager = manager;
-	}
+    public void setStoreId(Long storeId) {
+        this.storeId = storeId;
+    }
 
-	public Long getStoreId() {
-		return storeId;
-	}
+    public Address getAddress() {
+        return address;
+    }
 
-	public void setStoreId(Long storeId) {
-		this.storeId = storeId;
-	}
+    public void setAddress(Address address) {
+        this.address = address;
+    }
 
-	public Address getAddress() {
-		return address;
-	}
+    public Staff getManager() {
+        return manager;
+    }
 
-	public void setAddress(Address address) {
-		this.address = address;
-	}
+    public void setManager(Staff manager) {
+        this.manager = manager;
+    }
 
-	public List<Customer> getCustomers() {
-		return customers;
-	}
+    public List<Staff> getStaffList() {
+        return staffList;
+    }
 
-	public void setCustomers(List<Customer> customers) {
-		this.customers = customers;
-	}
+    public void setStaffList(List<Staff> staffList) {
+        this.staffList = staffList;
+    }
 
-	public List<Staff> getStaff_list() {
-		return staff_list;
-	}
+    public List<Customer> getCustomers() {
+        return customers;
+    }
 
-	public void setStaff_list(List<Staff> staff_list) {
-		this.staff_list = staff_list;
-	}
+    public void setCustomers(List<Customer> customers) {
+        this.customers = customers;
+    }
 
-	public LocalDateTime getLastUpdate() {
-		return lastUpdate;
-	}
+    public LocalDateTime getLastUpdate() {
+        return lastUpdate;
+    }
 
-	public void setLastUpdate(LocalDateTime lastUpdate) {
-		this.lastUpdate = lastUpdate;
-	}
-
+    public void setLastUpdate(LocalDateTime lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
 }

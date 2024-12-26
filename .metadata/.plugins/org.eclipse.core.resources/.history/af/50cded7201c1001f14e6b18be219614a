@@ -1,0 +1,140 @@
+package com.springboot.filmrentalstore;
+ 
+import com.springboot.filmrentalstore.DTO.PaymentDTO;
+import com.springboot.filmrentalstore.dao.PaymentDAO;
+import com.springboot.filmrentalstore.model.Payment;
+import com.springboot.filmrentalstore.model.Rental;
+import com.springboot.filmrentalstore.model.Inventory;
+import com.springboot.filmrentalstore.model.Store;
+import com.springboot.filmrentalstore.service.PaymentService;
+import com.springboot.filmrentalstore.model.Film;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+ 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+ 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+ 
+@ExtendWith(MockitoExtension.class)
+class PaymentServiceTest {
+ 
+    @InjectMocks
+    private PaymentService paymentService;
+ 
+    @Mock
+    private PaymentDAO paymentDAO;
+ 
+    private ModelMapper modelMapper = new ModelMapper();
+ 
+    private List<Payment> payments;
+ 
+    @BeforeEach
+    void setUp() {
+        payments = new ArrayList<>();
+        Payment payment1 = new Payment();
+        payment1.setPaymentDate(LocalDateTime.of(2023, 12, 1, 10, 0));
+        payment1.setAmount(100.0);
+        
+        Rental rental1 = new Rental();
+        Inventory inventory1 = new Inventory();
+        Store store1 = new Store();
+        store1.setStoreId(1L);
+        inventory1.setStore(store1);
+        Film film1 = new Film();
+        film1.setTitle("Film A");
+        film1.setFilmId(1L);
+        inventory1.setFilm(film1);
+        rental1.setInventory(inventory1);
+        payment1.setRental(rental1);
+ 
+        Payment payment2 = new Payment();
+        payment2.setPaymentDate(LocalDateTime.of(2023, 12, 2, 12, 0));
+        payment2.setAmount(150.0);
+ 
+        Rental rental2 = new Rental();
+        Inventory inventory2 = new Inventory();
+        Store store2 = new Store();
+        store2.setStoreId(2L);
+        inventory2.setStore(store2);
+        Film film2 = new Film();
+        film2.setTitle("Film B");
+        film2.setFilmId(2L);
+        inventory2.setFilm(film2);
+        rental2.setInventory(inventory2);
+        payment2.setRental(rental2);
+ 
+        payments.add(payment1);
+        payments.add(payment2);
+    }
+ 
+    @Test
+    void testAddPayment() {
+        PaymentDTO paymentDTO = new PaymentDTO();
+        paymentDTO.setAmount(200.0);
+        paymentDTO.setPaymentDate(LocalDateTime.now());
+        paymentDTO.setLastUpdate(LocalDateTime.now());
+ 
+        Payment payment = modelMapper.map(paymentDTO, Payment.class);
+        when(paymentDAO.save(any(Payment.class))).thenReturn(payment);
+ 
+        PaymentDTO savedPaymentDTO = paymentService.addPayment(paymentDTO);
+ 
+        assertNotNull(savedPaymentDTO);
+        assertEquals(paymentDTO.getAmount(), savedPaymentDTO.getAmount());
+        verify(paymentDAO, times(1)).save(any(Payment.class));
+    }
+    @Test
+    void testGetCumulativeRevenueByStoreDatewise() {
+        when(paymentDAO.findAll()).thenReturn(payments);
+ 
+        Map<LocalDate, Double> revenueMap = paymentService.getCumulativeRevenueByStoreDatewise(1L);
+ 
+        assertEquals(1, revenueMap.size());
+        assertEquals(100.0, revenueMap.get(LocalDate.of(2023, 12, 1)));
+        verify(paymentDAO, times(1)).findAll();
+    }
+ 
+    @Test
+    void testGetCumulativeRevenueFilmwise() {
+        when(paymentDAO.findAll()).thenReturn(payments);
+ 
+        Map<String, Double> filmRevenueMap = paymentService.getCumulativeRevenueFilmwise();
+ 
+        assertEquals(2, filmRevenueMap.size());
+        assertEquals(100.0, filmRevenueMap.get("Film A"));
+        assertEquals(150.0, filmRevenueMap.get("Film B"));
+        verify(paymentDAO, times(1)).findAll();
+    }
+ 
+    @Test
+    void testGetCumulativeRevenueByFilmStorewise() {
+        when(paymentDAO.findAll()).thenReturn(payments);
+ 
+        Map<String, Double> filmStoreRevenueMap = paymentService.getCumulativeRevenueByFilmStorewise(1L);
+ 
+        assertEquals(1, filmStoreRevenueMap.size());
+        assertEquals(100.0, filmStoreRevenueMap.get("Film A - null"));
+        verify(paymentDAO, times(1)).findAll();
+    }
+ 
+    @Test
+    void testGetCumulativeRevenueFilmsByStore() {
+        when(paymentDAO.findAll()).thenReturn(payments);
+ 
+        Map<String, Double> filmRevenueMap = paymentService.getCumulativeRevenueFilmsByStore(1L);
+ 
+        assertEquals(1, filmRevenueMap.size());
+        assertEquals(100.0, filmRevenueMap.get("Film A"));
+        verify(paymentDAO, times(1)).findAll();
+    }
+}
+ 
+ 

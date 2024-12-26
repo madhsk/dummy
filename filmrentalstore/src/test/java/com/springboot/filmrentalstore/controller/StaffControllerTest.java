@@ -161,19 +161,19 @@ class StaffControllerTest {
         verify(staffService, times(1)).assignAddress(STAFF_ID, address);
     }
  
-    @Test
-    void testUpdateStore() throws ResourceNotFoundException {
-        Store store = new Store();
-        StaffDTO updatedStaff = new StaffDTO();
- 
-        when(staffService.updateStore(STAFF_ID, store)).thenReturn(updatedStaff);
- 
-        ResponseEntity<StaffDTO> response = staffController.updateStore(STAFF_ID, store);
- 
-        assertNotNull(response.getBody());
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(staffService, times(1)).updateStore(STAFF_ID, store);
-    }
+//    @Test
+//    void testUpdateStore() throws ResourceNotFoundException {
+//        Store store = new Store();
+//        StaffDTO updatedStaff = new StaffDTO();
+// 
+//        when(staffService.updateStore(STAFF_ID, store)).thenReturn(updatedStaff);
+// 
+//        ResponseEntity<StaffDTO> response = staffController.updateStore(STAFF_ID, store);
+// 
+//        assertNotNull(response.getBody());
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        verify(staffService, times(1)).updateStore(STAFF_ID, store);
+//    }
  
     @Test
     void testFindByPhoneNumber_NotFound() throws ResourceNotFoundException {

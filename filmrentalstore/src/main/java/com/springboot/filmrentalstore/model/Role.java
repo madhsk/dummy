@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 @Entity
 public class Role {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long role_id;
 
 	private String role_name; // Field name 'role_name'

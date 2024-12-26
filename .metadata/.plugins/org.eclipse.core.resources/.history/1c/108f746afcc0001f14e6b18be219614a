@@ -1,0 +1,204 @@
+package com.springboot.filmrentalstore.service;
+
+import com.springboot.filmrentalstore.DTO.*;
+import com.springboot.filmrentalstore.dao.*;
+import com.springboot.filmrentalstore.exception.ResourceNotFoundException;
+import com.springboot.filmrentalstore.model.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+public class StoreServiceTest {
+
+    @InjectMocks
+    private StoreService storeService;
+
+    @Mock
+    private StoreDAO storeDAO;
+
+    @Mock
+    private AddressDAO addressDAO;
+
+    @Mock
+    private CustomerDAO customerDAO;
+
+    @Mock
+    private StaffDAO staffDAO;
+
+    @Mock
+    private ModelMapper modelMapper;
+
+    @BeforeEach
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    public void testGetAllStores() {
+        // Arrange
+        Store store1 = new Store();
+        Store store2 = new Store();
+        when(storeDAO.findAll()).thenReturn(Arrays.asList(store1, store2));
+
+        // Act
+        List<Store> stores = storeService.getAllStores();
+
+        // Assert
+        assertEquals(2, stores.size());
+        verify(storeDAO, times(1)).findAll();
+    }
+
+    @Test
+    public void testAddStore() throws ResourceNotFoundException {
+        // Arrange
+        StoreCreateDTO storeCreateDTO = new StoreCreateDTO();
+        storeCreateDTO.setAddressId(1L);
+
+        Address address = new Address();
+        address.setAddressId(1L);
+
+        Store store = new Store();
+        store.setAddress(address);
+        store.setLastUpdate(LocalDateTime.now());
+
+        when(addressDAO.findById(1L)).thenReturn(Optional.of(address));
+        when(storeDAO.save(any(Store.class))).thenReturn(store);
+
+        // Act
+        Store savedStore = storeService.addStore(storeCreateDTO);
+
+        // Assert
+        assertNotNull(savedStore);
+        assertEquals(address, savedStore.getAddress());
+        verify(addressDAO, times(1)).findById(1L);
+        verify(storeDAO, times(1)).save(any(Store.class));
+    }
+
+    @Test
+    public void testAddStore_AddressNotFound() {
+        // Arrange
+        StoreCreateDTO storeCreateDTO = new StoreCreateDTO();
+        storeCreateDTO.setAddressId(1L);
+
+        when(addressDAO.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> storeService.addStore(storeCreateDTO));
+        verify(addressDAO, times(1)).findById(1L);
+        verify(storeDAO, never()).save(any(Store.class));
+    }
+
+    @Test
+    public void testAssignAddressToStore() throws ResourceNotFoundException {
+        // Arrange
+        Long storeId = 1L;
+        Long addressId = 2L;
+
+        Store store = new Store();
+        store.setStoreId(storeId);
+
+        Address address = new Address();
+        address.setAddressId(addressId);
+
+        Store updatedStore = new Store();
+        updatedStore.setStoreId(storeId);
+        updatedStore.setAddress(address);
+
+        StoreDTO storeDTO = new StoreDTO();
+
+        when(storeDAO.findById(storeId)).thenReturn(Optional.of(store));
+        when(addressDAO.findById(addressId)).thenReturn(Optional.of(address));
+        when(storeDAO.save(any(Store.class))).thenReturn(updatedStore);
+        when(modelMapper.map(updatedStore, StoreDTO.class)).thenReturn(storeDTO);
+
+        // Act
+        StoreDTO result = storeService.assignAddressToStore(storeId, addressId);
+
+        // Assert
+        assertNotNull(result);
+        verify(storeDAO, times(1)).findById(storeId);
+        verify(addressDAO, times(1)).findById(addressId);
+        verify(storeDAO, times(1)).save(any(Store.class));
+        verify(modelMapper, times(1)).map(updatedStore, StoreDTO.class);
+    }
+
+    @Test
+    public void testGetStoresByCity() throws ResourceNotFoundException {
+        // Arrange
+        String cityName = "New York";
+
+        Address address = new Address();
+        City city = new City();
+        city.setCityName(cityName);
+        address.setCity(city);
+
+        Store store = new Store();
+        store.setAddress(address);
+
+        StoreDTO storeDTO = new StoreDTO();
+
+        when(storeDAO.findAll()).thenReturn(Collections.singletonList(store));
+        when(modelMapper.map(store, StoreDTO.class)).thenReturn(storeDTO);
+
+        // Act
+        List<StoreDTO> result = storeService.getStoresByCity(cityName);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(storeDAO, times(1)).findAll();
+        verify(modelMapper, times(1)).map(store, StoreDTO.class);
+    }
+
+    @Test
+    public void testGetStoresByCity_NotFound() {
+        // Arrange
+        String cityName = "NonExistentCity";
+
+        when(storeDAO.findAll()).thenReturn(Collections.emptyList());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> storeService.getStoresByCity(cityName));
+        verify(storeDAO, times(1)).findAll();
+    }
+
+    @Test
+    public void testUpdatePhoneNumber() throws ResourceNotFoundException {
+        // Arrange
+        Long storeId = 1L;
+        String newPhone = "123-456-7890";
+
+        Address address = new Address();
+        Store store = new Store();
+        store.setStoreId(storeId);
+        store.setAddress(address);
+
+        when(storeDAO.findById(storeId)).thenReturn(Optional.of(store));
+        when(addressDAO.save(address)).thenReturn(address);
+
+        // Act
+        String result = storeService.updatePhoneNumber(storeId, newPhone);
+
+        // Assert
+        assertEquals("Phone Number Updated Successfully To " + newPhone, result);
+        assertEquals(newPhone, address.getPhone());
+        verify(storeDAO, times(1)).findById(storeId);
+        verify(addressDAO, times(1)).save(address);
+    }
+}
+

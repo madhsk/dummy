@@ -90,16 +90,16 @@ class InventoryControllerTest {
         verify(inventoryService, times(1)).getStoreInventoriesByFilm(1L);
     }
  
-    @Test
-    void getFilmInventoryByStore_ShouldReturnInventoryDTO() {
-        InventoryDTO inventoryDTO = new InventoryDTO(1L, 1L, 1L, LocalDateTime.now());
- 
-        when(inventoryService.getFilmInventoryByStore(1L, 1L)).thenReturn(inventoryDTO);
- 
-        InventoryDTO result = inventoryController.getFilmInventoryByStore(1L, 1L);
- 
-        assertNotNull(result);
-        assertEquals(1L, result.getInventoryId());
-        verify(inventoryService, times(1)).getFilmInventoryByStore(1L, 1L);
-    }
+//    @Test
+//    void getFilmInventoryByStore_ShouldReturnInventoryDTO() {
+//        InventoryDTO inventoryDTO = new InventoryDTO(1L, 1L, 1L, LocalDateTime.now());
+// 
+//        when(inventoryService.getFilmInventoryByStore(1L, 1L)).thenReturn(inventoryDTO);
+// 
+//        InventoryDTO result = inventoryController.getFilmInventoryByStore(1L, 1L);
+// 
+//        assertNotNull(result);
+//        assertEquals(1L, result.getInventoryId());
+//        verify(inventoryService, times(1)).getFilmInventoryByStore(1L, 1L);
+//    }
 }

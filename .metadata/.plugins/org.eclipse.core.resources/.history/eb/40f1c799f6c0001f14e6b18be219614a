@@ -1,0 +1,143 @@
+package com.springboot.filmrentalstore;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+ 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+ 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import com.springboot.filmrentalstore.DTO.*;
+import com.springboot.filmrentalstore.dao.*;
+import com.springboot.filmrentalstore.exception.*;
+import com.springboot.filmrentalstore.model.*;
+import com.springboot.filmrentalstore.service.*;
+ 
+ 
+class InventoryServiceTest {
+ 
+    @InjectMocks
+    private InventoryService inventoryService;
+ 
+    @Mock
+    private InventoryDAO inventoryRepository;
+ 
+    @Mock
+    private FilmDAO filmRepository;
+ 
+    @Mock
+    private StoreDAO storeRepository;
+ 
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+ 
+    @Test
+    void testGetAllFilmInventories() {
+        // Arrange
+        List<Inventory> mockInventories = new ArrayList<>();
+        Inventory inventory = new Inventory();
+        inventory.setInventoryId(1L);
+        inventory.setFilm(new Film(1L, "Sample Film")); // Assuming Film has a constructor
+        inventory.setStore(new Store(1L, "Sample Store")); // Assuming Store has a constructor
+        inventory.setLastUpdate(LocalDateTime.now());
+        mockInventories.add(inventory);
+ 
+        when(inventoryRepository.findAll()).thenReturn(mockInventories);
+ 
+        // Act
+        List<InventoryDTO> result = inventoryService.getAllFilmInventories();
+ 
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(1L, result.get(0).getFilmId());
+        assertEquals(1L, result.get(0).getStoreId());
+    }
+ 
+    @Test
+    void testAddFilmToStoreSuccess() throws ResourceNotFoundException {
+        // Arrange
+        InventoryDTO inventoryDTO = new InventoryDTO(1L, 1L, 1L, LocalDateTime.now());
+        Film film = new Film();
+        film.setFilmId(1L);
+        Store store = new Store();
+        store.setStoreId(1L);
+ 
+        when(filmRepository.findById(1L)).thenReturn(Optional.of(film));
+        when(storeRepository.findById(1L)).thenReturn(Optional.of(store));
+        when(inventoryRepository.save(any(Inventory.class))).thenAnswer(invocation -> invocation.getArgument(0));
+ 
+        // Act
+        Inventory result = inventoryService.addFilmToStore(inventoryDTO);
+ 
+        // Assert
+        assertNotNull(result);
+        assertEquals(film, result.getFilm());
+        assertEquals(store, result.getStore());
+    }
+ 
+    @Test
+    void testAddFilmToStoreFilmNotFound() {
+        // Arrange
+        InventoryDTO inventoryDTO = new InventoryDTO(1L, 1L, 1L, LocalDateTime.now());
+ 
+        when(filmRepository.findById(1L)).thenReturn(Optional.empty());
+ 
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> inventoryService.addFilmToStore(inventoryDTO));
+    }
+ 
+    @Test
+    void testGetStoreInventoriesByFilm() {
+        // Arrange
+        List<Inventory> mockInventories = new ArrayList<>();
+        Inventory inventory = new Inventory();
+        inventory.setInventoryId(1L);
+        inventory.setFilm(new Film(1L, "Sample Film"));
+        inventory.setStore(new Store(1L, "Sample Store"));
+        inventory.setLastUpdate(LocalDateTime.now());
+        mockInventories.add(inventory);
+ 
+        when(inventoryRepository.findByFilm_FilmId(1L)).thenReturn(mockInventories);
+ 
+        // Act
+        List<InventoryDTO> result = inventoryService.getStoreInventoriesByFilm(1L);
+ 
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(1L, result.get(0).getFilmId());
+        assertEquals(1L, result.get(0).getStoreId());
+    }
+ 
+    @Test
+    void testGetFilmInventoriesByStore() {
+        // Arrange
+        List<Inventory> mockInventories = new ArrayList<>();
+        Inventory inventory = new Inventory();
+        inventory.setInventoryId(1L);
+        inventory.setFilm(new Film(1L, "Sample Film"));
+        inventory.setStore(new Store());
+        inventory.setLastUpdate(LocalDateTime.now());
+        mockInventories.add(inventory);
+ 
+        when(inventoryRepository.findByStore_StoreId(1L)).thenReturn(mockInventories);
+ 
+        // Act
+        List<InventoryDTO> result = inventoryService.getFilmInventoriesByStore(1L);
+ 
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(1L, result.get(0).getStoreId());
+    }
+}

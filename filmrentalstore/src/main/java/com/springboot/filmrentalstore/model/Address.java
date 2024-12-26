@@ -22,7 +22,7 @@ import jakarta.persistence.Table;
 public class Address {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long addressId;
 
 	private String address;
@@ -32,7 +32,7 @@ public class Address {
 	private String district;
 
 	@ManyToOne
-	@JsonBackReference
+	@JsonIgnore
 	@JoinColumn(name = "city_id")
 	private City city;
 
@@ -44,8 +44,6 @@ public class Address {
 
 	@OneToMany(mappedBy = "address", cascade = CascadeType.ALL)
 	@JsonIgnore
-	// @JsonManagedReference // Prevents infinite recursion; handles serialization
-	// of stores
 	private List<Store> stores;
 
 	public Address() {

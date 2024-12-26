@@ -18,14 +18,21 @@ public class PaymentController {
 	@Autowired
 	private PaymentService paymentService;
 
-	@PutMapping("/add")
-	public ResponseEntity<String> addPayment(@RequestBody PaymentDTO paymentDTO) throws InvalidInputException {
-		if (paymentDTO.getAmount() <= 0) {
-			throw new InvalidInputException("Payment amount must be greater than zero.");
-		}
-		paymentService.addPayment(paymentDTO);
-		return ResponseEntity.ok("Record Created Successfully");
+	@PostMapping("/add")
+	public ResponseEntity<String> addPayment(@RequestBody PaymentDTO paymentDTO) {
+	    try {
+	        if (paymentDTO.getAmount() <= 0) {
+	            throw new InvalidInputException("Payment amount must be greater than zero.");
+	        }
+	        paymentService.addPayment(paymentDTO);
+	        return ResponseEntity.ok("Record Created Successfully");
+	    } catch (InvalidInputException e) {
+	        return ResponseEntity.badRequest().body("Invalid input: " + e.getMessage());
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
+	    }
 	}
+
 
 	@GetMapping("/revenue/datewise")
 	public ResponseEntity<Map<LocalDate, Double>> getRevenueDatewise() {

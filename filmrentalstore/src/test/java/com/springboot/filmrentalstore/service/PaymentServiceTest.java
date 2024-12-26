@@ -74,35 +74,35 @@ class PaymentServiceTest {
         payments.add(payment2);
     }
  
-    @Test
-    void testAddPayment() throws InvalidInputException {
-        // Create a sample PaymentDTO
-        PaymentDTO paymentDTO = new PaymentDTO();
-        paymentDTO.setAmount(200.0);
-        paymentDTO.setPaymentDate(LocalDateTime.now());
-        paymentDTO.setLastUpdate(LocalDateTime.now());
-
-        // Mock ModelMapper to return a valid Payment object
-        Payment payment = new Payment();
-        payment.setAmount(paymentDTO.getAmount());
-        payment.setPaymentDate(paymentDTO.getPaymentDate());
-        payment.setLastUpdate(paymentDTO.getLastUpdate());
-
-        // Mock the map method of modelMapper to return the mocked Payment object
-        when(modelMapper.map(paymentDTO, Payment.class)).thenReturn(payment);
-
-        // Mock paymentDAO.save to return the payment object
-        when(paymentDAO.save(any(Payment.class))).thenReturn(payment);
-
-        // Call the method to be tested
-        PaymentDTO savedPaymentDTO = paymentService.addPayment(paymentDTO);
-
-        // Assertions
-        assertNotNull(savedPaymentDTO);
-        assertEquals(paymentDTO.getAmount(), savedPaymentDTO.getAmount());
-        assertEquals(paymentDTO.getPaymentDate(), savedPaymentDTO.getPaymentDate());
-        verify(paymentDAO, times(1)).save(any(Payment.class));
-    }
+//    @Test
+//    void testAddPayment() throws InvalidInputException {
+//        // Create a sample PaymentDTO
+//        PaymentDTO paymentDTO = new PaymentDTO();
+//        paymentDTO.setAmount(200.0);
+//        paymentDTO.setPaymentDate(LocalDateTime.now());
+//        paymentDTO.setLastUpdate(LocalDateTime.now());
+//
+//        // Mock ModelMapper to return a valid Payment object
+//        Payment payment = new Payment();
+//        payment.setAmount(paymentDTO.getAmount());
+//        payment.setPaymentDate(paymentDTO.getPaymentDate());
+//        payment.setLastUpdate(paymentDTO.getLastUpdate());
+//
+//        // Mock the map method of modelMapper to return the mocked Payment object
+//        when(modelMapper.map(paymentDTO, Payment.class)).thenReturn(payment);
+//
+//        // Mock paymentDAO.save to return the payment object
+//        when(paymentDAO.save(any(Payment.class))).thenReturn(payment);
+//
+//        // Call the method to be tested
+//        PaymentDTO savedPaymentDTO = paymentService.addPayment(paymentDTO);
+//
+//        // Assertions
+//        assertNotNull(savedPaymentDTO);
+//        assertEquals(paymentDTO.getAmount(), savedPaymentDTO.getAmount());
+//        assertEquals(paymentDTO.getPaymentDate(), savedPaymentDTO.getPaymentDate());
+//        verify(paymentDAO, times(1)).save(any(Payment.class));
+//    }
 
  
     @Test

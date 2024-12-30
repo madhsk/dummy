@@ -79,7 +79,6 @@ INDEX VERSION 1.134+C:\Users\madhsk\Film_Rental_Project\backend\.metadata\.plugi
 2058590802.index
 455040115.index
 3861693606.index
-2776791426.index
 2890692333.index
 1219606657.index
 1355477364.index

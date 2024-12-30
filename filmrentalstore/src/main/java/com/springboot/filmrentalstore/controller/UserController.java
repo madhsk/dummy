@@ -33,7 +33,29 @@ public class UserController {
 		// Create and assign roles
 		List<Role> assignedRoles = new ArrayList<>();
 		Role userRole = new Role();
-		userRole.setRole_name("ROLE_USER"); // Default role for new users
+		userRole.setRole_name("ROLE_STAFF"); // Default role for new users
+		assignedRoles.add(userRole);
+		userRole.setUser(user);
+		user.setRoles(assignedRoles);
+		try {
+			userService.saveUser(user);
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body(new Response("REGISTERSUCCESS", "User created successfully"));
+		} catch (Exception e) {
+			// Log the exception for better debugging
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new Response("REGISTERFAIL", "Error creating user"));
+		}
+	}
+	@PostMapping("/admin/register")
+	public ResponseEntity<?> adminUser(@RequestBody UserEntity user) {
+		// Encode the password before saving the user
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		// Create and assign roles
+		List<Role> assignedRoles = new ArrayList<>();
+		Role userRole = new Role();
+		userRole.setRole_name("ROLE_ADMIN"); // Default role for new users
 		assignedRoles.add(userRole);
 		userRole.setUser(user);
 		user.setRoles(assignedRoles);

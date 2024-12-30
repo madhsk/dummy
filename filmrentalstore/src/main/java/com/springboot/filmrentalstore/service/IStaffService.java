@@ -7,6 +7,9 @@ import com.springboot.filmrentalstore.exception.ResourceNotFoundException;
 import com.springboot.filmrentalstore.model.*;
 
 public interface IStaffService {
+	
+	public List<StaffDTO> findAll();
+	
 	public StaffDTO addStaff(StaffDTO staffDTO);
 
 	public List<StaffDTO> findStaffByLastName(String lastName) throws ResourceNotFoundException;
@@ -35,6 +38,6 @@ public interface IStaffService {
 	public StaffDTO updateStore(Long id, Store store) throws ResourceNotFoundException;
 
 //	public StaffDTO findByUsername(String username);
-	public StaffDTO authenticateStaff(String username, String password);
+	//public StaffDTO authenticateStaff(String username, String password);
 
 }

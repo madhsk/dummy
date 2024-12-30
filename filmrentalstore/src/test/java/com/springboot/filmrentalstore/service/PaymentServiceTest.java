@@ -1,156 +1,157 @@
 package com.springboot.filmrentalstore.service;
+
+import com.springboot.filmrentalstore.DTO.*;
 import com.springboot.filmrentalstore.DTO.PaymentDTO;
 import com.springboot.filmrentalstore.exception.InvalidInputException;
-import com.springboot.filmrentalstore.model.Payment;
-import com.springboot.filmrentalstore.model.Rental;
-import com.springboot.filmrentalstore.model.Inventory;
-import com.springboot.filmrentalstore.model.Store;
+import com.springboot.filmrentalstore.model.*;
 import com.springboot.filmrentalstore.repo.PaymentRepo;
-import com.springboot.filmrentalstore.service.PaymentService;
-import com.springboot.filmrentalstore.model.Film;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
- 
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
- 
-@ExtendWith(MockitoExtension.class)
+
 class PaymentServiceTest {
- 
-    @InjectMocks
-    private PaymentService paymentService;
- 
-    @Mock
-    private PaymentRepo paymentDAO;
-    @Mock
+
+    private PaymentRepo paymentRepo;
     private ModelMapper modelMapper;
- 
-    private List<Payment> payments;
- 
+    private PaymentService paymentService;
+
     @BeforeEach
     void setUp() {
-        payments = new ArrayList<>();
-        Payment payment1 = new Payment();
-        payment1.setPaymentDate(LocalDateTime.of(2023, 12, 1, 10, 0));
-        payment1.setAmount(100.0);
-        
-        Rental rental1 = new Rental();
-        Inventory inventory1 = new Inventory();
-        Store store1 = new Store();
-        store1.setStoreId(1L);
-        inventory1.setStore(store1);
-        Film film1 = new Film();
-        film1.setTitle("Film A");
-        film1.setFilmId(1L);
-        inventory1.setFilm(film1);
-        rental1.setInventory(inventory1);
-        payment1.setRental(rental1);
- 
-        Payment payment2 = new Payment();
-        payment2.setPaymentDate(LocalDateTime.of(2023, 12, 2, 12, 0));
-        payment2.setAmount(150.0);
- 
-        Rental rental2 = new Rental();
-        Inventory inventory2 = new Inventory();
-        Store store2 = new Store();
-        store2.setStoreId(2L);
-        inventory2.setStore(store2);
-        Film film2 = new Film();
-        film2.setTitle("Film B");
-        film2.setFilmId(2L);
-        inventory2.setFilm(film2);
-        rental2.setInventory(inventory2);
-        payment2.setRental(rental2);
- 
-        payments.add(payment1);
-        payments.add(payment2);
-    }
- 
-//    @Test
-//    void testAddPayment() throws InvalidInputException {
-//        // Create a sample PaymentDTO
-//        PaymentDTO paymentDTO = new PaymentDTO();
-//        paymentDTO.setAmount(200.0);
-//        paymentDTO.setPaymentDate(LocalDateTime.now());
-//        paymentDTO.setLastUpdate(LocalDateTime.now());
-//
-//        // Mock ModelMapper to return a valid Payment object
-//        Payment payment = new Payment();
-//        payment.setAmount(paymentDTO.getAmount());
-//        payment.setPaymentDate(paymentDTO.getPaymentDate());
-//        payment.setLastUpdate(paymentDTO.getLastUpdate());
-//
-//        // Mock the map method of modelMapper to return the mocked Payment object
-//        when(modelMapper.map(paymentDTO, Payment.class)).thenReturn(payment);
-//
-//        // Mock paymentDAO.save to return the payment object
-//        when(paymentDAO.save(any(Payment.class))).thenReturn(payment);
-//
-//        // Call the method to be tested
-//        PaymentDTO savedPaymentDTO = paymentService.addPayment(paymentDTO);
-//
-//        // Assertions
-//        assertNotNull(savedPaymentDTO);
-//        assertEquals(paymentDTO.getAmount(), savedPaymentDTO.getAmount());
-//        assertEquals(paymentDTO.getPaymentDate(), savedPaymentDTO.getPaymentDate());
-//        verify(paymentDAO, times(1)).save(any(Payment.class));
-//    }
-
- 
-    @Test
-    void testGetCumulativeRevenueDatewise() {
-        when(paymentDAO.findAll()).thenReturn(payments);
- 
-        Map<LocalDate, Double> revenueMap = paymentService.getCumulativeRevenueDatewise();
- 
-        assertEquals(2, revenueMap.size());
-        assertEquals(100.0, revenueMap.get(LocalDate.of(2023, 12, 1)));
-        assertEquals(150.0, revenueMap.get(LocalDate.of(2023, 12, 2)));
-        verify(paymentDAO, times(1)).findAll();
-    }
- 
-    @Test
-    void testGetCumulativeRevenueByStoreDatewise() {
-        when(paymentDAO.findAll()).thenReturn(payments);
- 
-        Map<LocalDate, Double> revenueMap = paymentService.getCumulativeRevenueByStoreDatewise(1L);
- 
-        assertEquals(1, revenueMap.size());
-        assertEquals(100.0, revenueMap.get(LocalDate.of(2023, 12, 1)));
-        verify(paymentDAO, times(1)).findAll();
-    }
- 
-    @Test
-    void testGetCumulativeRevenueFilmwise() {
-        when(paymentDAO.findAll()).thenReturn(payments);
- 
-        Map<String, Double> filmRevenueMap = paymentService.getCumulativeRevenueFilmwise();
- 
-        assertEquals(2, filmRevenueMap.size());
-        assertEquals(100.0, filmRevenueMap.get("Film A"));
-        assertEquals(150.0, filmRevenueMap.get("Film B"));
-        verify(paymentDAO, times(1)).findAll();
+        paymentRepo = mock(PaymentRepo.class);
+        modelMapper = new ModelMapper();
+        paymentService = new PaymentService();
+        paymentService.paymentRepo = paymentRepo;
+        paymentService.modelMapper = modelMapper;
     }
 
- 
     @Test
-    void testGetCumulativeRevenueFilmsByStore() {
-        when(paymentDAO.findAll()).thenReturn(payments);
- 
-        Map<String, Double> filmRevenueMap = paymentService.getCumulativeRevenueFilmsByStore(1L);
- 
-        assertEquals(1, filmRevenueMap.size());
-        assertEquals(100.0, filmRevenueMap.get("Film A"));
-        verify(paymentDAO, times(1)).findAll();
+    void addPayment_ValidPayment_ShouldSavePayment() throws InvalidInputException {
+        // Create nested DTO objects
+        CustomerDTO customerDTO = new CustomerDTO();
+        customerDTO.setCustomerId(1L);
+
+        StaffDTO staffDTO = new StaffDTO();
+        staffDTO.setStaffId(1L);
+
+        RentalDTO rentalDTO = new RentalDTO();
+        rentalDTO.setRentalId(1L);
+
+        // Create PaymentDTO and set all required fields
+        PaymentDTO paymentDTO = new PaymentDTO();
+        paymentDTO.setPaymentId(1L);
+        paymentDTO.setPaymentDate(LocalDateTime.now());
+        paymentDTO.setAmount(100.0);
+        paymentDTO.setLastUpdate(LocalDateTime.now());
+        paymentDTO.setCustomer(customerDTO);
+        paymentDTO.setStaff(staffDTO);
+        paymentDTO.setRental(rentalDTO);
+
+        // Act
+        paymentService.addPayment(paymentDTO);
+
+        // Assert
+        verify(paymentRepo, times(1)).save(Mockito.any(Payment.class));
+    }
+
+
+    @Test
+    void addPayment_InvalidPayment_ShouldThrowException() {
+        PaymentDTO paymentDTO = new PaymentDTO();
+        paymentDTO.setAmount(-10.0); // Invalid amount
+
+        // Act & Assert
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () -> {
+            paymentService.addPayment(paymentDTO);
+        });
+
+        assertEquals("Amount must be greater than zero.", exception.getMessage());
+    }
+
+    @Test
+    void getCumulativeRevenueDatewise_ShouldReturnCorrectRevenue() {
+        List<Payment> payments = new ArrayList<>();
+        payments.add(createPayment(1L, LocalDateTime.of(2023, 12, 1, 10, 0), 100.0));
+        payments.add(createPayment(2L, LocalDateTime.of(2023, 12, 1, 15, 0), 150.0));
+        payments.add(createPayment(3L, LocalDateTime.of(2023, 12, 2, 12, 0), 200.0));
+
+        when(paymentRepo.findAll()).thenReturn(payments);
+
+        Map<LocalDate, Double> revenue = paymentService.getCumulativeRevenueDatewise();
+
+        assertEquals(2, revenue.size());
+        assertEquals(250.0, revenue.get(LocalDate.of(2023, 12, 1)));
+        assertEquals(200.0, revenue.get(LocalDate.of(2023, 12, 2)));
+    }
+
+    @Test
+    void getCumulativeRevenueByStoreDatewise_ShouldReturnCorrectRevenue() {
+        List<Payment> payments = new ArrayList<>();
+        payments.add(createPaymentWithStore(1L, LocalDateTime.of(2023, 12, 1, 10, 0), 100.0, 1L));
+        payments.add(createPaymentWithStore(2L, LocalDateTime.of(2023, 12, 1, 15, 0), 150.0, 1L));
+        payments.add(createPaymentWithStore(3L, LocalDateTime.of(2023, 12, 2, 12, 0), 200.0, 2L));
+
+        when(paymentRepo.findAll()).thenReturn(payments);
+
+        Map<LocalDate, Double> revenue = paymentService.getCumulativeRevenueByStoreDatewise(1L);
+
+        assertEquals(1, revenue.size());
+        assertEquals(250.0, revenue.get(LocalDate.of(2023, 12, 1)));
+    }
+
+    @Test
+    void getCumulativeRevenueFilmwise_ShouldReturnCorrectRevenue() {
+        List<Payment> payments = new ArrayList<>();
+        payments.add(createPaymentWithFilm(1L, LocalDateTime.of(2023, 12, 1, 10, 0), 100.0, "Film A"));
+        payments.add(createPaymentWithFilm(2L, LocalDateTime.of(2023, 12, 1, 15, 0), 150.0, "Film B"));
+        payments.add(createPaymentWithFilm(3L, LocalDateTime.of(2023, 12, 2, 12, 0), 200.0, "Film A"));
+
+        when(paymentRepo.findAll()).thenReturn(payments);
+
+        Map<String, Double> revenue = paymentService.getCumulativeRevenueFilmwise();
+
+        assertEquals(2, revenue.size());
+        assertEquals(300.0, revenue.get("Film A"));
+        assertEquals(150.0, revenue.get("Film B"));
+    }
+
+    private Payment createPayment(Long id, LocalDateTime paymentDate, double amount) {
+        Payment payment = new Payment();
+        payment.setPaymentId(id);
+        payment.setPaymentDate(paymentDate);
+        payment.setAmount(amount);
+        return payment;
+    }
+
+    private Payment createPaymentWithStore(Long id, LocalDateTime paymentDate, double amount, Long storeId) {
+        Payment payment = createPayment(id, paymentDate, amount);
+        Store store = new Store();
+        store.setStoreId(storeId);
+        Inventory inventory = new Inventory();
+        inventory.setStore(store);
+        Rental rental = new Rental();
+        rental.setInventory(inventory);
+        payment.setRental(rental);
+        return payment;
+    }
+
+    private Payment createPaymentWithFilm(Long id, LocalDateTime paymentDate, double amount, String filmTitle) {
+        Payment payment = createPayment(id, paymentDate, amount);
+        Film film = new Film();
+        film.setTitle(filmTitle);
+        Inventory inventory = new Inventory();
+        inventory.setFilm(film);
+        Rental rental = new Rental();
+        rental.setInventory(inventory);
+        payment.setRental(rental);
+        return payment;
     }
 }
- 
- 

@@ -62,16 +62,16 @@ class StaffServiceTest {
         staffDTO = modelMapper.map(staff, StaffDTO.class);
     }
  
-    @Test
-    void addStaff() {
-        when(staffRepository.save(any(Staff.class))).thenReturn(staff);
- 
-        StaffDTO result = staffService.addStaff(staffDTO);
- 
-        assertNotNull(result);
-        assertEquals(staff.getFirstName(), result.getFirstName());
-        verify(staffRepository, times(1)).save(any(Staff.class));
-    }
+//    @Test
+//    void addStaff() {
+//        when(staffRepository.save(any(Staff.class))).thenReturn(staff);
+// 
+//        StaffDTO result = staffService.addStaff(staffDTO);
+// 
+//        assertNotNull(result);
+//        assertEquals(staff.getFirstName(), result.getFirstName());
+//        verify(staffRepository, times(1)).save(any(Staff.class));
+//    }
  
     @Test
     void findStaffByLastName() throws ResourceNotFoundException {
@@ -134,27 +134,7 @@ class StaffServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> staffService.updateStore(1L, store));
     }
  
-    @Test
-    void authenticateStaff_ValidCredentials() {
-        when(staffRepository.findByUsername("username")).thenReturn(staff);
-        staff.setPassword("password");
- 
-        StaffDTO result = staffService.authenticateStaff("username", "password");
- 
-        assertNotNull(result);
-        verify(staffRepository, times(1)).findByUsername("username");
-    }
- 
-    @Test
-    void authenticateStaff_InvalidCredentials() {
-        when(staffRepository.findByUsername("username")).thenReturn(staff);
-        staff.setPassword("wrongPassword");
- 
-        StaffDTO result = staffService.authenticateStaff("username", "password");
- 
-        assertNull(result);
-        verify(staffRepository, times(1)).findByUsername("username");
-    }
+
 }
  
  

@@ -1,0 +1,468 @@
+package com.springboot.filmrentalstore.controller;
+ 
+import com.springboot.filmrentalstore.DTO.FilmDTO;
+import com.springboot.filmrentalstore.exception.InvalidInputException;
+import com.springboot.filmrentalstore.exception.ResourceNotFoundException;
+import com.springboot.filmrentalstore.service.FilmService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+ 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+ 
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+ 
+class FilmControllerTest {
+ 
+    private MockMvc mockMvc;
+ 
+    @Mock
+    private FilmService filmService;
+ 
+    @InjectMocks
+    private FilmController filmController;
+ 
+    private FilmDTO filmDTO;
+ 
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(filmController).build();
+ 
+        // Create a sample FilmDTO for testing
+        filmDTO = new FilmDTO();
+        filmDTO.setFilmId(1L);
+        filmDTO.setTitle("Test Film");
+        filmDTO.setRelease_year(2023);
+        filmDTO.setRental_duration(7);
+        filmDTO.setRating(5);}
+        
+        
+        
+ 
+    // POST: Add a film
+    @Test
+    void testAddFilm() throws Exception {
+        // Mock the service call
+        doNothing().when(filmService).addFilm(Mockito.any(FilmDTO.class));
+
+        // Perform the POST request
+        mockMvc.perform(post("/api/films/post")
+                        .contentType("application/json")
+                        .content("{ \"title\": \"Test Film\", \"releaseYear\": 2023, \"rentalDuration\": 7, \"rentalRate\": 3.99, \"rating\": 5, \"language\": \"English\" }"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Record Saved"));
+
+        // Verify the interaction with the service
+        verify(filmService, times(1)).addFilm(Mockito.any(FilmDTO.class));
+    }
+
+ 
+  
+ 
+    // GET: Get all films
+    @Test
+    void testGetAllFilms() throws Exception {
+        // Mock the service call
+        when(filmService.getAllFilm()).thenReturn(List.of(filmDTO));
+ 
+        // Perform the GET request
+        mockMvc.perform(get("/api/films"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value("Test Film"));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).getAllFilm();
+    }
+ 
+    // GET: Find film by title
+    @Test
+    void testFindFilmByTitle() throws Exception {
+        // Mock the service call
+        when(filmService.findFilmsByTitle("Test Film")).thenReturn(filmDTO);
+ 
+        // Perform the GET request
+        mockMvc.perform(get("/api/films/title/Test Film"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Test Film"));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).findFilmsByTitle("Test Film");
+    }
+ 
+    
+ 
+    // GET: Find films by release year
+    @Test
+    void testFindFilmsByReleaseYear() throws Exception {
+        // Mock the service call
+        when(filmService.findFilmsByReleaseYear(2023)).thenReturn(List.of(filmDTO));
+ 
+        // Perform the GET request
+        mockMvc.perform(get("/api/films/year/2023"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].releaseYear").value(2023));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).findFilmsByReleaseYear(2023);
+    }
+ 
+   
+// GET: Films where rental duration is greater
+    @Test
+    void testFindFilmsWhereRentalDurationIsGreater() throws Exception {
+        // Mock the service call
+        when(filmService.findFilmsByRentalDuration(5)).thenReturn(List.of(filmDTO));
+ 
+        // Perform the GET request
+        mockMvc.perform(get("/api/films/duration/gt/5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].rentalDuration").value(7));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).findFilmsByRentalDuration(5);
+    }
+ 
+    
+ 
+    // GET: Films where rental rate is greater
+    @Test
+    void testFindFilmsWhereRentalRateIsGreater() throws Exception {
+        // Mock the service call
+        when(filmService.findFilmsWhereRentalRateIsGreater(3.0)).thenReturn(List.of(filmDTO));
+ 
+        // Perform the GET request
+        mockMvc.perform(get("/api/films/rate/gt/3.0"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].rentalRate").value(3.99));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).findFilmsWhereRentalRateIsGreater(3.0);
+    }
+ 
+   
+ 
+    // GET: Films where length is greater
+    @Test
+    void testFindFilmsWhereLengthIsGreater() throws Exception {
+        // Mock the service call
+        when(filmService.findFilmsWhereLengthIsGreater(90)).thenReturn(List.of(filmDTO));
+ 
+        // Perform the GET request
+        mockMvc.perform(get("/api/films/length/gt/90"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].length").value(7));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).findFilmsWhereLengthIsGreater(90);
+    }
+ 
+    
+ 
+    // GET: Films where rental duration is lower
+    @Test
+    void testFindFilmsWhereRentalDurationIsLower() throws Exception {
+        // Mock the service call
+        when(filmService.findFilmsWhereRentalDurationIsLower(10)).thenReturn(List.of(filmDTO));
+ 
+        // Perform the GET request
+        mockMvc.perform(get("/api/films/duration/lt/10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].rentalDuration").value(7));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).findFilmsWhereRentalDurationIsLower(10);
+    }
+ 
+    
+ 
+    // GET: Films where rental rate is lower
+    @Test
+    void testFindFilmsWhereRentalRateIsLower() throws Exception {
+        // Mock the service call
+        when(filmService.findFilmsWhereRateIsLower(5.0)).thenReturn(List.of(filmDTO));
+ 
+        // Perform the GET request
+        mockMvc.perform(get("/api/films/rate/lt/5.0"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].rentalRate").value(3.99));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).findFilmsWhereRateIsLower(5.0);
+    }
+ 
+   
+    
+    // GET: Films where length is lower
+    @Test
+    void testFindFilmsWhereLengthIsLower() throws Exception {
+        // Mock the service call
+        when(filmService.findFilmsWhereLengthIsLower(100)).thenReturn(List.of(filmDTO));
+ 
+        // Perform the GET request
+        mockMvc.perform(get("/api/films/length/lt/100"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].length").value(7));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).findFilmsWhereLengthIsLower(100);
+    }
+ 
+    
+    // GET: Films between years
+    @Test
+    void testFindFilmBetweenYear() throws Exception {
+        // Mock the service call
+        when(filmService.findFilmBetweenYear(2000, 2023)).thenReturn(List.of(filmDTO));
+ 
+        // Perform the GET request
+        mockMvc.perform(get("/api/films/betweenyear/2000/2023"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].releaseYear").value(2023));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).findFilmBetweenYear(2000, 2023);
+    }
+ 
+ 
+    // GET: Films where rating is lower
+    @Test
+    void testFindFilmsWhereRatingIsLower() throws Exception {
+        // Mock the service call
+        when(filmService.findFilmsWhereRatingIsLower(6)).thenReturn(List.of(filmDTO));
+ 
+        // Perform the GET request
+        mockMvc.perform(get("/api/films/rating/lt/6"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].rating").value(5));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).findFilmsWhereRatingIsLower(6);
+    }
+ 
+    
+ 
+    // GET: Films where rating is higher
+    @Test
+    void testFindFilmsWhereRatingIsHigher() throws Exception {
+        // Mock the service call
+        when(filmService.findFilmsWhereRatingIsHigher(3)).thenReturn(List.of(filmDTO));
+ 
+        // Perform the GET request
+        mockMvc.perform(get("/api/films/rating/gt/3"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].rating").value(5));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).findFilmsWhereRatingIsHigher(3);
+    }
+ 
+    
+ 
+    // GET: Films by language
+    @Test
+    void testFindFilmsByLanguage() throws Exception {
+        // Mock the service call
+        when(filmService.findFilmsByLanguage("English")).thenReturn(List.of(filmDTO));
+ 
+        // Perform the GET request
+        mockMvc.perform(get("/api/films/language/English"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].language").value("English"));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).findFilmsByLanguage("English");
+    }
+ 
+   
+    // GET: Count films by year
+    @Test
+    void testDisplayFilmsNumberByYear() throws Exception {
+        // Mock the service call
+        Map<Integer, Integer> filmsCount = new HashMap<>();
+        filmsCount.put(2023, 10);
+        when(filmService.displayFilmsNumberByYear()).thenReturn(filmsCount);
+ 
+        // Perform the GET request
+        mockMvc.perform(get("/api/films/countbyyear"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.2023").value(10));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).displayFilmsNumberByYear();
+    }
+ 
+    // PUT: Update film title by ID
+    @Test
+    void testUpdateTitle() throws Exception {
+        // Mock the service call
+        when(filmService.updateTitle(1, "Updated Test Film")).thenReturn(filmDTO);
+ 
+        // Perform the PUT request
+        mockMvc.perform(put("/api/films/update/title/1")
+                        .contentType("application/json")
+                        .content("\"Updated Test Film\""))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Updated Test Film"));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).updateTitle(1, "Updated Test Film");
+    }
+ 
+    
+ 
+// PUT: Update film release year
+    @Test
+    void testUpdateReleaseYear() throws Exception {
+        // Mock the service call
+        when(filmService.updateReleaseYear(1, 2024)).thenReturn(filmDTO);
+ 
+        // Perform the PUT request
+        mockMvc.perform(put("/api/films/update/releaseyear/1")
+                        .contentType("application/json")
+                        .content("2024"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.releaseYear").value(2024));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).updateReleaseYear(1, 2024);
+    }
+ 
+ 
+    // PUT: Update rental duration
+    @Test
+    void testUpdateRentalDuration() throws Exception {
+        // Mock the service call
+        when(filmService.updateRentalDuration(1, 10)).thenReturn(filmDTO);
+ 
+        // Perform the PUT request
+        mockMvc.perform(put("/api/films/update/rentalduration/1")
+                        .contentType("application/json")
+                        .content("10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.rentalDuration").value(10));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).updateRentalDuration(1, 10);
+    }
+ 
+    
+ 
+    // PUT: Update rental rate
+    @Test
+    void testUpdateRentalRate() throws Exception {
+        // Mock the service call
+        when(filmService.updateRentalRate(1, 5)).thenReturn(filmDTO);
+ 
+        // Perform the PUT request
+        mockMvc.perform(put("/api/films/update/rentalrate/1")
+                        .contentType("application/json")
+                        .content("5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.rentalRate").value(5));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).updateRentalRate(1, 5);
+    }
+ 
+  
+ 
+    // PUT: Update film rating
+    @Test
+    void testUpdateRating() throws Exception {
+        // Mock the service call
+        when(filmService.updateRating(1L, 4)).thenReturn(filmDTO);
+ 
+        // Perform the PUT request
+        mockMvc.perform(put("/api/films/update/rating/1")
+                        .contentType("application/json")
+                        .content("4"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.rating").value(4));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).updateRating(1L, 4);
+    }
+ 
+    
+ 
+    // PUT: Update film language
+    @Test
+    void testUpdateLanguage() throws Exception {
+        // Mock the service call
+        when(filmService.updateLanguage(1, 2)).thenReturn(filmDTO);
+ 
+        // Perform the PUT request
+        mockMvc.perform(put("/api/films/update/language/1")
+                        .contentType("application/json")
+                        .content("2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.language").value("English"));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).updateLanguage(1, 2);
+    }
+ 
+    @Test
+    void testUpdateLanguage_InvalidInput() throws Exception {
+        // Mock the service call to throw InvalidInputException
+        when(filmService.updateLanguage(1, -2)).thenThrow(new InvalidInputException("Invalid language"));
+ 
+        // Perform the PUT request
+        mockMvc.perform(put("/api/films/update/language/1")
+                        .contentType("application/json")
+                        .content("-2"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Invalid language"));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).updateLanguage(1, -2);
+    }
+ 
+    // PUT: Assign actors to film
+    @Test
+    void testAssignActorsToFilm() throws Exception {
+        // Mock the service call
+        Collection<Long> actorIds = List.of(1L, 2L);
+        doNothing().when(filmService).assignActorsToFilm(1L, actorIds);
+ 
+        // Perform the PUT request
+        mockMvc.perform(put("/api/films/1/actors")
+                        .contentType("application/json")
+                        .content("[1, 2]"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Actors assigned to film successfully"));
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).assignActorsToFilm(1L, actorIds);
+    }
+ 
+    // PUT: Update film category
+    @Test
+    void testUpdateCategory() throws Exception {
+        // Mock the service call
+        when(filmService.updateCategory(1L, 2L)).thenReturn(null);  // Assuming FilmCategory is returned.
+ 
+        // Perform the PUT request
+        mockMvc.perform(put("/api/films/update/category/1")
+                        .contentType("application/json")
+                        .content("2"))
+                .andExpect(status().isOk());
+ 
+        // Verify the interaction with the service
+        verify(filmService, times(1)).updateCategory(1L, 2L);
+    }
+}
+ 
+ 

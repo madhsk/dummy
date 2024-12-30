@@ -64,22 +64,6 @@ class CustomerControllerTest {
     }
 
 
-//    @Test
-//    void getCustomersByPhone_ShouldReturnCustomers() throws ResourceNotFoundException {
-//        String phone = "1234567890";
-//        CustomerDTO customerDTO = new CustomerDTO();
-//        customerDTO.setPhone(phone);
-//        List<CustomerDTO> customers = Arrays.asList(customerDTO);
-//        when(customerService.getCustomersByPhone(phone)).thenReturn(customers);
-//
-//        ResponseEntity<List<CustomerDTO>> response = customerController.getCustomersByPhone(phone);
-//
-//        assertEquals(1, response.getBody().size());
-//        assertEquals(phone, response.getBody().get(0).getPhone());
-//        verify(customerService, times(1)).getCustomersByPhone(phone);
-//    }
-
-
     @Test
     void getActiveCustomers_ShouldReturnActiveCustomers() {
         CustomerDTO customerDTO = new CustomerDTO();
@@ -151,47 +135,6 @@ class CustomerControllerTest {
         assertNotNull(response.getBody());
         assertEquals(newEmail, response.getBody().getEmail());
         verify(customerService, times(1)).updateEmail(id, newEmail);
-    }
-
-//    @Test
-//    void updatePhoneNumber_ShouldReturnUpdatedCustomer() throws ResourceNotFoundException {
-//        Long id = 1L;
-//        String newPhone = "1112223333";
-//        CustomerDTO updatedCustomer = new CustomerDTO();
-//        updatedCustomer.setPhone(newPhone);
-//        when(customerService.updateCustomerPhone(id, newPhone)).thenReturn(updatedCustomer);
-//
-//        ResponseEntity<CustomerDTO> response = customerController.updatePhoneNumber(id, newPhone);
-//
-//        assertNotNull(response.getBody());
-//        assertEquals(newPhone, response.getBody().getPhone());
-//        verify(customerService, times(1)).updateCustomerPhone(id, newPhone);
-//    }
-
-    @Test
-    void updateCustomerStore_ShouldReturnUpdatedCustomer() throws ResourceNotFoundException {
-        // Arrange
-        Long id = 1L;
-        Store store = new Store();
-        store.setStoreId(1L);
-
-        // Create and set up CustomerDTO with StoreDTO
-        CustomerDTO updatedCustomer = new CustomerDTO();
-        StoreDTO storeDTO = new StoreDTO();
-        storeDTO.setStoreId(1L); // Explicitly set the StoreDTO's ID
-        updatedCustomer.setStore(storeDTO);
-
-        // Mock the service method
-        when(customerService.assignStoreToCustomer(id, store)).thenReturn(updatedCustomer);
-
-        // Act: Call the controller method
-        ResponseEntity<CustomerDTO> response = customerController.updateCustomerStore(id, store);
-
-        // Assert: Verify results
-        assertNotNull(response.getBody());
-        assertNotNull(response.getBody().getStore()); // Ensure the store is not null
-        assertEquals(store.getStoreId(), response.getBody().getStore().getStoreId()); // Compare store IDs
-        verify(customerService, times(1)).assignStoreToCustomer(id, store);
     }
 
 

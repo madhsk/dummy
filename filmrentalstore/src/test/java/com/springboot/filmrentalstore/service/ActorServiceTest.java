@@ -1,267 +1,217 @@
 package com.springboot.filmrentalstore.service;
-import static org.mockito.Mockito.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.Assertions;
+ 
+import com.springboot.filmrentalstore.DTO.ActorDTO;
+import com.springboot.filmrentalstore.exception.InvalidInputException;
+import com.springboot.filmrentalstore.exception.ResourceNotFoundException;
+import com.springboot.filmrentalstore.model.Actor;
+import com.springboot.filmrentalstore.model.Film;
+import com.springboot.filmrentalstore.model.FilmActor;
+import com.springboot.filmrentalstore.repo.ActorRepo;
+import com.springboot.filmrentalstore.repo.FilmActorRepo;
+import com.springboot.filmrentalstore.repo.FilmRepo;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import com.springboot.filmrentalstore.DTO.ActorDTO;
-import com.springboot.filmrentalstore.exception.*;
-import com.springboot.filmrentalstore.model.*;
-import com.springboot.filmrentalstore.repo.*;
-import com.springboot.filmrentalstore.service.ActorService;
+import org.mockito.MockitoAnnotations;
  
+import java.time.LocalDateTime;
+import java.util.*;
  
-@ExtendWith(MockitoExtension.class)
-
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+ 
 class ActorServiceTest {
  
     @InjectMocks
-
     private ActorService actorService;
  
     @Mock
-
-    private ActorRepo actorRepository;
+    private ActorRepo actorRepo;
  
     @Mock
-
-    private FilmActorRepo filmActorRepository;
+    private FilmActorRepo filmActorRepo;
  
     @Mock
-
-    private FilmRepo filmRepository;
+    private FilmRepo filmRepo;
  
-    // Test for getActorsByLastName
-
+    private Actor sampleActor;
+ 
+    private ActorDTO sampleActorDTO;
+ 
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        sampleActor = new Actor(1L, "John", "Doe", LocalDateTime.now());
+        sampleActorDTO = new ActorDTO(1L, "John", "Doe", LocalDateTime.now());
+    }
+ 
     @Test
-
-    void testGetActorsByLastName_Success() throws InvalidInputException, ResourceNotFoundException {
-
+    void testGetActorsByLastName_Success() throws ResourceNotFoundException, InvalidInputException {
         // Arrange
-
-        String lastName = "Smith";
-
-        List<Actor> mockActors = Arrays.asList(
-
-                new Actor(1L, "John", "Smith", LocalDateTime.now()),
-
-                new Actor(2L, "Jane", "Smith", LocalDateTime.now())
-
-        );
-
-        when(actorRepository.findByLastName(lastName)).thenReturn(mockActors);
+        String lastName = "Doe";
+        List<Actor> actors = List.of(sampleActor);
+        when(actorRepo.findByLastName(lastName)).thenReturn(actors);
  
         // Act
-
         List<ActorDTO> result = actorService.getActorsByLastName(lastName);
  
         // Assert
-
-        Assertions.assertEquals(2, result.size());
-
-        Assertions.assertEquals("John", result.get(0).getFirstName());
-
-        verify(actorRepository, times(1)).findByLastName(lastName);
-
+        assertEquals(1, result.size());
+        assertEquals(sampleActor.getLastName(), result.get(0).getLastName());
+        verify(actorRepo, times(1)).findByLastName(lastName);
     }
  
     @Test
-
-    void testGetActorsByLastName_EmptyList() {
-
+    void testGetActorsByLastName_InvalidInput() {
         // Arrange
-
-        String lastName = "Smith";
-
-        when(actorRepository.findByLastName(lastName)).thenReturn(Collections.emptyList());
+        String lastName = null;
  
         // Act & Assert
-
-        ResourceNotFoundException exception = Assertions.assertThrows(
-
-                ResourceNotFoundException.class,
-
-                () -> actorService.getActorsByLastName(lastName)
-
-        );
-
-        Assertions.assertEquals("No actors found with last name: Smith", exception.getMessage());
-
-        verify(actorRepository, times(1)).findByLastName(lastName);
-
+        assertThrows(InvalidInputException.class, () -> actorService.getActorsByLastName(lastName));
     }
  
-    // Test for updateLastName
-
     @Test
-
-    void testUpdateLastName_Success() throws ResourceNotFoundException, InvalidInputException {
-
+    void testGetActorsByLastName_NotFound() {
         // Arrange
-
-        Long actorId = 1L;
-
-        String newLastName = "Johnson";
-
-        Actor mockActor = new Actor(actorId, "John", "Smith", LocalDateTime.now());
-
-        when(actorRepository.findById(actorId)).thenReturn(Optional.of(mockActor));
-
-        when(actorRepository.save(mockActor)).thenReturn(mockActor);
+        String lastName = "Unknown";
+        when(actorRepo.findByLastName(lastName)).thenReturn(Collections.emptyList());
+ 
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> actorService.getActorsByLastName(lastName));
+    }
+ 
+    @Test
+    void testGetActorsByFirstName_Success() throws ResourceNotFoundException, InvalidInputException {
+        // Arrange
+        String firstName = "John";
+        List<Actor> actors = List.of(sampleActor);
+        when(actorRepo.findByFirstName(firstName)).thenReturn(actors);
  
         // Act
-
+        List<ActorDTO> result = actorService.getActorsByFirstName(firstName);
+ 
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals(sampleActor.getFirstName(), result.get(0).getFirstName());
+        verify(actorRepo, times(1)).findByFirstName(firstName);
+    }
+ 
+    @Test
+    void testUpdateLastName_Success() throws ResourceNotFoundException, InvalidInputException {
+        // Arrange
+        Long actorId = 1L;
+        String newLastName = "Smith";
+        when(actorRepo.findById(actorId)).thenReturn(Optional.of(sampleActor));
+ 
+        // Act
         actorService.updateLastName(actorId, newLastName);
  
         // Assert
-
-        Assertions.assertEquals("Johnson", mockActor.getLastName());
-
-        verify(actorRepository, times(1)).findById(actorId);
-
-        verify(actorRepository, times(1)).save(mockActor);
-
+        assertEquals(newLastName, sampleActor.getLastName());
+        verify(actorRepo, times(1)).save(sampleActor);
     }
  
     @Test
-
+    void testUpdateLastName_InvalidInput() {
+        // Arrange
+        Long actorId = 1L;
+        String newLastName = "";
+ 
+        // Act & Assert
+        assertThrows(InvalidInputException.class, () -> actorService.updateLastName(actorId, newLastName));
+    }
+ 
+    @Test
     void testUpdateLastName_ActorNotFound() {
-
         // Arrange
-
         Long actorId = 1L;
-
-        String newLastName = "Johnson";
-
-        when(actorRepository.findById(actorId)).thenReturn(Optional.empty());
+        String newLastName = "Smith";
+        when(actorRepo.findById(actorId)).thenReturn(Optional.empty());
  
         // Act & Assert
-
-        ResourceNotFoundException exception = Assertions.assertThrows(
-
-                ResourceNotFoundException.class,
-
-                () -> actorService.updateLastName(actorId, newLastName)
-
-        );
-
-        Assertions.assertEquals("Actor not found with id: 1", exception.getMessage());
-
-        verify(actorRepository, times(1)).findById(actorId);
-
+        assertThrows(ResourceNotFoundException.class, () -> actorService.updateLastName(actorId, newLastName));
     }
  
-    // Test for addActor
-
     @Test
-
     void testAddActor_Success() throws InvalidInputException {
-
         // Arrange
-
-        ActorDTO newActorDto = new ActorDTO(null, "John", "Doe");
-
-        Actor savedActor = new Actor(1L, "John", "Doe", LocalDateTime.now());
-
-        when(actorRepository.save(any(Actor.class))).thenReturn(savedActor);
+        when(actorRepo.save(any(Actor.class))).thenReturn(sampleActor);
  
         // Act
-
-        String result = actorService.addActor(newActorDto);
+        String result = actorService.addActor(sampleActorDTO);
  
         // Assert
-
-        Assertions.assertEquals("Record Created Successfully", result);
-
-        verify(actorRepository, times(1)).save(any(Actor.class));
-
+        assertEquals("Record Created Successfully", result);
+        verify(actorRepo, times(1)).save(any(Actor.class));
     }
  
     @Test
-
     void testAddActor_InvalidInput() {
-
         // Arrange
-
-        ActorDTO invalidActorDto = new ActorDTO(null, "", "");
+        ActorDTO invalidActorDTO = new ActorDTO(null, "", null, null);
  
         // Act & Assert
-
-        InvalidInputException exception = Assertions.assertThrows(
-
-                InvalidInputException.class,
-
-                () -> actorService.addActor(invalidActorDto)
-
-        );
-
-        Assertions.assertEquals("First name and Last name cannot be null or empty", exception.getMessage());
-
+        assertThrows(InvalidInputException.class, () -> actorService.addActor(invalidActorDTO));
     }
  
-    // Test for getFilmsByActorId
-
     @Test
-
-    void testGetFilmsByActorId_Success() throws ResourceNotFoundException {
-
+    void testAssignFilmToActor_Success() throws ResourceNotFoundException {
         // Arrange
-
         Long actorId = 1L;
-
-        Actor mockActor = new Actor(actorId, "John", "Doe", LocalDateTime.now());
-
-        Film mockFilm = new Film(1L, "Film Title", "Film Description", LocalDateTime.now());
-
-        List<FilmActor> mockFilmActors = Arrays.asList(new FilmActor(mockFilm, mockActor, LocalDateTime.now()));
-
-        when(filmActorRepository.findAll()).thenReturn(mockFilmActors);
+        Long filmId = 2L;
+        Film film = new Film();
+        film.setFilmId(filmId);
+        when(actorRepo.findById(actorId)).thenReturn(Optional.of(sampleActor));
+        when(filmRepo.findById(filmId)).thenReturn(Optional.of(film));
+        when(filmActorRepo.existsByFilmAndActor(film, sampleActor)).thenReturn(false);
  
         // Act
-
-        List<Film> result = actorService.getFilmsByActorId(actorId);
+        actorService.assignFilmToActor(actorId, List.of(filmId));
  
         // Assert
-
-        Assertions.assertEquals(1, result.size());
-
-        Assertions.assertEquals("Film Title", result.get(0).getTitle());
-
-        verify(filmActorRepository, times(1)).findAll();
-
+        verify(filmActorRepo, times(1)).save(any(FilmActor.class));
     }
  
     @Test
-
-    void testGetFilmsByActorId_EmptyList() {
-
+    void testAssignFilmToActor_ActorNotFound() {
         // Arrange
-
         Long actorId = 1L;
-
-        when(filmActorRepository.findAll()).thenReturn(Collections.emptyList());
+        Long filmId = 2L;
+        when(actorRepo.findById(actorId)).thenReturn(Optional.empty());
  
         // Act & Assert
-
-        ResourceNotFoundException exception = Assertions.assertThrows(
-
-                ResourceNotFoundException.class,
-
-                () -> actorService.getFilmsByActorId(actorId)
-
-        );
-
-        Assertions.assertEquals("No films found for the given actor", exception.getMessage());
-
+        assertThrows(ResourceNotFoundException.class, () -> actorService.assignFilmToActor(actorId, List.of(filmId)));
     }
-
+ 
+    @Test
+    void testGetFilmsByActorId_Success() throws ResourceNotFoundException {
+        // Arrange
+        Long actorId = 1L;
+        Film film = new Film();
+        film.setFilmId(2L);
+        FilmActor filmActor = new FilmActor();
+        filmActor.setFilm(film);
+        filmActor.setActor(sampleActor);
+        when(filmActorRepo.findAll()).thenReturn(List.of(filmActor));
+ 
+        // Act
+        List<Film> films = actorService.getFilmsByActorId(actorId);
+ 
+        // Assert
+        assertEquals(1, films.size());
+        assertEquals(film.getFilmId(), films.get(0).getFilmId());
+    }
+ 
+    @Test
+    void testGetFilmsByActorId_NotFound() {
+        // Arrange
+        Long actorId = 1L;
+        when(filmActorRepo.findAll()).thenReturn(Collections.emptyList());
+ 
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> actorService.getFilmsByActorId(actorId));
+    }
 }
+ 
  

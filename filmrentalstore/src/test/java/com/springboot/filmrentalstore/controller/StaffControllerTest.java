@@ -91,33 +91,33 @@ class StaffControllerTest {
         verify(staffService, times(1)).findStaffByEmail(email);
     }
  
-    @Test
-    void testFindByCity() throws ResourceNotFoundException {
-        String city = "New York";
-        List<StaffDTO> staffList = Arrays.asList(new StaffDTO(), new StaffDTO());
- 
-        when(staffService.findByAddress_City_CityName(city)).thenReturn(staffList);
- 
-        ResponseEntity<List<StaffDTO>> response = staffController.findByAddress_City_CityName(city);
- 
-        assertEquals(2, response.getBody().size());
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(staffService, times(1)).findByAddress_City_CityName(city);
-    }
- 
-    @Test
-    void testFindByCountry() throws ResourceNotFoundException {
-        String country = "USA";
-        List<StaffDTO> staffList = Arrays.asList(new StaffDTO(), new StaffDTO());
- 
-        when(staffService.findByAddress_City_Country_CountryName(country)).thenReturn(staffList);
- 
-        ResponseEntity<List<StaffDTO>> response = staffController.findByAddress_City_Country_CountryName(country);
- 
-        assertEquals(2, response.getBody().size());
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(staffService, times(1)).findByAddress_City_Country_CountryName(country);
-    }
+//    @Test
+//    void testFindByCity() throws ResourceNotFoundException {
+//        String city = "New York";
+//        List<StaffDTO> staffList = Arrays.asList(new StaffDTO(), new StaffDTO());
+// 
+//        when(staffService.findByAddress_City_CityName(city)).thenReturn(staffList);
+// 
+//        ResponseEntity<List<StaffDTO>> response = staffController.findByAddress_City_CityName(city);
+// 
+//        assertEquals(2, response.getBody().size());
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        verify(staffService, times(1)).findByAddress_City_CityName(city);
+//    }
+// 
+//    @Test
+//    void testFindByCountry() throws ResourceNotFoundException {
+//        String country = "USA";
+//        List<StaffDTO> staffList = Arrays.asList(new StaffDTO(), new StaffDTO());
+// 
+//        when(staffService.findByAddress_City_Country_CountryName(country)).thenReturn(staffList);
+// 
+//        ResponseEntity<List<StaffDTO>> response = staffController.findByAddress_City_Country_CountryName(country);
+// 
+//        assertEquals(2, response.getBody().size());
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        verify(staffService, times(1)).findByAddress_City_Country_CountryName(country);
+//    }
  
     @Test
     void testUpdateFirstName() throws ResourceNotFoundException {

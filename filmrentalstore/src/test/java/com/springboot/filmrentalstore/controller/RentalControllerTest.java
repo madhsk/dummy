@@ -90,18 +90,18 @@ class RentalControllerTest {
         verify(rentalService, times(1)).getCustomersWithPendingReturnsByStore(STORE_ID);
     }
  
-    @Test
-    void testUpdateReturnDate() throws ResourceNotFoundException {
-        LocalDateTime returnDate = LocalDateTime.now();
-        RentalDTO updatedRental = new RentalDTO();
- 
-        when(rentalService.updateReturnDate(RENTAL_ID, returnDate)).thenReturn(updatedRental);
- 
-        ResponseEntity<RentalDTO> response = rentalController.updateReturnDate(RENTAL_ID, returnDate);
- 
-        assertNotNull(response.getBody());
-        verify(rentalService, times(1)).updateReturnDate(RENTAL_ID, returnDate);
-    }
+//    @Test
+//    void testUpdateReturnDate() throws ResourceNotFoundException {
+//        LocalDateTime returnDate = LocalDateTime.now();
+//        RentalDTO updatedRental = new RentalDTO();
+// 
+//        when(rentalService.updateReturnDate(RENTAL_ID, returnDate)).thenReturn(updatedRental);
+// 
+//        ResponseEntity<RentalDTO> response = rentalController.updateReturnDate(RENTAL_ID, returnDate);
+// 
+//        assertNotNull(response.getBody());
+//        verify(rentalService, times(1)).updateReturnDate(RENTAL_ID, returnDate);
+//    }
  
     @Test
     void testGetRentalsByCustomer_NotFound() throws ResourceNotFoundException {

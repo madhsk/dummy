@@ -2,9 +2,7 @@ package com.springboot.filmrentalstore.DTO;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
-@Data
 public class StoreCreateDTO {
 
 	@NotNull(message = "Address ID Cannot Be Null")

@@ -14,8 +14,8 @@ import java.util.*;
 
 @Service
 public class PaymentService implements IPaymentService {
-	@Autowired
-	private PaymentRepo paymentRepo;
+	@Autowired 
+	PaymentRepo paymentRepo;
 
 	@Autowired
 	ModelMapper modelMapper;

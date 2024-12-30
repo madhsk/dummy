@@ -1,6 +1,7 @@
 package com.springboot.filmrentalstore.service;
 
 
+import com.springboot.filmrentalstore.DTO.AddressDTO;
 import com.springboot.filmrentalstore.DTO.StaffDTO;
 import com.springboot.filmrentalstore.exception.ResourceNotFoundException;
 import com.springboot.filmrentalstore.model.Staff;
@@ -65,6 +66,15 @@ public class StaffService implements IStaffService {
         return staffDTO;
     }
  
+	public List<StaffDTO> findAll(){
+		List<Staff> staffList = staffRepo.findAll();
+		List<StaffDTO> staffDTOList = new ArrayList<>();
+        for (Staff staff : staffList) {
+            staffDTOList.add(modelMapper.map(staff, StaffDTO.class));
+        }
+		return staffDTOList;
+	}
+	
     // Find staff by last name
     public List<StaffDTO> findStaffByLastName(String lastName) throws ResourceNotFoundException {
         List<Staff> staffList = staffRepo.findByLastName(lastName);
@@ -213,6 +223,15 @@ public class StaffService implements IStaffService {
     }
  
     // Assign address to staff
+    public List<AddressDTO> getAllAddress(){
+    	List<Address> allAddress = addressRepo.findAll();
+    	List<AddressDTO> addressDTOList = new ArrayList<>();
+        for (Address address : allAddress) {
+        	addressDTOList.add(modelMapper.map(address, AddressDTO.class));
+        } 
+        return addressDTOList;
+    }
+    
     @Transactional
     public StaffDTO assignAddress(Long staffId, Address address) throws ResourceNotFoundException {
         Staff staff = staffRepo.findById(staffId)
@@ -222,19 +241,15 @@ public class StaffService implements IStaffService {
         Staff updatedStaff = staffRepo.save(staff);
         return modelMapper.map(updatedStaff, StaffDTO.class);
     }
-
-    @Override
-    public StaffDTO authenticateStaff(String username, String password) {
-        // Find the staff by username
-        Staff staff = staffRepo.findByUsername(username);
-
-        // Check if staff exists and the password matches
-        if (staff != null && staff.getPassword().equals(password)) {
-            // Convert Staff entity to StaffDTO
-            return new StaffDTO();
+    
+    public void deleteStaff(Long staffId) throws ResourceNotFoundException {
+    	Staff deleteStaff = staffRepo.findById(staffId).get();
+        // Check if the staff member exists
+        if (!staffRepo.existsById(staffId)) {
+            throw new ResourceNotFoundException("Staff not found with id " + staffId);
         }
-
-        // Return null if authentication fails
-        return null;
+        // Delete the staff member
+        staffRepo.delete(deleteStaff);
     }
+    
 }

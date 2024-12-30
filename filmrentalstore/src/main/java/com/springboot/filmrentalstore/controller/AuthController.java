@@ -57,7 +57,7 @@ public class AuthController {
 				{
 					System.out.println("Hello");
 					jwtToken.generateToken(username, password, user.getRole());
-					res = new ResponseEntity<JwtResponse>(new JwtResponse(jwtToken.getToken()), HttpStatus.ACCEPTED);
+					res = new ResponseEntity<JwtResponse>(new JwtResponse(jwtToken.getToken(),username), HttpStatus.ACCEPTED);
 				}
 				return res;
 			}

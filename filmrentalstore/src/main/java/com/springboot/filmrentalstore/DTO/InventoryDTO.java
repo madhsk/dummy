@@ -12,6 +12,10 @@ public class InventoryDTO {
 		this.lastUpdate = lastUpdate;
 	}
 
+	public InventoryDTO() {
+		// TODO Auto-generated constructor stub
+	}
+
 	private Long inventoryId;
 	private Long filmId; // ID of the Film
 	private Long storeId; // ID of the Store

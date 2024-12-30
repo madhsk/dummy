@@ -1,0 +1,98 @@
+package com.springboot.filmrentalstore.controller;
+
+import com.springboot.filmrentalstore.DTO.InventoryDTO;
+import com.springboot.filmrentalstore.exception.ResourceNotFoundException;
+import com.springboot.filmrentalstore.model.Inventory;
+import com.springboot.filmrentalstore.service.InventoryService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+class InventoryControllerTest {
+
+    @InjectMocks
+    private InventoryController inventoryController;
+
+    @Mock
+    private InventoryService inventoryService;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void testCreateInventory() throws ResourceNotFoundException {
+        InventoryDTO inventoryDTO = new InventoryDTO(null, 1L, 1L, LocalDateTime.now());
+        Inventory inventory = new Inventory();
+        inventory.setInventoryId(1L);
+
+        when(inventoryService.addFilmToStore(inventoryDTO)).thenReturn(inventory);
+
+        ResponseEntity<Inventory> response = inventoryController.createInventory(inventoryDTO);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1L, response.getBody().getInventoryId());
+        verify(inventoryService, times(1)).addFilmToStore(inventoryDTO);
+    }
+
+    @Test
+    void testGetAllFilmInventories() {
+        InventoryDTO inventoryDTO = new InventoryDTO(1L, 1L, 1L, LocalDateTime.now());
+
+        when(inventoryService.getAllFilmInventories()).thenReturn(Arrays.asList(inventoryDTO));
+
+        ResponseEntity<List<InventoryDTO>> response = inventoryController.getAllFilmInventories();
+
+        assertEquals(1, 1);
+        verify(inventoryService, times(1)).getAllFilmInventories();
+    }
+
+    @Test
+    void testGetFilmInventoriesByStore() {
+        InventoryDTO inventoryDTO = new InventoryDTO(1L, 1L, 1L, LocalDateTime.now());
+
+        when(inventoryService.getFilmInventoriesByStore(1L)).thenReturn(Arrays.asList(inventoryDTO));
+
+        ResponseEntity<List<InventoryDTO>> response = inventoryController.getFilmInventoriesByStore(1L);
+
+        assertEquals(1, 1);
+        verify(inventoryService, times(1)).getFilmInventoriesByStore(1L);
+    }
+
+    @Test
+    void testGetStoreInventoriesByFilm() {
+        InventoryDTO inventoryDTO = new InventoryDTO(1L, 1L, 1L, LocalDateTime.now());
+
+        when(inventoryService.getStoreInventoriesByFilm(1L)).thenReturn(Arrays.asList(inventoryDTO));
+
+        ResponseEntity<List<InventoryDTO>> response = inventoryController.getStoreInventoriesByFilm(1L);
+
+        assertEquals(1, 1);
+        verify(inventoryService, times(1)).getStoreInventoriesByFilm(1L);
+    }
+
+    @Test
+    void testGetFilmInventoryByStore() {
+        InventoryDTO inventoryDTO = new InventoryDTO(1L, 1L, 1L, LocalDateTime.now());
+
+        when(inventoryService.getFilmInventoryByStore(1L, 1L)).thenReturn(Arrays.asList(inventoryDTO));
+
+        ResponseEntity<List<InventoryDTO>> response = inventoryController.getFilmInventoryByStore(1L, 1L);
+
+        assertEquals(1, response.size());
+        verify(inventoryService, times(1)).getFilmInventoryByStore(1L, 1L);
+    }
+}

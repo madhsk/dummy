@@ -14,8 +14,8 @@ public class UserService {
 
 	UserRepo userRepo;
 
-	public void saveUser(UserEntity user) {
-		userRepo.save(user);
+	public UserEntity saveUser(UserEntity user) {
+		return userRepo.save(user);
 	}
 
 	public boolean findById(long id) {
